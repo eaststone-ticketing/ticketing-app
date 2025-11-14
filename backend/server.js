@@ -3,6 +3,7 @@ import sqlite3 from "sqlite3";
 import { open } from 'sqlite';
 import cors from 'cors';
 import authRouter from "./auth.js";
+import jwt from "jsonwebtoken";
 
 const app = express();
 app.use(cors());
@@ -415,3 +416,4 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
 
 
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+
