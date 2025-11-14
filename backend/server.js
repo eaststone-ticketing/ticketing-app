@@ -120,7 +120,17 @@ await db.exec(`
 `);
 
 
+app.get("/create-admin", async (req, res) => {
+  const bcrypt = require("bcrypt");
+  const hashed = await bcrypt.hash("test123", 10);
 
+  await User.create({
+    username: "admin",
+    password: hashed
+  });
+
+  res.send("Admin created");
+});
 
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {

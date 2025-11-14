@@ -5,7 +5,7 @@ export async function getKyrkogardar() {
     const res = await fetch (`${API_URL}/kyrkogardar`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-                });
+                }});
     return res.json();
 }
 
@@ -24,7 +24,7 @@ export async function removeKyrkogard(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-    });
+    }});
     return res.json(
     )
 }
@@ -33,7 +33,7 @@ export async function getArenden() {
     const res = await fetch (`${API_URL}/arenden`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-                });
+                }});
     return res.json();
 }
 
@@ -52,7 +52,7 @@ export async function removeArende(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
-    });
+    }});
     return res.json();
 }
 
@@ -60,7 +60,7 @@ export async function getKunder() {
     const res = await fetch (`${API_URL}/kunder`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-                });
+                }});
     return res.json();
 }
 
@@ -79,7 +79,7 @@ export async function removeKunder(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
-    });
+    }});
     return res.json();
 }
 
@@ -112,7 +112,7 @@ export async function removeGodkannande(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
-    });
+    }});
     return res.json();
 }
 
@@ -156,7 +156,7 @@ export async function removeKommentarer(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
-    });
+    }});
     return res.json();
 }
 

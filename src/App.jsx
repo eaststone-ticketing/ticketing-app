@@ -9,9 +9,6 @@ import { IoPersonOutline } from "react-icons/io5";
 import './App.css'
 import MainApp from './MainApp.jsx'
 
-
-
-
 function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
     const [sockel, setSockel] = useState(false);
     const [staende, setStaende] = useState(false);
