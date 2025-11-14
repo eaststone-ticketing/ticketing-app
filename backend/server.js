@@ -6,8 +6,13 @@ import authRouter from "./auth.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+const API_URL = process.env.API_URL || "http://localhost:3000";
+
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [`${API_URL}`, "http://localhost:3000"],
+  methods: ["GET","POST","PUT","DELETE"]
+}));
 app.use(express.json());
 
 function authenticateToken(req, res, next) {
@@ -447,6 +452,6 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
   }
 });
 
-
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

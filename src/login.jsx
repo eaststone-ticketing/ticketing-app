@@ -57,7 +57,7 @@ function Login({ onLogin }) {
 
         <img src={logo} alt="Logo"/>
         <div>
-          <label>Användarem: </label>
+          <label>Användare: </label>
           <input
             type="text"
             value={username}
