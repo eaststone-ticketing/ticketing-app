@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './login.css'
 import logo from './assets/images/eaststone.png'
+const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -20,7 +21,7 @@ function Login({ onLogin }) {
 
     
     try {
-    const res = await fetch("http://localhost:5000/auth/login", {
+    const res = await fetch(`http://${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
