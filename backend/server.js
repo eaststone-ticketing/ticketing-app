@@ -4,6 +4,7 @@ import { open } from 'sqlite';
 import cors from 'cors';
 import authRouter from "./auth.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const app = express();
 app.use(cors());
@@ -121,15 +122,37 @@ await db.exec(`
 
 
 app.get("/create-admin", async (req, res) => {
-  const bcrypt = require("bcrypt");
-  const hashed = await bcrypt.hash("test123", 10);
+  try {
+    const username = "admin";
+    const plainPassword = "test123";
 
-  await User.create({
-    username: "admin",
-    password: hashed
-  });
+    // Check if admin already exists
+    const existing = await db.get(
+      "SELECT * FROM users WHERE username = ?",
+      username
+    );
 
-  res.send("Admin created");
+    if (existing) {
+      return res.json({ message: "Admin already exists" });
+    }
+
+    const hashed = await bcrypt.hash(plainPassword, 10);
+
+    await db.run(
+      `INSERT INTO users (username, password_hash)
+       VALUES (?, ?)`,
+      [username, hashed]
+    );
+
+    res.json({
+      message: "Admin created successfully!",
+      login: { username, password: plainPassword }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create admin" });
+  }
 });
 
 
