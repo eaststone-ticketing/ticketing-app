@@ -8,6 +8,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Expect "Bearer <token>"
+
+    if (!token) return res.sendStatus(401); // Unauthorized
+
+    jwt.verify(token, process.env.JWT_SECRET || "supersecret", (err, user) => {
+        if (err) return res.sendStatus(403); // Forbidden
+        req.user = user; // attach decoded user info to request
+        next();
+    });
+}
 
 const db = await open({
     filename: "./database.db",
@@ -110,7 +122,7 @@ await db.exec(`
 
 
 
-app.post("/kyrkogardar", async (req, res) => {
+app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
 
     const result = await db.run(`
@@ -133,7 +145,7 @@ app.post("/kyrkogardar", async (req, res) => {
 });
 
 
-app.post("/arenden", async (req, res) => {
+app.post("/arenden", authenticateToken, async (req, res) => {
     const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status}  = req.body;
     const result = await db.run (`
         INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status)
@@ -181,7 +193,7 @@ app.post("/arenden", async (req, res) => {
     res.json(newArende);
 })
 
-app.post("/kunder", async (req, res) => {
+app.post("/kunder", authenticateToken, async (req, res) => {
     const {bestallare, email, telefonnummer, address} = req.body;
     const result = await db.run (`
         INSERT INTO kunder (bestallare, email, telefonnummer, address)
@@ -199,7 +211,7 @@ app.post("/kunder", async (req, res) => {
     res.json(newKund);
 })
 
-app.post("/godkannanden", async(req,res) => {
+app.post("/godkannanden", authenticateToken, async(req,res) => {
     const {arendeID, godkannare, datum, kalla} = req.body;
     const result = await db.run(`
         INSERT INTO godkannanden (arendeID, godkannare, datum, kalla)
@@ -216,7 +228,7 @@ app.post("/godkannanden", async(req,res) => {
     res.json(newGodkannande)
     })
 
-app.post("/kommentarer", async(req,res) => {
+app.post("/kommentarer", authenticateToken, async(req,res) => {
   const {arendeID, innehall, tagged_users} = req.body;
   const result = await db.run(`
     INSERT INTO kommentarer(arendeID, innehall, tagged_users)
@@ -232,38 +244,38 @@ app.post("/kommentarer", async(req,res) => {
   res.json(newKommentar)
 })
 
-app.get("/kyrkogardar", async (req, res) => {
+app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const kyrkogardar = await db.all("SELECT * FROM kyrkogardar");
     res.json(kyrkogardar);
 })
 
-app.get("/arenden", async (req, res) => {
+app.get("/arenden", authenticateToken, async (req, res) => {
     const arenden = await db.all("SELECT * FROM arenden")
     res.json(arenden);
 })
 
-app.get("/kunder", async (req, res) => {
+app.get("/kunder", authenticateToken, async (req, res) => {
     const kunder = await db.all("SELECT * FROM kunder")
     res.json(kunder);
 })
 
-app.get("/godkannanden", async (req, res) => {
+app.get("/godkannanden", authenticateToken, async (req, res) => {
     const godkannanden = await db.all("SELECT * FROM godkannanden")
     res.json(godkannanden);
 })
 
-app.get("/kommentarer", async(req, res) => {
+app.get("/kommentarer", authenticateToken, async(req, res) => {
   const kommentarer = await db.all("SELECT * FROM kommentarer")
   res.json(kommentarer);
 })
 
-app.get("/users", async (req, res) => {
+app.get("/users", authenticateToken, async (req, res) => {
     const users = await db.all("SELECT * FROM users");
     res.json(users);
 });
 
 
-app.delete("/kyrkogardar/:id", async (req, res) => {
+app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
 
     await db.run("DELETE FROM kyrkogardar WHERE id = ?", id);
@@ -271,7 +283,7 @@ app.delete("/kyrkogardar/:id", async (req, res) => {
     res.json({ message: `Kyrkogard with ID ${id} deleted` });
 });
 
-app.delete("/arenden/:id", async (req, res) => {
+app.delete("/arenden/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
 
     await db.run("DELETE FROM arenden WHERE id = ?", id);
@@ -279,7 +291,7 @@ app.delete("/arenden/:id", async (req, res) => {
     res.json({message: `Ärende with ID ${id} deleted`})
 })
 
-app.delete("/kunder/:id", async (req, res) => {
+app.delete("/kunder/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
 
     await db.run ("DELETE FROM kunder WHERE id = ?", id);
@@ -287,7 +299,7 @@ app.delete("/kunder/:id", async (req, res) => {
     res.json({message: `Kund with ID ${id} deleted`})
 })
 
-app.delete("/godkannanden/:id", async(req, res) => {
+app.delete("/godkannanden/:id", authenticateToken, async(req, res) => {
     const {id} = req.params;
 
     await db.run ("DELETE FROM godkannanden WHERE id = ?", id);
@@ -295,7 +307,7 @@ app.delete("/godkannanden/:id", async(req, res) => {
     res.json({message: `Godkannande with ID ${id} deleted` })
 })
 
-app.delete("/kommentarer/:id", async(req, res) => {
+app.delete("/kommentarer/:id", authenticateToken, async(req, res) => {
   const {id} = req.params;
 
   await db.run ("DELETE FROM kommentarer WHERE id = ?", id);
@@ -303,7 +315,7 @@ app.delete("/kommentarer/:id", async(req, res) => {
   res.json({message: `Kommentar with ID ${id} deleted`  })
 })
 
-app.put("/kyrkogardar/:id", async (req, res) => {
+app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
 
@@ -322,7 +334,7 @@ app.put("/kyrkogardar/:id", async (req, res) => {
   }
 });
 
-app.put("/arenden/:id", async (req, res) => {
+app.put("/arenden/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const fields = req.body;
 
@@ -344,7 +356,7 @@ app.put("/arenden/:id", async (req, res) => {
   }
 });
 
-app.put("/kunder/:id", async (req, res) => {
+app.put("/kunder/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { bestallare, email, telefonnummer, address } = req.body;
 
@@ -363,7 +375,7 @@ app.put("/kunder/:id", async (req, res) => {
   }
 });
 
-app.put("/godkannanden/:id", async (req, res) => {
+app.put("/godkannanden/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
     const {arendeID, godkannare, datum, kalla} = req.body;
 
@@ -383,7 +395,7 @@ app.put("/godkannanden/:id", async (req, res) => {
     }
 });
 
-app.put("/kommentarer/:id", async (req, res) => {
+app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
   const {id} = req.params;
   const{arendeID, innehall, tagged_users} = req.body;
 
@@ -400,5 +412,6 @@ app.put("/kommentarer/:id", async (req, res) => {
     res.status(500).json({error: "Failed to update kommentarer"})
   }
 });
+
 
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
