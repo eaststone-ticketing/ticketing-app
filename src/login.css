@@ -1,0 +1,29 @@
+
+.background {
+    background: linear-gradient(to top, rgb(213, 223, 215), rgb(243,255,245));
+    width: 100vw;  
+    height: 100vh; 
+    margin: 0;     
+    padding: 0;    
+    position: absolute; 
+    top: 0;         
+    left: 0;        
+    z-index: -1; 
+}
+
+.login-box{
+    display:flex;
+    flex-direction:column;
+    background: linear-gradient(to top, rgb(233, 243, 235), rgb(255,255,255));
+    padding: 40px;
+    width: 400px;
+    height: 300px;
+    gap: 30px;
+    border-radius:15px;
+    }
+.login-box h2{
+    background: linear-gradient(to top, rgb(243, 253, 245), rgb(255,255,255));  
+    border-radius:15px;
+    padding: 10px;
+    margin: 0px;
+}
