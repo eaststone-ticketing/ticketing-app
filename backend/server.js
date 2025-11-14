@@ -13,6 +13,7 @@ app.use(cors({
   origin: [`${API_URL}`, "http://localhost:3000"],
   methods: ["GET","POST","PUT","DELETE"]
 }));
+
 app.use(express.json());
 
 function authenticateToken(req, res, next) {
@@ -453,5 +454,5 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(5000, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
