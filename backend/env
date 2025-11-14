@@ -1,3 +1,3 @@
 PORT=5000
 JWT_SECRET=supersecret
-API_URL=http://localhost:3000
+API_URL=https://ticketing-app-production-5b65.up.railway.app/
