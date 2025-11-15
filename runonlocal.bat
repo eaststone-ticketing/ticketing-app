@@ -1,1 +1,0 @@
-cd /d C:\Users\felix\Documents\helpdesk-eaststone\helpdesk-eaststone && npm run start
