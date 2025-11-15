@@ -1,0 +1,1 @@
+cmd /k "cd /d %USERPROFILE%\Documents\helpdesk-eaststone\helpdesk-eaststone-backend && node server.js"
