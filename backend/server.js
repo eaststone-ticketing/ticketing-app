@@ -7,11 +7,11 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 
-const API_URL = process.env.API_URL || "http://localhost:3000";
+const API_URL = process.env.API_URL || "http://localhost:5173";
 
 const app = express();
 app.use(cors({
-  origin: [`${API_URL}`, "http://localhost:3000"],
+  origin: [`${API_URL}`, "http://localhost:5173"],
   methods: ["GET","POST","PUT","DELETE"]
 }));
 
@@ -31,7 +31,7 @@ function authenticateToken(req, res, next) {
 }
 
 const db = await open({
-    filename: process.env.NODE_ENV === "testing" ? "test.db" : "/data/database.db",
+    filename: "database.db",
     driver: sqlite3.Database
 });
 
@@ -415,6 +415,24 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({error: "Failed to update kommentarer"})
+  }
+});
+
+app.put("/users/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  const{password} = req.body;
+  const encrypted = await bcrypt.hash(password, 10);
+  try {
+    await db.run(
+      `UPDATE users
+      SET password_hash = ?
+      WHERE id = ?`,
+      [encrypted, id]
+    );
+    res.json({message: "Password updated successfully"})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Failed to update password"})
   }
 });
 

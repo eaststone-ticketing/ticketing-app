@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar } from "./api.js";
+import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword } from "./api.js";
 import { TbGrave2 } from "react-icons/tb";
 import { BsTelephone } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail } from "react-icons/md";
@@ -1121,7 +1121,7 @@ function KundTab({kunder, setKunder}) {
       return (matchName && matchID && matchEmail && matchTel);
     });
   return (
-    <div classname = "kund-search-menu">
+    <div className = "search-menu">
       <form className = "searchbar-kund">
       <h3>Sök kund</h3>
       <div className = "input-field-searchbar-kund">
@@ -1141,7 +1141,8 @@ function KundTab({kunder, setKunder}) {
       <input type = "text" name = "tel" value = {tel} onChange={(e) => setTel(e.target.value)} ></input>
       </div>
       </form>
-      <div className = "kund-results">
+      
+    <div className = "kund-results">
       {result.slice(0,50).map((kund) => (
         <div key={kund.id} className="kund-card">
           <div className = "kund-card-h-and-button">
@@ -1410,6 +1411,7 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   const now = new Date();
   const [kommentarer, setKommentarer] = useState(null);
   const [showDetail, setShowDetail] = useState(null);
+  const [newPassword, setNewPassword] = useState(null);
 
   useEffect(() => {
   const fetchKommentarer = async () => {
@@ -1449,6 +1451,13 @@ return <div>
   <div className = "sideways">
   <Greeting/>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
+  <form onSubmit = {(e) => {e.preventDefault(); updatePassword(JSON.parse(localStorage.getItem('user')), newPassword)}}>
+    <div>
+    <label>Nytt lösenord</label>
+    <input onChange = {(e) => setNewPassword(e.target.value)}></input>
+    </div>
+    <button type = "submit">Byt lösenord</button>
+  </form>
   </div>
   <div>
   <div className = "feed">

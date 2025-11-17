@@ -1183,7 +1183,8 @@
   position:relative;
   top: -980px;
   right: -445px;
-  overflow-y: auto;
+  overflow-y:auto;
+  max-height: 600px;  /* adjust height as needed */
 }
 
 .scrollable-box {

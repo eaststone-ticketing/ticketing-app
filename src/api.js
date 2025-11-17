@@ -48,7 +48,7 @@ export async function addArende(arende) {
 }
 
 export async function removeArende(id) {
-    const res = await fetch (`${API_URL}/arenden`, {
+    const res = await fetch (`${API_URL}/arenden/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
@@ -210,3 +210,23 @@ export async function updateKommentar(id, data) {
   return res.json();
 }
 
+export async function updatePassword(user, password){
+  const data = {username:user.username, password:password}
+  console.log(user.userId)
+  const res = await fetch(`${API_URL}/users/${user.userId}`,
+    {
+      method: "PUT",
+      headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${getToken()}`
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+    const text = await res.text(); // will show HTML or error text
+    console.error("Password update failed:", text);
+    return;
+  }
+
+      return res.json();
+}
