@@ -216,6 +216,19 @@ app.post("/kunder", authenticateToken, async (req, res) => {
     res.json(newKund);
 })
 
+app.post("/users", async(res,req) => {
+  const {userId, username, password_hash} = req.body;
+  const result = await db.run(`
+    INSERT INTO users (userId, username, password_hash)
+    VALUES(?,?,?)`,
+  [arendeID, godkannare, datum, kalla]);
+  const newUser = {
+    userId: userId,
+    username: username,
+    password_hash: password_hash
+  };
+})
+
 app.post("/godkannanden", authenticateToken, async(req,res) => {
     const {arendeID, godkannare, datum, kalla} = req.body;
     const result = await db.run(`
