@@ -1187,7 +1187,7 @@
 }
 
 .scrollable-box {
-  overflow-y: auto;  /* Enables vertical scrolling */
+  overflow-y: auto;
   height: 730px;
   border-radius: 15px;
 }

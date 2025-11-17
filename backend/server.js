@@ -31,7 +31,7 @@ function authenticateToken(req, res, next) {
 }
 
 const db = await open({
-    filename: "/data/database.db",
+    filename: process.env.NODE_ENV === "testing" ? "test.db" : "/data/database.db",
     driver: sqlite3.Database
 });
 
