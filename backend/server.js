@@ -218,13 +218,11 @@ app.post("/kunder", authenticateToken, async (req, res) => {
 
 app.post("/users", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const {userId, username, password_hash } = req.body;
 
-    if (!username || !password) {
+    if (!username || !password_hash) {
       return res.status(400).json({ error: "Username and password required" });
     }
-
-    const password_hash = await bcrypt.hash(password, 10);
 
     const result = await db.run(
       `INSERT INTO users (username, password_hash)
