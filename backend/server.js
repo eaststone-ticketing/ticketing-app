@@ -216,18 +216,33 @@ app.post("/kunder", authenticateToken, async (req, res) => {
     res.json(newKund);
 })
 
-app.post("/users", async(res,req) => {
-  const {userId, username, password_hash} = req.body;
-  const result = await db.run(`
-    INSERT INTO users (userId, username, password_hash)
-    VALUES(?,?,?)`,
-  [arendeID, godkannare, datum, kalla]);
-  const newUser = {
-    userId: userId,
-    username: username,
-    password_hash: password_hash
-  };
-})
+app.post("/users", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password required" });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    const result = await db.run(
+      `INSERT INTO users (username, password_hash)
+       VALUES (?, ?)`,
+      [username, password_hash]
+    );
+
+    res.json({
+      id: result.lastID,
+      username,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
 
 app.post("/godkannanden", authenticateToken, async(req,res) => {
     const {arendeID, godkannare, datum, kalla} = req.body;
