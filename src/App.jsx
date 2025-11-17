@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword } from "./api.js";
+import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar } from "./api.js";
 import { TbGrave2 } from "react-icons/tb";
 import { BsTelephone } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail } from "react-icons/md";
@@ -237,7 +237,7 @@ function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set 
         value={formData.kyrkogard}
       required>
         <option value="">Välj begravningsplats</option>
-        {kyrkogardar.map((k) => (
+        {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((k) => (
           <option key={k.id} value={k.namn}>
             {k.namn}
           </option>
@@ -1384,7 +1384,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
     <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">Lägg till kyrkogård</button>
     {formVisible && <KyrkogardForm kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} formData = {formData} setFormData = {setFormData} />}
   <div className = "kyrkogard-list">
-  {kyrkogardar.map((kyrkogard) => (
+  {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((kyrkogard) => (
     <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setView(true);}}>
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>
@@ -1451,13 +1451,6 @@ return <div>
   <div className = "sideways">
   <Greeting/>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
-  <form onSubmit = {(e) => {e.preventDefault(); updatePassword(JSON.parse(localStorage.getItem('user')), newPassword)}}>
-    <div>
-    <label>Nytt lösenord</label>
-    <input onChange = {(e) => setNewPassword(e.target.value)}></input>
-    </div>
-    <button type = "submit">Byt lösenord</button>
-  </form>
   </div>
   <div>
   <div className = "feed">
