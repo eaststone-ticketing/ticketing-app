@@ -216,7 +216,7 @@ app.post("/kunder", authenticateToken, async (req, res) => {
     res.json(newKund);
 })
 
-app.post("/users", async (req, res) => {
+app.post("/users", authenticateToken, async (req, res) => {
   try {
     const {userId, username, password_hash } = req.body;
 
