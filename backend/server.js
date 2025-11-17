@@ -31,7 +31,7 @@ function authenticateToken(req, res, next) {
 }
 
 const db = await open({
-    filename: "./data/database.db",
+    filename: ".data/sdatabase.db",
     driver: sqlite3.Database
 });
 
@@ -128,40 +128,27 @@ await db.exec(`
 `);
 
 
-app.get("/create-admin", async (req, res) => {
+app.post("/users", async (req, res) => {
   try {
-    const username = "admin";
-    const plainPassword = "test123";
+    const { username, password_hash } = req.body;
 
-    // Check if admin already exists
-    const existing = await db.get(
-      "SELECT * FROM users WHERE username = ?",
-      username
-    );
-
-    if (existing) {
-      return res.json({ message: "Admin already exists" });
+    if (!username || !password_hash) {
+      return res.status(400).json({ error: "Missing username or password_hash" });
     }
-
-    const hashed = await bcrypt.hash(plainPassword, 10);
 
     await db.run(
       `INSERT INTO users (username, password_hash)
        VALUES (?, ?)`,
-      [username, hashed]
+      [username, password_hash]
     );
 
-    res.json({
-      message: "Admin created successfully!",
-      login: { username, password: plainPassword }
-    });
+    res.json({ message: "User inserted" });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create admin" });
+    res.status(500).json({ error: "Failed to insert user" });
   }
 });
-
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;

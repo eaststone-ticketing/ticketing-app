@@ -1475,9 +1475,9 @@ return <div>
 
 function App(user) {
 
-  console.log(user.username)
+  const isAdmin = (JSON.parse(localStorage.getItem('user')) === "admin" ? true:false)
 
-  const [activeTab, setActiveTab] = useState('Översikt')
+  const [activeTab, setActiveTab] = useState(isAdmin ? 'AdminView' : 'Översikt')
   const tabs = ['Översikt', 'Ärenden', 'Kunder', 'Leverantörer', 'Kyrkogårdar']
   const [arenden, setArenden] = useState([])
   const [kyrkogardar, setKyrkogardar] = useState([])
@@ -1544,6 +1544,7 @@ function App(user) {
           {activeTab === 'Leverantörer' && <LeverantorTab/>}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
+          {activeTab === 'AdminView' && <AdminView/>}
         </div>
       </div>
     </>
