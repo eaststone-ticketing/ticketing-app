@@ -7,11 +7,11 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 
-const API_URL = process.env.API_URL || "http://localhost:5173";
+const API_URL = process.env.API_URL || "http://localhost:3000";
 
 const app = express();
 app.use(cors({
-  origin: [`${API_URL}`, "http://localhost:5173"],
+  origin: [`${API_URL}`, "http://localhost:3000"],
   methods: ["GET","POST","PUT","DELETE"]
 }));
 
