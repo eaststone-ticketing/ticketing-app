@@ -1,0 +1,398 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.app {
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  background-color: #9de4a5;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  padding: 10px 70px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.tab-button:hover {
+  background-color: #e0e0e0;
+}
+
+.tab-button.active {
+  font-weight: bold;
+  background-color:#ccf8d0;;
+}
+
+.tab-content {
+  padding-top: 20px;
+  text-align: left;
+}
+
+.email-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 20px;
+  max-width: 600px;
+
+  text-align: left;
+}
+
+.email-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.email-header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  font-size: 14px;
+  color: #333;
+}
+
+.email-subject {
+  font-weight: bold;
+  margin-top: 4px;
+  color: #222;
+}
+
+.email-content{
+  width: 1000px;
+  display:flex;
+  flex-direction: row;
+}
+
+.email-preview {
+  font-size: 14px;
+  color: #466;
+  margin-top: 2px;
+}
+
+.subject-and-create-new-form {
+  width: 500px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+}
+
+.subject-and-create-new-form button {
+  background-color: rgb(233, 243, 235);
+  color: black;
+  margin: 2px;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: row;
+  width: 100px; 
+  margin-left : 100px   
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 150px 150px 150px; /* Two equal columns */
+  gap: 0.1rem 2rem; /* Space between form fields */
+  max-width: 800px;
+  background-color: rgb(233, 243, 235);
+  padding: 10px;
+  padding-right: 40px;
+  border: solid black 1px;
+  border-radius: 15px;
+}
+
+.form button {
+  margin: 10px 0px;
+  padding: 5px 0px;
+  border: solid black 1px;
+
+}
+
+.form h4 {
+  padding: 0px;
+  margin-bottom: 2px;
+}
+
+.kyrkogard-card {
+  border : 1px solid black;
+  border-radius: 8px;
+  margin: 2px;
+  padding: 10px;
+  width: 500px;
+  gap: 10px 10px;
+  background: rgb(223, 233, 225);
+}
+
+.kyrkogard-card h3{
+  margin: 0; 
+  padding: 0;
+}
+
+.kyrkogard-card p{
+  margin: 2px 0;
+  line-height: 1.2;
+}
+
+.kyrkogard-card:hover {
+  background: rgb(233, 243, 235);
+  cursor: pointer;
+}
+
+.kyrkogard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;   
+  gap: 1rem;             
+}
+
+.kyrkogard-card button {
+  background-color: rgb(233, 243, 235);
+  color: black;
+  border: none;
+  padding: 2px 5px;
+  font-size: 12px;
+}
+
+.kyrkogard-card button:hover {
+  background-color: rgb(230, 0, 0);
+  cursor: pointer;
+}
+
+.arende-card {
+  display:flex;
+  border : 1px solid black;
+  border-radius: 8px;
+  margin: 2px;
+  padding: 10px;
+  width: 500px;
+  gap: 10px 10px;
+  background: rgb(223, 233, 225);
+  justify-content: space-between;
+}
+
+.arende-card:hover {
+  background: rgb(233, 243, 235);
+  cursor: pointer;
+}
+
+.arende-card h3{
+  margin: 0; 
+  padding: 0;
+}
+.arende-card p{
+  margin: 2px 0;
+  line-height: 1.2;
+}
+
+.search-arenden-menu{
+  border : 1px solid black;
+  background: rgb(223, 233, 225);
+  padding: 0px 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+}
+
+.arende-search-result{
+  border-radius: 8px;
+  margin: 2px;
+  gap: 10px 10px;
+  background: white;
+  width: 200px;
+}
+
+.arenden-list {
+  width: 230px;
+  gap: 10px 10px;
+  padding: 10px 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.arende-search-result p{
+  color: blue;
+  text-decoration: underline;
+  cursor:pointer;
+  font-weight: bold;
+}
+
+.search-button {
+  margin-left: 100px;
+  margin-top: 10px;
+  padding: 3px 20px;
+}
+
+.search-inputs {
+  width: 170px;
+}
+
+.searchbar-arende {
+  display: grid;
+  grid-template-columns: 150px 150px; /* Two equal columns */
+  gap: 0.1rem 4rem; /* Space between form fields */
+  margin-bottom: 10px;
+}
+
+.searchbar-kund {
+  display: grid;
+  grid-template-columns: 150px 150px; /* Two equal columns */
+  gap: 0.1rem 4rem; /* Space between form fields */
+  margin-bottom: 10px;
+}
+
+.add-kyrkogard-button {
+  margin-bottom: 10px;
+  background-color: rgb(233, 243, 235);
+  border: solid black 1px;
+}
+
+.arende-detail{
+  padding: 2px 0px ;
+  margin: 2px 0px;
+  max-width: 300px;
+  gap: 10px 10px;
+  background: rgb(243, 253, 245);
+}
+.arende-detail p{
+  margin: 2px 0;
+  line-height: 1.2;
+}
+
+.arende-detail-kyrkogard-p{
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+.arende-detail-container {
+  display: flex;
+  flex-direction: row;
+  gap: 50px 50px;
+}
+
+.header-and-close-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;   
+  gap: 1rem;             
+}
+
+.header-and-close-button button {
+  background-color: rgb(233, 243, 235);
+  border-radius: 2px;
+  padding:0px 3px;
+  border:none;
+  color:rgb(0, 0, 0);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.header-and-close-button button:hover {
+  background-color: rgb(230, 0, 0);
+  color: white;
+}
+
+.buttons-arende-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px 0px;
+  background-color: rgb(223, 233, 225);
+  padding: 5px 10px;
+  height: 300px;
+}
+
+
+.buttons-arende-detail button {
+  width: auto;
+  height: 30px;
+  padding: 0px 10px;
+  background-color: rgb(233, 243, 235);
+}
+
+.buttons-arende-detail button:hover {
+  background-color: rgb(243, 253, 245);
+}
+
+.delete-button {
+  background-color: rgb(233, 243, 235);
+  color: black;
+  border: none;
+  padding: 2px 5px;
+  font-size: 12px;
+}
+
+.delete-button:hover {
+  background-color: rgb(230, 0, 0);
+  cursor: pointer;
+}
+
+.arende-detail-main {
+  display: flex;
+  flex-direction: row;
+}
+
+.further-detail-field {
+  padding: 0px 15px;
+}
