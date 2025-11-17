@@ -127,29 +127,6 @@ await db.exec(`
   );
 `);
 
-
-app.post("/users", async (req, res) => {
-  try {
-    const { username, password_hash } = req.body;
-
-    if (!username || !password_hash) {
-      return res.status(400).json({ error: "Missing username or password_hash" });
-    }
-
-    await db.run(
-      `INSERT INTO users (username, password_hash)
-       VALUES (?, ?)`,
-      [username, password_hash]
-    );
-
-    res.json({ message: "User inserted" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to insert user" });
-  }
-});
-
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
 
