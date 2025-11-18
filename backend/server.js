@@ -6,20 +6,26 @@ import authRouter from "./auth.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import 'dotenv/config'; 
+import fs from "fs";
+import { PDFDocument } from "pdf-lib";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
 const app = express();
 app.use(cors({
-  origin: [`${API_URL}`, "http://localhost:3000"],
+  origin: [`${API_URL}`, "http://localhost:3000", "http://localhost:5173"],
   methods: ["GET","POST","PUT","DELETE"]
 }));
 
 app.use(express.json());
 
 function authenticateToken(req, res, next) {
+    let token = null;
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Expect "Bearer <token>"
+    token = authHeader && authHeader.split(' ')[1]; // Expect "Bearer <token>"
+
+    // 2. OR check query token in URLs like /arendepdf/1?token=abc
+    if (!token && req.query.token) token = req.query.token;
 
     if (!token) return res.sendStatus(401); // Unauthorized
 
@@ -31,7 +37,7 @@ function authenticateToken(req, res, next) {
 }
 
 const db = await open({
-    filename: "/data/database.db",
+    filename: "data/database.db",
     driver: sqlite3.Database
 });
 
@@ -215,32 +221,6 @@ app.post("/kunder", authenticateToken, async (req, res) => {
 
     res.json(newKund);
 })
-
-app.post("/users", authenticateToken, async (req, res) => {
-  try {
-    const {userId, username, password_hash } = req.body;
-
-    if (!username || !password_hash) {
-      return res.status(400).json({ error: "Username and password required" });
-    }
-
-    const result = await db.run(
-      `INSERT INTO users (username, password_hash)
-       VALUES (?, ?)`,
-      [username, password_hash]
-    );
-
-    res.json({
-      id: result.lastID,
-      username,
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to create user" });
-  }
-});
-
 
 app.post("/godkannanden", authenticateToken, async(req,res) => {
     const {arendeID, godkannare, datum, kalla} = req.body;
@@ -461,6 +441,71 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
     res.status(500).json({error: "Failed to update password"})
   }
 });
+
+app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
+
+
+  // You need to make sure that this path is right before putting into production
+  const templatePath = "./templates/form.pdf"
+
+  const pdfBytes = fs.readFileSync(templatePath);
+
+    try {
+      const { arendeId } = req.params;
+
+      const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
+      if (!arende) {
+        return res.status(404).json({ error: "Ärende not found" });
+      }
+
+  
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const form = pdfDoc.getForm();
+
+    console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
+
+      form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
+      form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
+      form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
+      form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
+      form.getTextField("Adress").setText(arende.adress || "");
+      form.getTextField("Postadress").setText(arende.ort || "");
+      form.getTextField("Post Nr").setText(arende.postnummer || "");
+      form.getTextField("Telefon").setText(arende.tel || "");
+      form.getTextField("Epost").setText(arende.email || "");
+      form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
+      form.getTextField("Kvarter").setText(arende.kvarter || "");
+      form.getTextField("Platsnummer").setText(arende.gravnummer || "");
+      form.getTextField("Model").setText(arende.modell || "");
+      form.getTextField("Typsnitt").setText(arende.typsnitt || "");
+      form.getTextField("Dekor").setText(arende.dekor || "");
+      form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
+      form.getTextField("Minnesord").setText(arende.minnesord || "");
+      form.getTextField("Totalpris").setText(arende.pris || "");
+      form.getTextField("Tillbehor").setText(arende.tillbehor || "");
+      form.getTextField("Datum").setText(arende.datum || "");
+
+            // Example checkbox
+      if (arende.sockel) form.getCheckBox("Check Box16").check();
+
+      const filledPdfBytes = await pdfDoc.save();
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn}.pdf`);
+      res.send(Buffer.from(filledPdfBytes));
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Could not generate PDF" });
+    }
+  
+  console.log("Bytes read:", pdfBytes.length);
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=test.pdf");
+  res.send(pdfBytes);
+})
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

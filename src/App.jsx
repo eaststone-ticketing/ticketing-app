@@ -8,6 +8,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { IoPersonOutline } from "react-icons/io5";
 import './App.css'
 import MainApp from './MainApp.jsx'
+import DownloadPdfButton from './PdfDownloadButton.jsx'
 
 function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
     const [sockel, setSockel] = useState(false);
@@ -965,6 +966,7 @@ function findTicketAmount(filter, results){
         <div className = "arende-detail">
         <p><strong>Datum skapad:</strong> {activeArende.datum}</p>
         </div>
+        <DownloadPdfButton arendeId = {activeArende.id}></DownloadPdfButton>
         </div>
         
         <div className = "further-detail-field">
