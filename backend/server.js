@@ -245,8 +245,8 @@ app.post("/kommentarer", authenticateToken, async(req,res) => {
   const {arendeID, innehall, tagged_users} = req.body;
   const result = await db.run(`
     INSERT INTO kommentarer(arendeID, innehall, tagged_users)
-    VALUES(?,?,?,?)
-    `,[arendeID, innehall, tagged_users, id])
+    VALUES(?,?,?)
+    `,[arendeID, innehall, tagged_users])
   const newKommentar = {
     id: result.lastID,
     arendeID,
@@ -451,13 +451,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
   const templatePath = path.join(__dirname, "templates", "form.pdf");
 
-  let pdfBytes;
-  try {
-    pdfBytes = fs.readFileSync(templatePath);
-  } catch (err) {
-    console.error("PDF template not found:", err);
-    return res.status(500).json({ error: "PDF template missing on server" });
-  }
+  const pdfBytes = fs.readFileSync(templatePath);
 
     try {
       const { arendeId } = req.params;
@@ -466,6 +460,8 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       if (!arende) {
         return res.status(404).json({ error: "Ärende not found" });
       }
+
+      
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
@@ -495,6 +491,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
       // checkboxes
       if (arende.sockel) form.getCheckBox("Check Box16").check();
+      if (arende.staende) form.getCheckBox("Check Box19").check();
       if (arende.GRO) form.getCheckBox("Check Box20").check();
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
       if (arende.forsankt) form.getCheckBox("Check Box24").check();
