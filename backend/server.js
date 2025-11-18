@@ -467,7 +467,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
     const form = pdfDoc.getForm();
 
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
-
+      /*
       form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
       form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
       form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
@@ -490,7 +490,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       form.getTextField("Datum").setText(arende.datum || "");
 
       // checkboxes
-      /*
+      
       if (arende.sockel) form.getCheckBox("Check Box16").check();
       if (arende.staende) form.getCheckBox("Check Box19").check();
       if (arende.GRO) form.getCheckBox("Check Box20").check();
