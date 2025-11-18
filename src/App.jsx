@@ -1459,7 +1459,7 @@ return <div>
     <h3>Dina ärenden</h3>
   </div>
     <div className = "feed-container">
-    {kommentarer.filter(k => arenden.find(a => k.arendeID === a.id))?.map(k => <div className = "feed-card">
+    {kommentarer?.filter(k => arenden.find(a => k.arendeID === a.id)).map(k => <div className = "feed-card">
       <div className = "feed-item-container" onClick = {() => setShowDetail(showDetail === k.id ? null: k.id)}>
       <div className = "feed-item-preview">
       <p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
