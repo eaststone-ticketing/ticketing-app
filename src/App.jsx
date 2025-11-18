@@ -9,6 +9,7 @@ import { IoPersonOutline } from "react-icons/io5";
 import './App.css'
 import MainApp from './MainApp.jsx'
 import DownloadPdfButton from './PdfDownloadButton.jsx'
+import OversiktEditForm from './OversiktEditForm'
 
 function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
     const [sockel, setSockel] = useState(false);
@@ -474,6 +475,7 @@ function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, set
   const [kommentarer, setKommentarer] = useState(null);
   const [createKommentar, setCreateKommentar] = useState(false);
   const [currentKommentar, setCurrentKommentar] = useState(null);
+  const [oversiktEdit, setOversiktEdit] = useState(false);
 
 useEffect(() => {
   if (!activeArende) return;
@@ -860,13 +862,14 @@ function findTicketAmount(filter, results){
               {showMore !== arende.id && <IoMdArrowDropright className = "dropdown-arrow" onClick = {() => {setShowMore(arende.id)}}/>}
               {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
               </div>
-              {(arende.status === "Godkänd av kund")&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kund, väntar svar av kyrkogård", arende)}>Skickat skiss →→</button>}
-              {(arende.status === "Nytt")&&<button className = "send-button-ny" onClick = {() => updateArendeStatus("Väntar svar av kund", arende)}>Skickat skiss →→</button>}
-              {(arende.status === "Godkänd av kyrkogård" )&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kyrkogård, väntar svar av kund", arende)}>Skickat skiss →→</button>}
+              <h4 className = "dense-h4">{arende.arendeTyp}</h4>
+              {(arende.status === "Godkänd av kund" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kund, väntar svar av kyrkogård", arende)}>Skickat skiss →→</button>}
+              {(arende.status === "Nytt" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button-ny" onClick = {() => updateArendeStatus("Väntar svar av kund", arende)}>Skickat skiss →→</button>}
+              {(arende.status === "Godkänd av kyrkogård" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kyrkogård, väntar svar av kund", arende)}>Skickat skiss →→</button>}
               {(arende.status === "Nytt" )&&<button className = "send-button-ny" onClick = {() => updateArendeStatus("Väntar svar av kyrkogård", arende)}>Skickat ansökan →→</button>}
               {(arende.status === "Redo")&&<button className = "send-button" onClick = {() => updateArendeStatus("Stängt", arende)}>Arbete utfört</button>}
-              {(arende.status === "Väntar svar av kund")&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat ansökan →→</button>}
-              {(arende.status === "Väntar svar av kyrkogård")&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat skiss →→</button>}
+              {(arende.status === "Väntar svar av kund" )&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat ansökan →→</button>}
+              {(arende.status === "Väntar svar av kyrkogård" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat skiss →→</button>}
               {showMore === arende.id && <div>
               <p><strong>{arende.status}</strong></p>
               <div className = "arende-card-info-entry"> 
@@ -918,7 +921,11 @@ function findTicketAmount(filter, results){
         {arendeDetailState === "oversikt" && <div>
         <div className = "arende-detail-main">
         <div>
+        <div className = "arende-detail-main-header-and-edit-button">
         <h2>{activeArende.avlidenNamn}</h2>
+        <button onClick = {() => setOversiktEdit(!oversiktEdit)}>Redigera</button>
+        </div>
+        <h3>{activeArende.arendeTyp}</h3>
         <div className = "arende-detail">
         <p><strong>ID:</strong> {activeArende.id}</p>
         </div>
@@ -933,8 +940,9 @@ function findTicketAmount(filter, results){
           <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård")}></input>
           </div>
           <div className = "godkannande-info">{activeGodkannanden && displayGodkannande(activeGodkannanden, "kyrkogård")}</div>
-
+        <div>
         </div>
+        {!oversiktEdit && <div>
         <div className = "arende-detail">
         <p><strong>Dödsdatum:</strong> {activeArende.dodsDatum}</p>
         </div>
@@ -952,7 +960,7 @@ function findTicketAmount(filter, results){
         <p><strong>Telefonnummer:</strong> {activeArende.tel}</p>
         </div>
         <div className = "arende-detail">
-        <p><strong>Kyrkogård:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeKyrkogard(true); setActiveArendeBestallare(false)}}>{activeKyrkogard.namn}</p>
+        <p><strong>Kyrkogård:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeKyrkogard(true); setActiveArendeBestallare(false); setActiveKyrkogard(kyrkogardar.find(k => k.namn === activeArende.kyrkogard))}}>{activeArende.kyrkogard}</p>
         </div>
         <div className = "arende-detail">
         <p><strong>Kvarter:</strong> {activeArende.kvarter}</p>
@@ -967,6 +975,11 @@ function findTicketAmount(filter, results){
         <p><strong>Datum skapad:</strong> {activeArende.datum}</p>
         </div>
         <DownloadPdfButton arendeId = {activeArende.id}></DownloadPdfButton>
+        </div>
+}
+{oversiktEdit && <OversiktEditForm arende = {activeArende}/>}
+        </div>
+
         </div>
         
         <div className = "further-detail-field">
@@ -1017,7 +1030,7 @@ function findTicketAmount(filter, results){
           <div>
           <h2>Designspecifikationer för {activeArende.avlidenNamn}</h2>
           <p>Modell: <strong>{activeArende.modell}</strong></p>
-          <p>Material <strong>{activeArende.material}</strong></p>
+          <p>Material: <strong>{activeArende.material}</strong></p>
           <p>Sockel?: <strong>{activeArende.sockel === 1 ? "Ja": "Nej"}</strong></p>
           <p>Typsnitt: <strong>{activeArende.typsnitt ?? "Typsnitt saknas"}</strong></p>
           <p>Färg: <strong>{activeArende.farg ?? "Färg saknas"}</strong></p>

@@ -721,8 +721,15 @@
 
 .arende-detail-main h2 {
   padding: 2px;
-  margin: 2px;
+  margin: 0px;
   line-height: 1.5;
+}
+
+.arende-detail-main h3 {
+  padding: 2px 0px 10px 0;
+  margin: 2px;
+  line-height: 0.5;
+  margin-bottom: 10px;
 }
 
 .further-detail-field {
@@ -1191,4 +1198,23 @@
   overflow-y: auto;
   height: 730px;
   border-radius: 15px;
+}
+
+.dense-h4 {
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
+
+.arende-detail-main-header-and-edit-button {
+  display: flex;
+  flex-direction: sideways;
+  gap: 15px;
+  padding-right: 0;
+  margin-right: 0;
+}
+.arende-detail-main-header-and-edit-button button {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
 }
