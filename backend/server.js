@@ -457,12 +457,11 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
         return res.status(404).json({ error: "Ärende not found" });
       }
 
-      const templatePath = path.join("backend", "templates", "form.pdf");
+      const templatePath = path.join(__dirname, "templates", "form.pdf");
 
       console.log(templatePath)
 
-      const pdfBytes = fs.readFileSync(templatePath);
-      if(!pdfBytes) console.log("No pdfBytes");
+      const pdfBytes = fs.readFileSync(templatePath) ?? fs.readFileSync("./templates/form.pdf");
       
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
