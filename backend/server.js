@@ -497,14 +497,20 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
       if (arende.forsankt) form.getCheckBox("Check Box24").check();
       */
-      const filledPdfBytes = await pdfDoc.save();
 
-      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
-      res.send(Buffer.from(filledPdfBytes));
 
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Could not generate PDF" });
+    }
+
+    try {
+      const filledPdfBytes = await pdfDoc.save();
+
+      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
+      res.send(Buffer.from(filledPdfBytes));
+    } catch (err) {
+      console.log(err);
     }
   
   console.log("Bytes read:", pdfBytes.length);
