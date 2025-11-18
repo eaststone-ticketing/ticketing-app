@@ -446,7 +446,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
 
   // You need to make sure that this path is right before putting into production
-  const templatePath = "/backend/templates/form.pdf"
+  const templatePath = "/templates/form.pdf"
 
   const pdfBytes = fs.readFileSync(templatePath);
 
@@ -500,10 +500,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
     }
   
   console.log("Bytes read:", pdfBytes.length);
-
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", "attachment; filename=test.pdf");
-  res.send(pdfBytes);
 })
 
 
