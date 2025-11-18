@@ -451,7 +451,13 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
   const templatePath = path.join(__dirname, "templates", "form.pdf");
 
-  const pdfBytes = fs.readFileSync(templatePath);
+  let pdfBytes;
+  try {
+    pdfBytes = fs.readFileSync(templatePath);
+  } catch (err) {
+    console.error("PDF template not found:", err);
+    return res.status(500).json({ error: "PDF template missing on server" });
+  }
 
     try {
       const { arendeId } = req.params;
