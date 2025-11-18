@@ -8,6 +8,8 @@ import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 import fs from "fs";
 import { PDFDocument } from "pdf-lib";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
@@ -445,8 +447,10 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
 app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
 
-  // You need to make sure that this path is right before putting into production
-  const templatePath = "./templates/form.pdf"
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const templatePath = path.join(__dirname, "templates", "form.pdf");
 
   const pdfBytes = fs.readFileSync(templatePath);
 
@@ -458,6 +462,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
         return res.status(404).json({ error: "Ärende not found" });
       }
 
+      
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
