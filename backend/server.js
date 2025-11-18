@@ -491,7 +491,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
       // checkboxes
       if (arende.sockel) form.getCheckBox("Check Box16").check();
-      if (arende.staende) form.getCheckBox("Check Box19").check();
+      if (arende.staende === false) form.getCheckBox("Check Box19").uncheck();
       if (arende.GRO) form.getCheckBox("Check Box20").check();
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
       if (arende.forsankt) form.getCheckBox("Check Box24").check();
