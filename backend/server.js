@@ -449,8 +449,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const templatePath = path.join(__dirname, "templates", "form.pdf");
-  const pdfBytes = Buffer.from("test");
+
 
     try {
       const { arendeId } = req.params;
@@ -460,6 +459,9 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
         return res.status(404).json({ error: "Ärende not found" });
       }
 
+      const templatePath = path.join(__dirname, "templates", "form.pdf");
+
+      const pdfBytes = fs.readFileSync(templatePath);
       
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -511,5 +513,9 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+try {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+} catch (err) {
+    console.error("Server failed to start:", err);
+}
 
