@@ -7,14 +7,16 @@
     "not dead",
     "not op_mini all"
   ],
-  "type": "module","scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "start": "serve -s dist -l $PORT",
-  "lint": "eslint ."
-},
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "serve -s dist -l $PORT",
+    "lint": "eslint ."
+  },
   "dependencies": {
+    "pdf-lib": "^1.17.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
