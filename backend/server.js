@@ -446,7 +446,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
 
   // You need to make sure that this path is right before putting into production
-  const templatePath = "./templates/form.pdf"
+  const templatePath = ".backend/templates/form.pdf"
 
   const pdfBytes = fs.readFileSync(templatePath);
 
