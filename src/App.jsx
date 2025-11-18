@@ -1018,7 +1018,7 @@ function findTicketAmount(filter, results){
           <h2>Designspecifikationer för {activeArende.avlidenNamn}</h2>
           <p>Modell: <strong>{activeArende.modell}</strong></p>
           <p>Material <strong>{activeArende.material}</strong></p>
-          <p>Sockel?: <strong>{activeArende.sockel === 1 ? "Ja": "Nej"}</strong></p>
+          <p>Sockel?: <strong>{activeArende.sockel === 1 ? "Ja": `{${activeArende.sockel}}`}</strong></p>
           <p>Typsnitt: <strong>{activeArende.typsnitt ?? "Typsnitt saknas"}</strong></p>
           <p>Färg: <strong>{activeArende.farg ?? "Färg saknas"}</strong></p>
           <p>Försänkt/Förhöjd: <strong>{activeArende.forsankt ?? "Information saknas"}</strong></p>
