@@ -469,10 +469,24 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       }
 
       console.log(templatePath)
+    try {
+      pdfBytes = fs.readFileSync(templatePath);
+      console.log("PDF file read successfully.");
+    } catch (err) {
+      console.error("Error reading PDF file:", err);
+      return res.status(500).json({ error: "Failed to read PDF template" });
+    }
 
-      const pdfBytes = fs.readFileSync(templatePath) ?? fs.readFileSync("./templates/form.pdf");
-  
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+    // Load the PDF document
+    let pdfDoc;
+    try {
+      pdfDoc = await PDFDocument.load(pdfBytes);
+      console.log("PDF loaded successfully.");
+    } catch (err) {
+      console.error("Error loading PDF document:", err);
+      return res.status(500).json({ error: "Failed to load PDF document" });
+    }
+    
     const form = pdfDoc.getForm();
 
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
