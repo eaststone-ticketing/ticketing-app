@@ -8,9 +8,8 @@ import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 import fs from "fs";
 import { PDFDocument } from "pdf-lib";
-/*
 import path from "path";
-import { fileURLToPath } from "url";*/
+import { fileURLToPath } from "url";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
@@ -348,7 +347,7 @@ app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
   }
 });
 
-/*app.put("/arenden/:id", authenticateToken, async (req, res) => {
+app.put("/arenden/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const fields = req.body;
 
@@ -387,7 +386,7 @@ app.put("/kunder/:id", authenticateToken, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to update kund" });
   }
-});*/
+});
 
 app.put("/godkannanden/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
@@ -451,8 +450,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
   const __dirname = path.dirname(__filename);
 
   const templatePath = path.join(__dirname, "templates", "form.pdf");
-
-  const pdfBytes = fs.readFileSync(templatePath);
+  const pdfBytes = Buffer.from("test");
 
     try {
       const { arendeId } = req.params;
