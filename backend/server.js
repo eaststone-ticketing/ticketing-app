@@ -459,6 +459,15 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
       const templatePath = path.join(__dirname, "templates", "form.pdf");
 
+      // Log template path
+      console.log("Template Path:", templatePath);
+
+      // Check if the file exists
+      if (!fs.existsSync(templatePath)) {
+        console.error("Template not found at path:", templatePath);
+        return res.status(404).json({ error: "Template not found" });
+      }
+
       console.log(templatePath)
 
       const pdfBytes = fs.readFileSync(templatePath) ?? fs.readFileSync("./templates/form.pdf");
