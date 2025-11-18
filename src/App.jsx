@@ -1462,7 +1462,7 @@ return <div>
     {kommentarer?.map(k => <div className = "feed-card">
       <div className = "feed-item-container" onClick = {() => setShowDetail(showDetail === k.id ? null: k.id)}>
       <div className = "feed-item-preview">
-      <p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
+      <p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id) ?? 3)}}><strong>#{k.arendeID}</strong></p>
       {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
       {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed" onClick = {() => setShowDetail(showDetail === k.id ? null: k.id)}></IoMdArrowDropdown>}
       </div>
