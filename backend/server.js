@@ -8,8 +8,9 @@ import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 import fs from "fs";
 import { PDFDocument } from "pdf-lib";
+/*
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "url";*/
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
