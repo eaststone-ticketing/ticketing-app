@@ -491,7 +491,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       const filledPdfBytes = await pdfDoc.save();
 
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn}.pdf`);
+      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
       res.send(Buffer.from(filledPdfBytes));
 
     } catch (err) {
