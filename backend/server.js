@@ -245,7 +245,7 @@ app.post("/kommentarer", authenticateToken, async(req,res) => {
   const {arendeID, innehall, tagged_users} = req.body;
   const result = await db.run(`
     INSERT INTO kommentarer(arendeID, innehall, tagged_users)
-    VALUES(?,?,?)
+    VALUES(?,?,?,?)
     `,[arendeID, innehall, tagged_users, id])
   const newKommentar = {
     id: result.lastID,
