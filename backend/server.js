@@ -459,6 +459,8 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 
       const templatePath = path.join(__dirname, "templates", "form.pdf");
 
+      console.log(templatePath)
+
       const pdfBytes = fs.readFileSync(templatePath);
       if(!pdfBytes) console.log("No pdfBytes");
       
