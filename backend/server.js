@@ -466,8 +466,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       if (!arende) {
         return res.status(404).json({ error: "Ärende not found" });
       }
-
-      
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
