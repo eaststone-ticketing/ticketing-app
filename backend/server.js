@@ -469,6 +469,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       }
 
       console.log(templatePath)
+    let pdfBytes;
     try {
       pdfBytes = fs.readFileSync(templatePath);
       console.log("PDF file read successfully.");
@@ -486,7 +487,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       console.error("Error loading PDF document:", err);
       return res.status(500).json({ error: "Failed to load PDF document" });
     }
-    
+
     const form = pdfDoc.getForm();
 
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
