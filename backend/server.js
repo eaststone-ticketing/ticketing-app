@@ -446,12 +446,10 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
 
 app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 ;
+    try {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-
-
-    try {
       const { arendeId } = req.params;
 
       const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
