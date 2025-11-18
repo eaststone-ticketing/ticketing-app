@@ -347,7 +347,7 @@ app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
   }
 });
 
-app.put("/arenden/:id", authenticateToken, async (req, res) => {
+/*app.put("/arenden/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const fields = req.body;
 
@@ -386,7 +386,7 @@ app.put("/kunder/:id", authenticateToken, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to update kund" });
   }
-});
+});*/
 
 app.put("/godkannanden/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
