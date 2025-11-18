@@ -445,9 +445,7 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
 });
 
 app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
-
-
-  console.log(__dirname);
+;
 
   const templatePath = "./templates/form.pdf"
 
