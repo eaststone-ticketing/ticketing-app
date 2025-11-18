@@ -462,7 +462,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       console.log(templatePath)
 
       const pdfBytes = fs.readFileSync(templatePath) ?? fs.readFileSync("./templates/form.pdf");
-      
   
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const form = pdfDoc.getForm();
@@ -491,12 +490,13 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       form.getTextField("Datum").setText(arende.datum || "");
 
       // checkboxes
+      /*
       if (arende.sockel) form.getCheckBox("Check Box16").check();
       if (arende.staende) form.getCheckBox("Check Box19").check();
       if (arende.GRO) form.getCheckBox("Check Box20").check();
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
       if (arende.forsankt) form.getCheckBox("Check Box24").check();
-
+      */
       const filledPdfBytes = await pdfDoc.save();
 
       res.setHeader("Content-Type", "application/pdf");
