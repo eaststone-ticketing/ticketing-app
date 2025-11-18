@@ -446,8 +446,10 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
 
 app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
 ;
-  const url = fileURLToPath(import.meta.url);
-  const templatePath = `${url}/templates/form.pdf`
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const templatePath = path.join(__dirname, "templates", "form.pdf");
 
   const pdfBytes = fs.readFileSync(templatePath);
 
