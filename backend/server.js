@@ -444,31 +444,32 @@ app.put("/users/:id", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
-;
-    try {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
+app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
+  try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
 
-      const { arendeId } = req.params;
+    const { arendeId } = req.params;
 
-      const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
-      if (!arende) {
-        return res.status(404).json({ error: "Ärende not found" });
-      }
+    // Get arende data from DB
+    const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
+    if (!arende) {
+      return res.status(404).json({ error: "Ärende not found" });
+    }
 
-      const templatePath = path.join(__dirname, "templates", "form.pdf");
+    // Define the template path
+    const templatePath = path.join(__dirname, "templates", "form.pdf");
 
-      // Log template path
-      console.log("Template Path:", templatePath);
+    // Log template path
+    console.log("Template Path:", templatePath);
 
-      // Check if the file exists
-      if (!fs.existsSync(templatePath)) {
-        console.error("Template not found at path:", templatePath);
-        return res.status(404).json({ error: "Template not found" });
-      }
+    // Check if the file exists
+    if (!fs.existsSync(templatePath)) {
+      console.error("Template not found at path:", templatePath);
+      return res.status(404).json({ error: "Template not found" });
+    }
 
-      console.log(templatePath)
+    // Read the PDF file
     let pdfBytes;
     try {
       pdfBytes = fs.readFileSync(templatePath);
@@ -488,57 +489,62 @@ app.get("/arendepdf/:arendeId", authenticateToken, async(req, res) => {
       return res.status(500).json({ error: "Failed to load PDF document" });
     }
 
+    // Get form from the PDF
     const form = pdfDoc.getForm();
-
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
-      /*
-      form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
-      form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
-      form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
-      form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
-      form.getTextField("Adress").setText(arende.adress || "");
-      form.getTextField("Postadress").setText(arende.ort || "");
-      form.getTextField("Post Nr").setText(arende.postnummer || "");
-      form.getTextField("Telefon").setText(arende.tel || "");
-      form.getTextField("Epost").setText(arende.email || "");
-      form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
-      form.getTextField("Kvarter").setText(arende.kvarter || "");
-      form.getTextField("Platsnummer").setText(arende.gravnummer || "");
-      form.getTextField("Model").setText(arende.modell || "");
-      form.getTextField("Typsnitt").setText(arende.typsnitt || "");
-      form.getTextField("Dekor").setText(arende.dekor || "");
-      form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
-      form.getTextField("Minnesord").setText(arende.minnesord || "");
-      form.getTextField("Totalpris").setText(arende.pris || "");
-      form.getTextField("Tillbehor").setText(arende.tillbehor || "");
-      form.getTextField("Datum").setText(arende.datum || "");
 
-      // checkboxes
-      
-      if (arende.sockel) form.getCheckBox("Check Box16").check();
-      if (arende.staende) form.getCheckBox("Check Box19").check();
-      if (arende.GRO) form.getCheckBox("Check Box20").check();
-      if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
-      if (arende.forsankt) form.getCheckBox("Check Box24").check();
-      */
+    // Fill in the form fields (you can uncomment your form filling logic here)
+    form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
+    form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
+    form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
+    form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
+    form.getTextField("Adress").setText(arende.adress || "");
+    form.getTextField("Postadress").setText(arende.ort || "");
+    form.getTextField("Post Nr").setText(arende.postnummer || "");
+    form.getTextField("Telefon").setText(arende.tel || "");
+    form.getTextField("Epost").setText(arende.email || "");
+    form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
+    form.getTextField("Kvarter").setText(arende.kvarter || "");
+    form.getTextField("Platsnummer").setText(arende.gravnummer || "");
+    form.getTextField("Model").setText(arende.modell || "");
+    form.getTextField("Typsnitt").setText(arende.typsnitt || "");
+    form.getTextField("Dekor").setText(arende.dekor || "");
+    form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
+    form.getTextField("Minnesord").setText(arende.minnesord || "");
+    form.getTextField("Totalpris").setText(arende.pris || "");
+    form.getTextField("Tillbehor").setText(arende.tillbehor || "");
+    form.getTextField("Datum").setText(arende.datum || "");
 
+    // Handle checkboxes
+    if (arende.sockel) form.getCheckBox("Check Box16").check();
+    if (arende.staende) form.getCheckBox("Check Box19").check();
+    if (arende.GRO) form.getCheckBox("Check Box20").check();
+    if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
+    if (arende.forsankt) form.getCheckBox("Check Box24").check();
 
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Could not generate PDF" });
-    }
-
+    // Save the filled PDF
+    let filledPdfBytes;
     try {
-      const filledPdfBytes = await pdfDoc.save();
-
-      res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
-      res.send(Buffer.from(filledPdfBytes));
+      filledPdfBytes = await pdfDoc.save();
+      console.log("PDF saved successfully.");
     } catch (err) {
-      console.log(err);
+      console.error("Error saving PDF:", err);
+      return res.status(500).json({ error: "Failed to save filled PDF" });
     }
-  
-  console.log("Bytes read:", pdfBytes.length);
-})
+
+    // Set response headers for PDF download
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
+
+    // Send the PDF as response
+    res.send(Buffer.from(filledPdfBytes));
+
+  } catch (err) {
+    console.error("General error:", err);
+    res.status(500).json({ error: "Could not generate PDF" });
+  }
+});
+
 
 
 const PORT = process.env.PORT || 5000;
