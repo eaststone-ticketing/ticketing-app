@@ -10,6 +10,7 @@ import './App.css'
 import MainApp from './MainApp.jsx'
 import DownloadPdfButton from './PdfDownloadButton.jsx'
 import OversiktEditForm from './OversiktEditForm'
+import DesignEditForm from './DesignEditForm'
 
 function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
     const [sockel, setSockel] = useState(false);
@@ -476,6 +477,7 @@ function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, set
   const [createKommentar, setCreateKommentar] = useState(false);
   const [currentKommentar, setCurrentKommentar] = useState(null);
   const [oversiktEdit, setOversiktEdit] = useState(false);
+  const [designEdit, setDesignEdit] = useState(false);
 
 useEffect(() => {
   if (!activeArende) return;
@@ -577,22 +579,28 @@ async function findAndRemoveGodkannande(id, godkannare){
   }
 }
 
-async function changeGodkannandeDetails(id, godkannare, data){
-  try{
-  const godkannanden = await getGodkannanden();}
-  catch(err){console.log(err)}
-  const toChange = godkannanden.find(g => g.arendeID === id && g.godkannare === godkannare)
-  try{
-  await updateGodkannande(toChange.id, data)}
-  catch(err){console.log(err)}
-
-    setActiveGodkannanden(prevState => {
-    return prevState.map(g => 
-      g.godkannare === godkannare ? { ...g, ...data } : g
-    );
-  });
+async function changeGodkannandeDetails(id, godkannare, data) {
+  let godkannanden = [];
+  try {
+    godkannanden = await getGodkannanden();
+  } catch (err) {
+    console.log(err);
+    return;}
+  const toChange = godkannanden.find(
+    g => g.arendeID === id && g.godkannare === godkannare);
+  if (!toChange) {
+    console.log("Hittar ej godkännande att uppdatera");
+    return;}
+  try {
+    await updateGodkannande(toChange.id, data);
+  } catch (err) {
+    console.log(err);
+  }
+   setActiveGodkannanden(prev =>
+    prev.map(g =>
+      g.godkannare === godkannare ? { ...g, ...data } : g)
+  );
 }
-
 function appendNameAndDate(innehall){
   const user = JSON.parse(localStorage.getItem('user') )
     const time = new Date();
@@ -992,6 +1000,9 @@ function findTicketAmount(filter, results){
           <p><strong>Email:</strong> {activeArende.email}</p>
           </div>
           <div className = "arende-detail">
+          <p><strong>Telefon:</strong> {activeArende.tel}</p>
+          </div>
+          <div className = "arende-detail">
           <p><strong>Adress:</strong> {activeArende.adress},{activeArende.postnummer} {activeArende.ort}</p>
           </div>
 
@@ -1028,7 +1039,11 @@ function findTicketAmount(filter, results){
         {arendeDetailState === "design" && <div>
           <div className = "arende-detail-main">
           <div>
+          <div className = "arende-detail-main-header-and-edit-button">
           <h2>Designspecifikationer för {activeArende.avlidenNamn}</h2>
+          <button onClick = {() => setDesignEdit(!designEdit)}>Redigera</button>
+          </div>
+          {!designEdit && <div>
           <p>Modell: <strong>{activeArende.modell}</strong></p>
           <p>Material: <strong>{activeArende.material}</strong></p>
           <p>Sockel?: <strong>{activeArende.sockel === 1 ? "Ja": "Nej"}</strong></p>
@@ -1042,7 +1057,8 @@ function findTicketAmount(filter, results){
           <p>Dödsdatum: <strong>{activeArende.dodsDatum ?? "Dödsdatum saknas"}</strong></p>
           <p>Minnesord: <strong>{activeArende.minnesord ?? "Minnesord saknas"}</strong></p>
           <p>Dekor: <strong>{activeArende.dekor ?? "Dekor saknas"}</strong></p>
-
+          </div>}
+          {designEdit && <DesignEditForm arende = {activeArende} setDesignEdit={setDesignEdit} setActiveArende={setActiveArende}/>}
           </div>
           </div>
           </div>}
@@ -1064,7 +1080,7 @@ function findTicketAmount(filter, results){
           <p>Datum: {g.datum}</p>
           <p>Källa: {g.kalla}</p>
           </div>}
-          {godkannandeToEdit === g.godkannare && <form onSubmit = {(e) => {changeGodkannandeDetails(activeArende.id, g.godkannare, {arendeID: activeArende.id, godkannare: g.godkannare, datum: newDatum, kalla: newKalla});  e.preventDefault();  setGodkannandeToEdit(null)}}>
+          {godkannandeToEdit === g.godkannare && <form onSubmit = { async (e) => { e.preventDefault(); await changeGodkannandeDetails(activeArende.id, g.godkannare, {arendeID: activeArende.id, godkannare: g.godkannare, datum: newDatum, kalla: newKalla}); setGodkannandeToEdit(null)}}>
             <div>
             <label>Datum: </label>
             <input onChange = {(e) => setNewDatum(e.target.value)} type = "text" value = {newDatum}></input>
@@ -1193,17 +1209,9 @@ function ActiveKyrkogardView({setView, setRedigering, setKyrkogardar, redigering
     postnummer: activeKyrkogard.postnummer
 });
 
-  const [formDataMerge, setFormDataMerge] = useState({
-    namnMerge: ""
-  });
 
-
-  const [merge, setMerge] = useState(false)
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })}
-  const handleChangeMerge = (e) => {
-    setFormDataMerge({...formDataMerge, [e.target.name]: e.target.value})
-  }
 
   async function handleUpdate (e, id) {
 
@@ -1220,42 +1228,12 @@ function ActiveKyrkogardView({setView, setRedigering, setKyrkogardar, redigering
     }
   }
 
-async function mergeKyrkogard(source, target) {
-  try {
-    // Get all ärenden
-    const arenden = await getArenden();
-
-    // Find those belonging to the source kyrkogård
-    const sourceArenden = arenden.filter(
-      (arende) => arende.kyrkogard === source.namn
-    );
-
-    console.log(`Found ${sourceArenden.length} ärenden to move.`);
-
-    // Update each ärende to point to the target kyrkogård
-    for (const arende of sourceArenden) {
-      await updateArende(arende.id, { ...arende, kyrkogard: target.namn });
-    }
-
-    // Optionally: delete the old kyrkogård
-    await removeKyrkogard(source.id);
-
-    console.log("Merge complete!");
-  } catch (err) {
-    console.error("Merge failed:", err);
-  }
-}
-    
-const result = kyrkogardar.filter(
-  (k) => k.namn?.toLowerCase().includes(formDataMerge.namnMerge.toLowerCase())
-);
       
   return <div className = "sideways">
         <div>
         <div className = "button-panel-kyrkogard">
         <button onClick = {() => {setView(false)}}>← Tillbaka</button>
-        <button onClick = {() => {setRedigering(!redigering); setMerge(false)}}>Redigera kyrkogård</button>
-        <button onClick = {() => {setMerge(!merge); setRedigering(false)}}>Merge</button>
+        <button onClick = {() => {setRedigering(!redigering);}}>Redigera kyrkogård</button>
         </div>
         <h3>{activeKyrkogard.namn}</h3>
         <div className = "arende-detail">
@@ -1291,22 +1269,6 @@ const result = kyrkogardar.filter(
           </form>
           </div>
           }
-          {merge && <div>
-            <form className = "form">
-              <div>
-              <h3>Sök kyrkogård för merge</h3>
-              <label>Namn:</label>
-              <input type = "text" name = "namnMerge" onChange = {handleChangeMerge}></input>
-              </div>
-            </form>
-            {result.map((kyrkogard) =>
-            <div className = "arende-card">
-              <h3>{kyrkogard.namn}</h3>
-              <button onClick = {() => {mergeKyrkogard(activeKyrkogard, kyrkogard)}}>Merge</button>
-            </div>
-            )
-            }
-            </div>}
         </div>   
 }
 
@@ -1396,8 +1358,24 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
 
   return <div className = "kyrkogard-tab">
     {!view && <div>
+    <div className = "kyrkogard-tab-buttons">
     <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">Lägg till kyrkogård</button>
+    <button onClick = {() => setKyrkogardTabState("skapagrupp")} className = "add-kyrkogard-button">Skapa kyrkogårdsgruppering</button>
+    <button onClick = {() => setKyrkogardTabState("slaihop")} className = "add-kyrkogard-button">Slå ihop flera kyrkogårdar</button>
+    </div>
     {formVisible && <KyrkogardForm kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} formData = {formData} setFormData = {setFormData} />}
+  <div className = "kyrkogard-main">
+      <form className = "searchbar-kyrkogard">
+      <h3>Sök kyrkogård</h3>
+      <div className = "input-field-searchbar-kund">
+      <label>Namn på kyrkogård</label>
+      <input type = "text" name = "namn" ></input>
+      </div>
+      <div className = "input-field-searchbar-kund">
+      <label>Kyrkogårdsgrupp</label>
+      <input type = "text" name = "grupp" ></input>
+      </div>
+      </form>
   <div className = "kyrkogard-list">
   {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((kyrkogard) => (
     <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setView(true);}}>
@@ -1414,6 +1392,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       <p>Kyrkogårdsnummer: {kyrkogard.id}</p>
     </div>
   ))}
+  </div>
   </div>
     </div>
 }
