@@ -16,6 +16,7 @@ export async function addKyrkogard(kyrkogard) {
         method: "POST",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`} ,
+        credentials: 'include',
         body: JSON.stringify(kyrkogard)
     });
     return res.json();
@@ -25,8 +26,9 @@ export async function removeKyrkogard(id) {
     const res = await fetch (`${API_URL}/kyrkogardar/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`,
-    }});
+                  "Authorization": `Bearer ${getToken()}`
+                },
+          credentials: 'include',});
     return res.json(
     )
 }
@@ -35,7 +37,8 @@ export async function getArenden() {
     const res = await fetch (`${API_URL}/arenden`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-                }});
+                },
+        credentials: 'include',});
     return res.json();
 }
 
@@ -44,7 +47,8 @@ export async function addArende(arende) {
         method: "POST",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
-        body: JSON.stringify(arende)      
+        body: JSON.stringify(arende),
+        credentials: 'include',      
     });
     return res.json();
 }
@@ -53,16 +57,16 @@ export async function removeArende(id) {
     const res = await fetch (`${API_URL}/arenden/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`
-    }});
+                  "Authorization": `Bearer ${getToken()}`},
+        credentials: 'include'});
     return res.json();
 }
 
 export async function getKunder() {
     const res = await fetch (`${API_URL}/kunder`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`,
-                }});
+                  "Authorization": `Bearer ${getToken()}`,},
+                credentials: 'include'});
     return res.json();
 }
 
@@ -71,6 +75,7 @@ export async function addKund(kund) {
         method: "POST",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+        credentials: 'include',
         body: JSON.stringify(kund)      
     });
     return res.json();
@@ -81,7 +86,7 @@ export async function removeKunder(id) {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
-    }});
+    }, credentials: 'include'});
     return res.json();
 }
 
@@ -89,6 +94,7 @@ export async function getGodkannanden() {
     const res = await fetch (`${API_URL}/godkannanden`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+                  credentials: 'include'
                 });
 
     if (!res.ok) {
@@ -104,6 +110,7 @@ export async function addGodkannande(godkannande) {
     method: "POST",
     headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+                  credentials: 'include',
     body: JSON.stringify(godkannande)      
     });
     return res.json();
@@ -113,8 +120,8 @@ export async function removeGodkannande(id) {
     const res = await fetch (`${API_URL}/godkannanden/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`
-    }});
+                  "Authorization": `Bearer ${getToken()}`},
+                credentials: 'include'});
     return res.json();
 }
 
@@ -122,6 +129,7 @@ export async function getKommentarer() {
     const res = await fetch (`${API_URL}/kommentarer`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+                  credentials: 'include'
                  });
 
     if (!res.ok) {
@@ -137,6 +145,7 @@ export async function addKommentarer(kommentar) {
       method: "POST",
       headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+                credentials: 'include',
       body: JSON.stringify(kommentar),
     });
 
@@ -157,8 +166,8 @@ export async function removeKommentarer(id) {
     const res = await fetch (`${API_URL}/kommentarer/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`
-    }});
+                  "Authorization": `Bearer ${getToken()}`},
+                credentials: 'include'});
     return res.json();
 }
 
@@ -167,6 +176,7 @@ export async function updateGodkannande(id,data) {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   return res.json();
@@ -177,6 +187,7 @@ export async function updateKyrkogard(id, data) {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`} ,
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   return res.json();
@@ -187,6 +198,7 @@ export async function updateArende(id, data) {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`} ,
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   return res.json();
@@ -197,6 +209,7 @@ export async function updateKund(id, data) {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`} ,
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   return res.json();
@@ -207,6 +220,7 @@ export async function updateKommentar(id, data) {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()} `},
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   return res.json();
@@ -221,6 +235,7 @@ export async function updatePassword(user, password){
       headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${getToken()}`
       },
+      credentials: 'include',
       body: JSON.stringify(data)
     });
 
