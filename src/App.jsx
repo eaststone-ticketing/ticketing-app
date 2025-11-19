@@ -452,7 +452,7 @@ return (
 )
 }
 
-function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende}) {
+function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
 
   const [avlidenNamn, setAvlidenNamn] = useState("");
   const [id, setID] = useState("");
@@ -528,7 +528,7 @@ useEffect(() => {
     setArenden(data); 
   }
   loadArenden(); 
-  }, []);
+  }, [activeArende]);
 
   async function handleDelete(id) {
   try {
@@ -910,12 +910,12 @@ function findTicketAmount(filter, results){
 
         <div className = "arende-detail-container">
         <div className = "buttons-arende-detail">
-        <button onClick = {() => {setActiveArende(null); setCreateKommentar(false)}}>← Tillbaka till sökfält</button>
+        <button onClick = {() => {setActiveTab('Ärenden'); setActiveArende(null); setCreateKommentar(false)}}>← Tillbaka till sökfält</button>
         <button onClick = {() => setArendeDetailState("oversikt")}> Översikt</button>
         <button onClick = {() => setArendeDetailState("design")}>Design</button>
         <button onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
-        <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer</button>
+        <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
         </div>
         {arendeDetailState === "oversikt" && <div>
@@ -977,7 +977,7 @@ function findTicketAmount(filter, results){
         <DownloadPdfButton arendeId = {activeArende.id}></DownloadPdfButton>
         </div>
 }
-{oversiktEdit && <OversiktEditForm arende = {activeArende}/>}
+{oversiktEdit && <OversiktEditForm arende = {activeArende} setOversiktEdit={setOversiktEdit} setActiveArende={setActiveArende}/>}
         </div>
 
         </div>
@@ -1556,7 +1556,7 @@ function App(user) {
         </div>
         <div className="tab-content">
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
-          {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende}/>}
+          {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
           {activeTab === 'Kunder' && <KundTab kunder = {kunder} setKunder = {setKunder}/>}
           {activeTab === 'Leverantörer' && <LeverantorTab/>}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}

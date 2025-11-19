@@ -1,0 +1,21 @@
+.button-panel{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.oversikt-edit-form {
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+    padding: 0px 10px 10px 5px;
+}
+
+.edit-form-entry {
+    padding: 1px 1px 1px 0;
+}
+.edit-form-entry label {
+    margin-right: 6px;
+}
