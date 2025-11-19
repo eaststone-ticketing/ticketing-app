@@ -24,7 +24,8 @@ function Login({ onLogin }) {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password }),
+      credentials: 'include',  // <-- This ensures cookies are sent with the request
     });
 
     const data = await res.json();
