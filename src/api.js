@@ -8,6 +8,11 @@ export async function getKyrkogardar() {
                 },
               credentials: 'include'
               });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    
     return res.json();
 }
 
@@ -19,6 +24,11 @@ export async function addKyrkogard(kyrkogard) {
         credentials: 'include',
         body: JSON.stringify(kyrkogard)
     });
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -29,6 +39,11 @@ export async function removeKyrkogard(id) {
                   "Authorization": `Bearer ${getToken()}`
                 },
           credentials: 'include',});
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json(
     )
 }
@@ -39,6 +54,11 @@ export async function getArenden() {
                   "Authorization": `Bearer ${getToken()}`,
                 },
         credentials: 'include',});
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -50,6 +70,11 @@ export async function addArende(arende) {
         body: JSON.stringify(arende),
         credentials: 'include',      
     });
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -59,6 +84,11 @@ export async function removeArende(id) {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
         credentials: 'include'});
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -67,6 +97,11 @@ export async function getKunder() {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,},
                 credentials: 'include'});
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -78,6 +113,11 @@ export async function addKund(kund) {
         credentials: 'include',
         body: JSON.stringify(kund)      
     });
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -87,6 +127,11 @@ export async function removeKunder(id) {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`
     }, credentials: 'include'});
+
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -101,7 +146,10 @@ export async function getGodkannanden() {
         console.log(`Error: ${res.status} - ${res.statusText}`);
         throw new Error(`Failed to fetch godkannanden: ${res.status} ${res.statusText}`);
     }
-
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -113,6 +161,10 @@ export async function addGodkannande(godkannande) {
                   credentials: 'include',
     body: JSON.stringify(godkannande)      
     });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -122,6 +174,10 @@ export async function removeGodkannande(id) {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
                 credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -135,6 +191,10 @@ export async function getKommentarer() {
     if (!res.ok) {
         console.log(`Error: ${res.status} - ${res.statusText}`);
         throw new Error(`Failed to fetch godkannanden: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
     }
     return res.json();
 }
@@ -168,6 +228,10 @@ export async function removeKommentarer(id) {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`},
                 credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
     return res.json();
 }
 
@@ -179,6 +243,11 @@ export async function updateGodkannande(id,data) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
+
+  const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
   return res.json();
 }
 
@@ -190,6 +259,11 @@ export async function updateKyrkogard(id, data) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
+
+  const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
   return res.json();
 }
 
@@ -201,6 +275,10 @@ export async function updateArende(id, data) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
   return res.json();
 }
 
@@ -212,6 +290,10 @@ export async function updateKund(id, data) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
   return res.json();
 }
 
@@ -223,6 +305,10 @@ export async function updateKommentar(id, data) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
   return res.json();
 }
 
