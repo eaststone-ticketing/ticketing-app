@@ -18,7 +18,7 @@ const app = express();
 app.use(cors({
   origin: [`${API_URL}`, "http://localhost:3000", "http://localhost:5173"],
   methods: ["GET","POST","PUT","DELETE"],
-  credentials: true,  // Allow sending cookies with requests
+  credentials: true,
 }));
 
 app.use(express.json());
