@@ -32,6 +32,8 @@ function authenticateToken(req, res, next) {
     // 2. OR check query token in URLs like /arendepdf/1?token=abc
     if (!token && req.query.token) token = req.query.token;
 
+    if (!token && req.cookies.refresh_token) return res.sendStatus(402)
+
     if (!token) return res.sendStatus(401); // Unauthorized
 
     jwt.verify(token, process.env.JWT_SECRET || "supersecret", (err, user) => {
