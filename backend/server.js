@@ -32,34 +32,12 @@ function authenticateToken(req, res, next) {
     // 2. OR check query token in URLs like /arendepdf/1?token=abc
     if (!token && req.query.token) token = req.query.token;
 
-    if (!token && req.cookies.refresh_token) return res.sendStatus(402)
 
     if (!token) return res.sendStatus(401); // Unauthorized
 
     jwt.verify(token, process.env.JWT_SECRET || "supersecret", (err, user) => {
         if (err){
-          if (err.name === "TokenExpiredError"){
-            const refreshToken = req.cookies.refresh_token;
-            if (!refreshToken) return res.sendStatus(401);
-                jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "supersecret-refresh", (err, user) => {
-                    if (err) {
-                        return res.sendStatus(403); // Forbidden if refresh token is invalid
-                    }
-                        const newAccessToken = jwt.sign(
-                        { userId: user.userId },
-                        process.env.JWT_SECRET || "supersecret",
-                        { expiresIn: '15m' } // Set a short expiration for the new access token
-                    );
-                    
-                    res.setHeader('Authorization', `Bearer ${newAccessToken}`);
-
-                    // Attach the user to the request (continue the flow)
-                    req.user = user;
-                    next();
-                  
-                  });
-          } else {
-           return res.sendStatus(403)}; // Forbidden
+            return res.sendStatus(403); // Forbidden
           }
         req.user = user; // attach decoded user info to request
         next();
@@ -573,7 +551,16 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/refresh-token", async (req, res) => {
+    const refreshToken = req.cookies.refresh_token;
+    if (!refreshToken) return res.sendStatus(401);
 
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        const newAccessToken = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        res.json({ accessToken: newAccessToken });
+    });
+});
 
 const PORT = process.env.PORT || 5000;
 try {

@@ -1,10 +1,48 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
-function getToken() { const user = localStorage.getItem('user'); return user ? JSON.parse(user).token : null; }
+
+async function getToken() {
+
+  const user = localStorage.getItem('user'); 
+  let token = user ? JSON.parse(user).token : null; 
+
+  if(!token) return null;
+  
+  if (isTokenExpired(token)){
+        try {
+            const res = await fetch(`${API_URL}/refresh-token`, {
+                method: 'POST',
+                credentials: 'include', // send HTTP-only cookie
+            });
+
+            if (!res.ok) {
+                console.error('Refresh token failed');
+                return null;
+            }
+
+            const data = await res.json();
+            // Save the new token in localStorage
+            localStorage.setItem('user', JSON.stringify({ ...JSON.parse(user), token: data.accessToken }));
+            token = data.accessToken;
+        } catch (err) {
+            console.error('Error refreshing token:', err);
+            return null;
+        }
+  }
+  
+    return token;
+}
+
+function isTokenExpired(token) {
+    if (!token) return true;
+    const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT payload
+    const now = Date.now() / 1000; // current time in seconds
+    return payload.exp < now + 30; // consider it expired if less than 30s left
+}
 
 export async function getKyrkogardar() {
     const res = await fetch (`${API_URL}/kyrkogardar`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`,
+                  "Authorization": `Bearer ${await getToken()}`,
                 },
               credentials: 'include'
               });
@@ -20,7 +58,7 @@ export async function addKyrkogard(kyrkogard) {
     const res = await fetch (`${API_URL}/kyrkogardar`, {
         method: "POST",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`} ,
+                  "Authorization": `Bearer ${await getToken()}`} ,
         credentials: 'include',
         body: JSON.stringify(kyrkogard)
     });
@@ -36,7 +74,7 @@ export async function removeKyrkogard(id) {
     const res = await fetch (`${API_URL}/kyrkogardar/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`
+                  "Authorization": `Bearer ${await getToken()}`
                 },
           credentials: 'include',});
 
@@ -51,7 +89,7 @@ export async function removeKyrkogard(id) {
 export async function getArenden() {
     const res = await fetch (`${API_URL}/arenden`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`,
+                  "Authorization": `Bearer ${await getToken()}`,
                 },
         credentials: 'include',});
 
@@ -66,7 +104,7 @@ export async function addArende(arende) {
     const res = await fetch (`${API_URL}/arenden`, {
         method: "POST",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
         body: JSON.stringify(arende),
         credentials: 'include',      
     });
@@ -82,7 +120,7 @@ export async function removeArende(id) {
     const res = await fetch (`${API_URL}/arenden/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
         credentials: 'include'});
 
     const newToken = res.headers.get("Authorization");
@@ -95,7 +133,7 @@ export async function removeArende(id) {
 export async function getKunder() {
     const res = await fetch (`${API_URL}/kunder`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`,},
+                  "Authorization": `Bearer ${await getToken()}`,},
                 credentials: 'include'});
 
     const newToken = res.headers.get("Authorization");
@@ -109,7 +147,7 @@ export async function addKund(kund) {
     const res = await fetch (`${API_URL}/kunder`, {
         method: "POST",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
         credentials: 'include',
         body: JSON.stringify(kund)      
     });
@@ -125,7 +163,7 @@ export async function removeKunder(id) {
     const res = await fetch (`${API_URL}/kunder/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`
+                  "Authorization": `Bearer ${await getToken()}`
     }, credentials: 'include'});
 
     const newToken = res.headers.get("Authorization");
@@ -138,7 +176,7 @@ export async function removeKunder(id) {
 export async function getGodkannanden() {
     const res = await fetch (`${API_URL}/godkannanden`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                   credentials: 'include'
                 });
 
@@ -157,7 +195,7 @@ export async function addGodkannande(godkannande) {
     const res = await fetch (`${API_URL}/godkannanden`, {
     method: "POST",
     headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                   credentials: 'include',
     body: JSON.stringify(godkannande)      
     });
@@ -172,7 +210,7 @@ export async function removeGodkannande(id) {
     const res = await fetch (`${API_URL}/godkannanden/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                 credentials: 'include'});
     const newToken = res.headers.get("Authorization");
     if (newToken && newToken.startsWith("Bearer ")) {
@@ -184,7 +222,7 @@ export async function removeGodkannande(id) {
 export async function getKommentarer() {
     const res = await fetch (`${API_URL}/kommentarer`, {
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                   credentials: 'include'
                  });
 
@@ -204,7 +242,7 @@ export async function addKommentarer(kommentar) {
     const res = await fetch(`${API_URL}/kommentarer`, {
       method: "POST",
       headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                 credentials: 'include',
       body: JSON.stringify(kommentar),
     });
@@ -226,7 +264,7 @@ export async function removeKommentarer(id) {
     const res = await fetch (`${API_URL}/kommentarer/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
                 credentials: 'include'});
     const newToken = res.headers.get("Authorization");
     if (newToken && newToken.startsWith("Bearer ")) {
@@ -239,7 +277,7 @@ export async function updateGodkannande(id,data) {
     const res = await fetch(`${API_URL}/godkannanden/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`},
+                  "Authorization": `Bearer ${await getToken()}`},
     credentials: 'include',
     body: JSON.stringify(data)
   });
@@ -255,7 +293,7 @@ export async function updateKyrkogard(id, data) {
   const res = await fetch(`${API_URL}/kyrkogardar/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`} ,
+                  "Authorization": `Bearer ${await getToken()}`} ,
     credentials: 'include',
     body: JSON.stringify(data)
   });
@@ -271,7 +309,7 @@ export async function updateArende(id, data) {
   const res = await fetch(`${API_URL}/arenden/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`} ,
+                  "Authorization": `Bearer ${await getToken()}`} ,
     credentials: 'include',
     body: JSON.stringify(data)
   });
@@ -286,7 +324,7 @@ export async function updateKund(id, data) {
   const res = await fetch(`${API_URL}/kunder/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()}`} ,
+                  "Authorization": `Bearer ${await getToken()}`} ,
     credentials: 'include',
     body: JSON.stringify(data)
   });
@@ -301,7 +339,7 @@ export async function updateKommentar(id, data) {
   const res = await fetch(`${API_URL}/kommentarer/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
-                  "Authorization": `Bearer ${getToken()} `},
+                  "Authorization": `Bearer ${await getToken()} `},
     credentials: 'include',
     body: JSON.stringify(data)
   });
@@ -319,7 +357,7 @@ export async function updatePassword(user, password){
     {
       method: "PUT",
       headers: {"Content-Type": "application/json",
-                "Authorization": `Bearer ${getToken()}`
+                "Authorization": `Bearer ${await getToken()}`
       },
       credentials: 'include',
       body: JSON.stringify(data)
