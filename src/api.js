@@ -5,7 +5,9 @@ export async function getKyrkogardar() {
     const res = await fetch (`${API_URL}/kyrkogardar`, {
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${getToken()}`,
-                }});
+                },
+              credentials: 'include'
+              });
     return res.json();
 }
 
