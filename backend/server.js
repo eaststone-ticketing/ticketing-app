@@ -10,6 +10,7 @@ import fs from "fs";
 import { PDFDocument } from "pdf-lib";
 import path from "path";
 import { fileURLToPath } from "url";
+import cookieParser from 'cookie-parser';
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
@@ -20,6 +21,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(cookieParser());
 
 function authenticateToken(req, res, next) {
     let token = null;
@@ -32,7 +34,30 @@ function authenticateToken(req, res, next) {
     if (!token) return res.sendStatus(401); // Unauthorized
 
     jwt.verify(token, process.env.JWT_SECRET || "supersecret", (err, user) => {
-        if (err) return res.sendStatus(403); // Forbidden
+        if (err){
+          if (err.name === "TokenExpiredError"){
+            const refreshToken = req.cookies.refresh_token;
+            if (!refreshToken) return res.sendStatus(401);
+                jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "supersecret-refresh", (err, user) => {
+                    if (err) {
+                        return res.sendStatus(403); // Forbidden if refresh token is invalid
+                    }
+                        const newAccessToken = jwt.sign(
+                        { userId: user.userId },
+                        process.env.JWT_SECRET || "supersecret",
+                        { expiresIn: '15m' } // Set a short expiration for the new access token
+                    );
+                    
+                    res.setHeader('Authorization', `Bearer ${newAccessToken}`);
+
+                    // Attach the user to the request (continue the flow)
+                    req.user = user;
+                    next();
+                  
+                  });
+          } else {
+           return res.sendStatus(403)}; // Forbidden
+          }
         req.user = user; // attach decoded user info to request
         next();
     });
