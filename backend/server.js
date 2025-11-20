@@ -562,10 +562,29 @@ app.post("/refresh-token", async (req, res) => {
     });
 });
 
+app.post("/alter-table", async (req,res) => {
+
+  const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN deleted_at TIMESTAMP DEFAULT NULL';
+
+  db.run(alterTableSQL, (err) => {
+      if (err) {
+          console.error('Error altering table:', err.message);
+          return res.status(500).json({ error: "Failed to alter table" });
+      } else {
+          console.log('Column deleted_at added successfully.');
+          res.status(200).json({ message: "Column deleted_at added successfully." });
+      }
+    });
+  db.close();
+})
+
+
 const PORT = process.env.PORT || 5000;
 try {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 } catch (err) {
     console.error("Server failed to start:", err);
 }
+
+
 
