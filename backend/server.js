@@ -575,7 +575,6 @@ app.get("/alter-table", async (req,res) => {
           res.status(200).json({ message: "Column deleted_at added successfully." });
       }
     });
-  db.close();
 })
 
 
