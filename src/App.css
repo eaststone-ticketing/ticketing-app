@@ -1264,3 +1264,10 @@
   overflow-y:auto;
   height:850px;
 }
+
+.load-more-button-kyrkogard {
+  position:relative;
+  left: 270px;
+  top: 6px;
+  background: rgb(243, 243, 245);
+}

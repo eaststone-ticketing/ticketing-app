@@ -1333,8 +1333,10 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   const [formVisible, setFormVisible] = useState(false)
   const [activeKyrkogard, setActiveKyrkogard] = useState(null)
   const [redigering, setRedigering] = useState(false)
-  const [view, setView] = useState(false)
   const [kyrkogardTabState, setKyrkogardTabState] = useState(null)
+  const [searchNamn, setSearchNamn] = useState("")
+  const [searchGrupp, setSearchGrupp] = useState("")
+  const [loadMax, setLoadMax] = useState(50)
 
   async function handleDelete(id) {
   try {
@@ -1375,15 +1377,15 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       <h3>Sök kyrkogård</h3>
       <div className = "input-field-searchbar-kund">
       <label>Namn på kyrkogård</label>
-      <input type = "text" name = "namn" ></input>
+      <input type = "text" name = "namn" onChange = {(e) => setSearchNamn(e.target.value)}></input>
       </div>
       <div className = "input-field-searchbar-kund">
       <label>Kyrkogårdsgrupp</label>
-      <input type = "text" name = "grupp" ></input>
+      <input type = "text" name = "grupp" onChange = {(e) => setSearchGrupp(e.target.value)} ></input>
       </div>
       </form>
   <div className = "kyrkogard-list">
-  {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((kyrkogard) => (
+  {[...kyrkogardar].filter(k => k && k.namn && k.namn.includes(searchNamn) && (k.kyrkogard_grupp?.includes(searchGrupp) || searchGrupp === "")).sort((a, b) => a.namn.localeCompare(b.namn)).slice(0,loadMax).map((kyrkogard) => (
     <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setKyrkogardTabState(kyrkogard.id);}}>
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>
@@ -1398,6 +1400,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       <p>Kyrkogårdsnummer: {kyrkogard.id}</p>
     </div>
   ))}
+  <button className = "load-more-button-kyrkogard" onClick = {() => setLoadMax(loadMax + 50)}>↓ Ladda mer ↓</button>
   </div>
   </div>
     </div>
