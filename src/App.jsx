@@ -11,6 +11,7 @@ import MainApp from './MainApp.jsx'
 import DownloadPdfButton from './PdfDownloadButton.jsx'
 import OversiktEditForm from './OversiktEditForm'
 import DesignEditForm from './DesignEditForm'
+import SlaIhopMenu from './SlaIhopMenu'
 
 function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
     const [sockel, setSockel] = useState(false);
@@ -532,21 +533,21 @@ useEffect(() => {
   loadArenden(); 
   }, [activeArende]);
 
-  async function handleDelete(id) {
-  try {
-    await removeArende(id); // call backend
-    setArenden(arenden.filter(a => a.id !== id)); // update state
-  } catch (err) {
-    console.error("Error deleting arende:", err);
-  }
-  }
 
-  async function handleDeleteButton(id) {
-    const isConfirmed = window.confirm("Är du säker på att du vill radera?");
+  async function handleDeleteButton(arende) {
+    const isConfirmed = window.confirm(`Är du säker på att du vill ${arende.status !== "raderad" ? "radera" :"återställa"}?`);
     if (isConfirmed) {
-      handleDelete(id)
+      if (arende.status === "raderad"){
+        const data = {...arende, status: "Nytt"}
+        await updateArende(arende.id, data)
+        const arenden = await getArenden();
+        setArenden(arenden);
+      }else {
+        const data = {...arende, status: "raderad", deleted_at: new Date().toISOString()}
+        await updateArende(arende.id, data)
+        const arenden = await getArenden();
+        setArenden(arenden);}
     } else {
-
     }
   }
 
@@ -851,6 +852,7 @@ function findTicketAmount(filter, results){
               />
             </div>
           </form>
+          <button onClick = {() => setFilter("raderade")}>Visa raderade ärenden</button>
           </div>
           {!skapaArende && <div>
           <div className = "arende-card-filter-panel">
@@ -862,7 +864,7 @@ function findTicketAmount(filter, results){
             <button onClick = {() => setFilter("vänta")} className = {filter === "vänta" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Väntande ({findTicketAmount("Väntande", resultSorted)})</button>
           </div>
           <div className = "scrollable-box">
-          {resultSorted.filter(k => !filter || k.status.toLowerCase().includes(filter) || ((k.status === "Väntar svar av kyrkogård" || k.status === "Väntar svar av kund") && filter === "nytt")).slice(0,50).map((arende) => (
+          {resultSorted.filter(k => !filter && k.status !== "raderad" || filter === "raderade" && k.status === "raderad" || k.status.toLowerCase().includes(filter) || ((k.status === "Väntar svar av kyrkogård" || k.status === "Väntar svar av kund") && filter === "nytt")).slice(0,50).map((arende) => (
             <div key={arende.id}   className={`arende-card-${arende.status === "Redo" ? "redo": arende.status === "Godkänd av kund" ? "kund": arende.status === "Godkänd av kyrkogård" ? "kyrkogard": arende.status === "LEGACY" ? "legacy": arende.status === "Stängt" ? "stangt" : "ny"}`}>
               <div>
               <div className = "arende-card-header-and-button">
@@ -901,7 +903,7 @@ function findTicketAmount(filter, results){
               </div>}
               </div>
               <div>
-              <button className = "delete-button-card" onClick = {(e) =>{e.stopPropagation(); handleDeleteButton(arende.id)}}>Radera</button>
+              <button className = "delete-button-card" onClick = {(e) =>{e.stopPropagation(); handleDeleteButton(arende)}}>{arende.status !== "raderad" && <p>Radera</p>}{arende.status === "raderad" && <p>Återställ</p>}</button>
               </div>
             </div>
           ))}
@@ -979,6 +981,9 @@ function findTicketAmount(filter, results){
         <div className = "arende-detail">
         <p><strong>Status:</strong> {activeArende.status}</p> 
         </div>
+        {activeArende.status === "raderad" && <div className = "arende-detail">
+          <p>Raderad: {activeArende.deleted_at }</p>
+          </div>}
         <div className = "arende-detail">
         <p><strong>Datum skapad:</strong> {activeArende.datum}</p>
         </div>
@@ -1198,7 +1203,7 @@ function LeverantorTab() {
   return <div>Leverantörslista</div>
 }
 
-function ActiveKyrkogardView({setView, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard, kyrkogardar}) {
+function ActiveKyrkogardView({setKyrkogardTabState, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard, kyrkogardar}) {
   const [formData, setFormData] = useState({
     namn: activeKyrkogard.namn,
     kontaktperson: activeKyrkogard.kontaktperson,
@@ -1232,7 +1237,7 @@ function ActiveKyrkogardView({setView, setRedigering, setKyrkogardar, redigering
   return <div className = "sideways">
         <div>
         <div className = "button-panel-kyrkogard">
-        <button onClick = {() => {setView(false)}}>← Tillbaka</button>
+        <button onClick = {() => {setKyrkogardTabState(null)}}>← Tillbaka</button>
         <button onClick = {() => {setRedigering(!redigering);}}>Redigera kyrkogård</button>
         </div>
         <h3>{activeKyrkogard.namn}</h3>
@@ -1329,6 +1334,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   const [activeKyrkogard, setActiveKyrkogard] = useState(null)
   const [redigering, setRedigering] = useState(false)
   const [view, setView] = useState(false)
+  const [kyrkogardTabState, setKyrkogardTabState] = useState(null)
 
   async function handleDelete(id) {
   try {
@@ -1357,7 +1363,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
     })
 
   return <div className = "kyrkogard-tab">
-    {!view && <div>
+    {kyrkogardTabState === null && <div>
     <div className = "kyrkogard-tab-buttons">
     <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">Lägg till kyrkogård</button>
     <button onClick = {() => setKyrkogardTabState("skapagrupp")} className = "add-kyrkogard-button">Skapa kyrkogårdsgruppering</button>
@@ -1378,7 +1384,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       </form>
   <div className = "kyrkogard-list">
   {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((kyrkogard) => (
-    <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setView(true);}}>
+    <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setKyrkogardTabState(kyrkogard.id);}}>
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>
       <div>
@@ -1396,7 +1402,8 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   </div>
     </div>
 }
-{view && <ActiveKyrkogardView setView = {setView} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
+{kyrkogardTabState === "slaihop" && <SlaIhopMenu kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
+{(activeKyrkogard !== null) && <ActiveKyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
 </div>
 }
 

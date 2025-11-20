@@ -1,0 +1,17 @@
+.kyrkogard-and-assign-button{
+    display:flex;
+    flex-direction:row;
+    gap: 6px;
+    align-items: center;
+}
+
+.kyrkogard-and-assign-button button {
+    padding: 0px;
+
+}
+
+.SlaIhopMenu {
+    display:flex;
+    flex-direction:row;
+    gap: 6px;
+}
