@@ -562,7 +562,7 @@ app.post("/refresh-token", async (req, res) => {
     });
 });
 
-app.post("/alter-table", async (req,res) => {
+app.get("/alter-table", async (req,res) => {
 
   const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN deleted_at TIMESTAMP DEFAULT NULL';
 
