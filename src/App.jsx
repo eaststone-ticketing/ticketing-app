@@ -1500,14 +1500,6 @@ return <div>
       {showDetail === k.id && <p><pre className = "pre">{k.innehall}</pre></p>}
       </div>
     </div>)}
-     
-  <div>
-    <label>Nytt lösenord</label>
-    <input type = "password" value = {newPassword} onChange = {(e) => setNewPassword(e.target.value)}></input>
-    <label>Bekräfta lösenord</label>
-    <input type = "password" value = {passwordChecker} onChange = {(e) => setPasswordChecker(e.target.value)}></input>
-    <button onClick = {() => {updatePassword(JSON.parse(localStorage.getItem('user')), newPassword, passwordChecker); setNewPassword("")}}>Ändra lösenord</button>
-  </div>
     </div>
   </div>
   </div>
