@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar } from "./api.js";
+import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword } from "./api.js";
 import { TbGrave2 } from "react-icons/tb";
 import { BsTelephone } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail } from "react-icons/md";
@@ -479,6 +479,7 @@ function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, set
   const [currentKommentar, setCurrentKommentar] = useState(null);
   const [oversiktEdit, setOversiktEdit] = useState(false);
   const [designEdit, setDesignEdit] = useState(false);
+  const [typeToSearch, setTypeToSearch] = useState("");
 
 useEffect(() => {
   if (!activeArende) return;
@@ -726,23 +727,26 @@ async function handleStatusChange(approver) {
   setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id));
 }
 function findTicketAmount(filter, results){
+
+  const resultsfiltered = results.filter(r => r.arendeTyp === typeToSearch || typeToSearch === "");
+
   if(filter === "all"){
-    return results.length
+    return resultsfiltered.length
   }
   if(filter === "Nytt"){
-    return results.filter(r => r.status === "Nytt" || r.status === "Väntar svar av kund" || r.status === "Väntar svar av kyrkogård").length;
+    return resultsfiltered.filter(r => r.status === "Nytt" || r.status === "Väntar svar av kund" || r.status === "Väntar svar av kyrkogård").length;
   }
   if(filter === "Godkänd av kund"){
-    return results.filter(r => r.status.includes("Godkänd av kund")).length;
+    return resultsfiltered.filter(r => r.status.includes("Godkänd av kund")).length;
   }
   if(filter === "Godkänd av kyrkogård"){
-    return results.filter(r => r.status.includes("Godkänd av kyrkogård")).length;
+    return resultsfiltered.filter(r => r.status.includes("Godkänd av kyrkogård")).length;
   }
   if (filter === "Väntande"){
-    return results.filter(r => r.status.toLowerCase().includes("vänt")).length
+    return resultsfiltered.filter(r => r.status.toLowerCase().includes("vänt")).length
   }
   if(filter === "Redo"){
-    return results.filter(r => r.status === "Redo").length;
+    return resultsfiltered.filter(r => r.status === "Redo").length;
   }
 }
   const result = arenden.filter((arende) => {
@@ -805,7 +809,26 @@ function findTicketAmount(filter, results){
             <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button"><strong>+ Skapa nytt ärende</strong></button>
           </div>
           <form className="searchbar-arende">
+            <div className = "header-and-dropdown">
             <h3>Sök ärende</h3>
+            <select onChange = {(e) => setTypeToSearch(e.target.value)}>
+              <option value = "">
+                Välj typ av ärende
+              </option>
+              <option>
+                Ny sten
+              </option>
+              <option>
+                Stabilisering
+              </option>
+              <option>
+                Nyinskription
+              </option>
+              <option>
+                Inspektering
+              </option>
+            </select>
+            </div>
             <div className = "input-field-searchbar-arende">
               <label>Namn på avliden</label>
               <input
@@ -864,7 +887,12 @@ function findTicketAmount(filter, results){
             <button onClick = {() => setFilter("vänta")} className = {filter === "vänta" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Väntande ({findTicketAmount("Väntande", resultSorted)})</button>
           </div>
           <div className = "scrollable-box">
-          {resultSorted.filter(k => !filter && k.status !== "raderad" || filter === "raderade" && k.status === "raderad" || k.status.toLowerCase().includes(filter) || ((k.status === "Väntar svar av kyrkogård" || k.status === "Väntar svar av kund") && filter === "nytt")).slice(0,50).map((arende) => (
+          {resultSorted.filter(k => !filter && k.status !== "raderad" && typeToSearch === ""
+          || filter === "raderade" && k.status === "raderad" 
+          || typeToSearch === k.arendeTyp
+          || k.status.toLowerCase().includes(filter) 
+          || ((k.status === "Väntar svar av kyrkogård" 
+          || k.status === "Väntar svar av kund") && filter === "nytt")).slice(0,50).map((arende) => (
             <div key={arende.id}   className={`arende-card-${arende.status === "Redo" ? "redo": arende.status === "Godkänd av kund" ? "kund": arende.status === "Godkänd av kyrkogård" ? "kyrkogard": arende.status === "LEGACY" ? "legacy": arende.status === "Stängt" ? "stangt" : "ny"}`}>
               <div>
               <div className = "arende-card-header-and-button">
@@ -1416,6 +1444,7 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   const [kommentarer, setKommentarer] = useState(null);
   const [showDetail, setShowDetail] = useState(null);
   const [newPassword, setNewPassword] = useState(null);
+  const [passwordChecker, setPasswordChecker] = useState(null);
 
   useEffect(() => {
   const fetchKommentarer = async () => {
@@ -1472,6 +1501,14 @@ return <div>
       </div>
     </div>)}
     </div>
+  </div>
+  
+  <div>
+    <label>Nytt lösenord</label>
+    <input type = "password" value = {newPassword} onChange = {(e) => setNewPassword(e.target.value)}></input>
+    <label>Bekräfta lösenord</label>
+    <input type = "password" value = {passwordChecker} onChange = {(e) => setPasswordChecker(e.target.value)}></input>
+    <button onClick = {() => {updatePassword(JSON.parse(localStorage.getItem('user')), newPassword, passwordChecker); setNewPassword("")}}>Sätt lösenord</button>
   </div>
   </div>
   

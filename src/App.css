@@ -1271,3 +1271,20 @@
   top: 6px;
   background: rgb(243, 243, 245);
 }
+
+.header-and-dropdown {
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
+}
+
+.header-and-dropdown select {
+  max-width: 200px;
+  margin-right: 50px;
+  margin-top: 15px;
+  max-height:30px;
+  background: rgb(243, 243, 245);
+  border: 3px solid rgb(223, 233, 225);
+  border-radius: 15px;
+  font-family: inherit;
+}

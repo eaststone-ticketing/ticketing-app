@@ -350,7 +350,20 @@ export async function updateKommentar(id, data) {
   return res.json();
 }
 
-export async function updatePassword(user, password){
+export async function updatePassword(user, passwordIn, passwordCheckerIn){
+
+  const password = passwordIn.trim()
+  const passWordChecker = passwordCheckerIn.trim()
+
+  if (password !== passWordChecker){
+    window.alert("Lösenorden är inte likadana")
+    return
+  }
+
+  if (password.length < 5){
+    window.alert("Please choose a password that contains 5 characters or more")
+    return
+  }
   const data = {username:user.username, password:password}
   console.log(user.userId)
   const res = await fetch(`${API_URL}/users/${user.userId}`,
