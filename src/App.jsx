@@ -12,449 +12,13 @@ import DownloadPdfButton from './PdfDownloadButton.jsx'
 import OversiktEditForm from './OversiktEditForm'
 import DesignEditForm from './DesignEditForm'
 import SlaIhopMenu from './SlaIhopMenu'
+import ArendeCardButtons from './ArendeCardButtons.jsx'
+import NewArendeForm from './ArendeTab/NewArendeForm/NewArendeForm.jsx'
+import EmailTab from './EmailTab.jsx'
+import findTicketAmount from './ArendeTab/findTicketAmount.jsx'
+import ArendeCardFilterPanel from './ArendeTab/ArendeCardFilterPanel.jsx'
 
-function NewStoneForm({arenden, setArenden, kyrkogardar, kunder, setKunder, set = null}) {
-    const [sockel, setSockel] = useState(false);
-    const [staende, setStaende] = useState(false);
-    const [GRO, setGRO] = useState(false);
-    const [arendeTyp, setArendeTyp] = useState("");
-
-    const [formData, setFormData] = useState({
-    arendetyp: "",
-    avlidenNamn: "",
-    fodelseDatum: "",
-    dodsDatum: "",
-    fakturaTillDodsbo: "",
-    bestallare: "",
-    adress: "",
-    ort: "",
-    postnummer: "",
-    tel: "",
-    email: "",
-    kyrkogard: "",
-    kvarter: "",
-    gravnummer: "",
-    modell: "",
-    material: "",
-    symboler:"",
-    beteckning:"",
-    staende: "",
-    framsida: "",
-    kanter: "",
-    sockelBearbetning: "",
-    typsnitt: "",
-    forsankt: "",
-    farg: "",
-    dekor: "",
-    platsForFlerNamn: "",
-    minnesord: "",
-    pris: "",
-    tillbehor: "",
-    GRO: ""
-  })
-
-  async function createTicket(e) {
-    try {
-     e.preventDefault()
-    const datum = new Date().toISOString().split('T')[0];
-    const newArende = await addArende({ datum, ...formData, sockel, staende, GRO, status: "Nytt"})
-    
-    setArenden([...arenden,newArende]);
-    
-    const kundNamn = formData.bestallare;
-    const kundTel = formData.tel;
-    // If kund doesn't already exist, add to kunder
-    if (!kunder.some(k => k.namn === kundNamn && k.tel === kundTel)) {
-      const newKund = await addKund({bestallare: formData.bestallare, email: formData.email, telefonnummer: formData.tel, adress: formData.adress})
-      console.log(newKund)
-      setKunder([...kunder, newKund])
-    }
-
-  }
-  catch(err){
-    console.log(err)
-  }
-    // Clear the form
-    setFormData({
-    arendeTyp: "",
-    avlidenNamn: "",
-    fodelseDatum: "",
-    dodsDatum: "",
-    fakturaTillDodsbo: "",
-    bestallare: "",
-    adress: "",
-    ort: "",
-    postnummer: "",
-    tel: "",
-    email: "",
-    kyrkogard: "",
-    kvarter: "",
-    gravnummer: "",
-    modell: "",
-    material: "",
-    symboler:"",
-    beteckning:"",
-    staende: "",
-    framsida: "",
-    kanter: "",
-    sockelBearbetning: "",
-    typsnitt: "",
-    forsankt: "",
-    farg: "",
-    dekor: "",
-    platsForFlerNamn: "",
-    minnesord: "",
-    pris: "",
-    tillbehor: "",
-    GRO: ""
-    })
-    setGRO(false)
-    setSockel(false)
-    setStaende(false)
-    if(set){
-      set(false)
-    }
-  }
-  const avlidenEntries = [
-    {label:"Namn", type: "text", name: "avlidenNamn"},
-    {label:"Födelsedatum", type:"date", name:"fodelseDatum"},
-    {label:"Dödsdatum", type: "date", name: "dodsDatum"},
-  ]
-
-  const bestallareEntries = [
-    {label:"Namn", type:"text", name:"bestallare"},
-    {label:"Adress", type:"text", name: "adress"},
-    {label:"Postnummer", type:"text", name:"postnummer"},
-    {label:"Ort", type:"text", name:"ort"},
-    {label:"Email", type:"text", name:"email"},
-    {label:"Telefonnummer", type:"text", name:"tel"},
-  ]
-
-  const gravstenEntries = [
-    {label: "Modell", type:"text", name:"modell"},
-    {label: "Material", type:"text", name: "material"},
-    {label: "Symboler vid datum", type: "text", name: "symboler"},
-    {label: "Beteckning, baksida", type: "text", name: "beteckning"}
-  ]
-
-  const bearbetningEntries = [
-    {label: "Framsida", type: "text", name: "framsida"},
-    {label: "Kanter", type: "text", name: "kanter"},
-    {label: "Sockel", type: "text", name: "sockelBearbetning"}
-  ]
-
-  const utsmyckningEntries = [
-    {label: "Typsnitt", type: "text", name: "typsnitt"},
-    {label: "Färg", type: "text", name: "farg"},
-    {label: "Dekor", type: "text", name: "dekor"},
-    {label: "Plats för fler namn", type: "text", name: "platsForFlerNamn"},
-    {label: "Minnesord", type: "text", name: "minnesord"}
-  ]
-
-  const prisEntries = [
-    {label: "Pris", type: "text", name: "price"}
-  ]
-
-  const handleChange = (e) => {
-    const { name, type, checked, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? (checked ? 1 : 0) : value
-    });
-  };
-
-  return <form onSubmit = {createTicket} className = "form">
-    <div className = "new-stone-form-top">
-    <select name = "arendeTyp" onChange = {e => {{handleChange(e); setArendeTyp(e.target.value)}}} value = {formData.arendeTyp} required>
-    <option value = "">Välj ärendetyp</option>
-    <option>Ny sten</option>
-    <option>Nyinskription</option>
-    <option>Stabilisering</option>
-    <option>Rengöring</option>
-    </select>
-    </div>
-    <div>{arendeTyp !== "Ny sten" && arendeTyp !== "Välj ärendetyp" &&  arendeTyp !== "" && <div> <label>Nuvarande text</label> <input name = "nuvarandeText" onChange = {handleChange} value = {formData.nuvarandeText}/> </div>}</div>
-    <div></div>
-    <div className = "avliden-gravsten">
-    <div className = "avliden-entries">
-    <h4>Avliden</h4>
-    {avlidenEntries.map((entry, index) => (
-      <div key = {index} className = "form-entry">
-        <label>{entry.label}</label>
-        <input type = {entry.type} name = {entry.name} onChange = {handleChange} value = {formData[entry.name]}></input>
-      </div>
-    ))}
-    </div>
-    <label>Faktura till dödsbo?</label>
-    <input name = "fakturaTillDodsbo" type = "checkbox" checked = {formData.fakturaTillDodsbo === 1} onChange = {handleChange}></input>
-        <div className = "gravsten-entries">
-      <h4>Gravsten</h4>
-      {gravstenEntries.map((entry, index) => (
-        <div key = {index} className = "form-entry">
-          <label>{entry.label}</label>
-          <input type = {entry.type} name = {entry.name} onChange = {handleChange} value = {formData[entry.name]}></input>
-        </div>
-      ))}
-      <label>Sockel?</label>
-      <input type="checkbox" checked={sockel} onChange={(e) => setSockel(e.target.checked)}/>
-      <div></div>
-      <label>Stående?</label>
-      <input type="checkbox" checked={staende} onChange={(e) => setStaende(e.target.checked)}/>
-    </div>
-    </div>
-
-     <div>
-    <div className = "bestallare-entries">
-      <h4>Beställare</h4>
-      {bestallareEntries.map((entry, index) => (
-      <div key = {index} className = "form-entry">
-        <label>{entry.label}</label>
-        <input type = {entry.type} name = {entry.name} onChange = {handleChange} value = {formData[entry.name]} required></input>
-      </div>
-      ))}
-    </div>
-    <div className = "bearbetning-entries">
-      <h4>Bearbetning</h4>
-      {bearbetningEntries.map((entry, index) => (
-        <div key = {index} className = "form-entry">
-          <label>{entry.label}</label>
-          <select name = {entry.name} onChange = {handleChange} value = {formData[entry.name]}>
-            <option>Välj bearbetning</option>
-            <option>Blankpolerad</option>
-            <option>Mattpolerad</option>
-            <option>Krysshamrad</option>
-            <option>Råhuggen</option>
-          </select>
-        </div>
-      ))}
-    </div>
-    </div>
-
-    <div>
-    <div className = "begravningsplats-entries">
-      <h4>Begravningsplats</h4>
-      <label>Begravningsplats</label>
-      <select
-        className = "select"
-        name="kyrkogard"
-        onChange={handleChange}
-        value={formData.kyrkogard}
-      required>
-        <option value="">Välj begravningsplats</option>
-        {[...kyrkogardar].filter(k => k && k.namn).sort((a, b) => a.namn.localeCompare(b.namn)).map((k) => (
-          <option key={k.id} value={k.namn}>
-            {k.namn}
-          </option>
-        ))}
-      </select>
-      <div className = "form-entry">
-      <label>Kvarter</label>
-      <input type = "text" name = "kvarter" onChange = {handleChange} value = {formData["kvarter"]}></input>
-      </div>
-      <div className = "form-entry">
-      <label>Gravnummer</label>
-      <input type = "text" name = "gravnummer" onChange = {handleChange} value = {formData["gravnummer"]}></input>
-      </div>
-    <div className = "utsmyckning-entries">
-      <h4>Utsmyckning</h4>
-      {utsmyckningEntries.map((entry, index) => (
-        <div key = {index} className = "form-entry">
-          <label>{entry.label}</label>
-          <input type = {entry.type} name = {entry.name} onChange = {handleChange} value = {formData[entry.name]}></input>
-        </div>
-      ))}
-    <label>Förhöjd/Försänkt</label>
-    <select
-        name="forsankt"
-        onChange={handleChange}
-        value={formData.forsankt}>
-      <option>Förhöjd/Försänkt</option>
-      <option>Förhöjd</option>
-      <option>Försänkt</option>
-    </select>
-    </div>
-    </div>
-    </div>
-    <div>
-    <label><strong>Pris</strong></label>
-    <input type = "text" name = "pris"  onChange = {handleChange} value = {formData["pris"]}/>
-    </div>
-    <div>
-    <label>Kommentar</label>
-    <input type = "text" name = "kommentar"  onChange = {handleChange} value = {formData["kommentar"]}/>
-    </div>
-    <div></div>
-    <div>
-    <label>GRO-sockel?</label>
-    <input type="checkbox" checked={GRO} onChange={(e) => setGRO(e.target.checked)}/>
-    </div>
-    <button type = "submit">Skapa ärende</button>
-    {set&& <button className = "uglycoded-flying-button" onClick = {() => set(false)}><strong>X</strong> Tillbaka till översikt</button>}
-  </form>
-}
-
-function SearchArenden({ arenden }) {
-  const [avlidenNamn, setAvlidenNamn] = useState("");
-  const [ID, setID] = useState("");
-  const [filtered, setFiltered] = useState([]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Trim inputs to ignore accidental spaces
-    const name = avlidenNamn?.trim().toLowerCase();
-    const id = ID;
-
-    // If both are empty, don't show anything
-    if (!name && !id) {
-      setFiltered([]);
-      return;
-    }
-
-    const result = arenden.filter((arende) => {
-      const matchName = name
-        ? arende.avlidenNamn.toLowerCase().includes(name)
-        : true;
-      const matchId = id ? String(arende.id) === id : true;
-      return matchName && matchId;
-    });
-
-    setFiltered(result);
-  };
-
-  return (
-    <div className="search-arenden-menu">
-      <div className = "search-inputs">
-      <h3>Sök ärende</h3>
-      <form onSubmit={handleSubmit}>
-        <label>Avlidens namn</label>
-        <input
-          type="text"
-          value={avlidenNamn}
-          onChange={(e) => setAvlidenNamn(e.target.value)}
-        />
-        <label>Ärendenummer</label>
-        <input
-          type="text"
-          value={ID}
-          onChange={(e) => setID(e.target.value)}
-        />
-        <button type="submit" className = "search-button">Sök</button>
-      </form>
-      </div>
-      <div className="arenden-list">
-        {filtered.length === 0 ? (
-          <div></div>
-        ) : (
-          filtered.map((arende) => (
-            <div key={arende.id} className = "arende-search-result">
-              <p>{arende.id}: {arende.avlidenNamn}</p>
-
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
-
-function EmailTab({arenden, setArenden, kyrkogardar, kunder, setKunder}) {
-    const emails = [
-    {
-      id: 1,
-      sender: 'Anna Svensson',
-      subject: 'Möte på torsdag',
-      preview: 'Hej! Kan vi flytta mötet till kl 14 istället?',
-      date: '2025-10-12',
-    },
-    {
-      id: 2,
-      sender: 'Jonas Eriksson',
-      subject: 'Faktura #12345',
-      preview: 'Här kommer fakturan för oktober...',
-      date: '2025-10-11',
-    },
-    {
-      id: 3,
-      sender: 'Maria Lind',
-      subject: 'Tack för senast!',
-      preview: 'Det var trevligt att ses på eventet.',
-      date: '2025-10-10',
-    },
-  ]
-
-const [activeEmail, setActiveEmail] = useState(null)
-const [selectedForm, setSelectedForm] = useState('')
-
-return (
-  <div className="email-feed">
-
-    {activeEmail === null && (
-    <div className = "email-list">
-    {emails.map((email) => (
-      
-      <div key={email.id} className={`email-item ${activeEmail === email.id ? 'active' : ''}`} 
-      onClick={() => setActiveEmail(activeEmail === email.id ? null : email.id)}>
-        
-        <div
-          className="email-header">
-          <strong>{email.sender}</strong>
-          <span className="email-date">{email.date}</span>
-          <span className="email-subject">{email.subject}</span>
-        </div>
-      </div>
-    ))}
-  </div>
-    )}
-
-    {activeEmail !== null && (
-      <div className = "email-detail">
-        {(() => {
-          const email = emails.find((e) => e.id === activeEmail)
-          const renderForm = () => {
-            switch (selectedForm) {
-              case 'newStone':
-                return <NewStoneForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder}/>
-              case 'newStoneStockholm':
-                return <NewStoneStockholmForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar}/>
-              case 'smallJob':
-                return <SmallJobForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar}/>
-              case 'searchArenden':
-                return <SearchArenden arenden = {arenden}/>
-              default:
-                return null
-              
-            }
-          }
-          return (
-            <div className="email-content">
-              <div>
-              <div className = "subject-and-create-new-form">
-                <h2>{email.subject}</h2>
-                <div>
-                <button onClick = {() => setSelectedForm("searchArenden")}>Bifoga i ärende</button>
-                <button onClick = {() => setSelectedForm("newStone")}>Skapa ärende</button>
-                </div>
-              </div>
-
-              <p><strong>From:</strong> {email.sender}</p>
-              <p><strong>Date:</strong> {email.date}</p>
-              <hr />
-              <p>{email.preview}</p>
-              </div>
-              <div className="form-container">{renderForm()}</div>
-            </div>
-          )
-        })()}
-        <button onClick = {() => {setActiveEmail(null) 
-                                  setSelectedForm('')}}>Back</button>
-      </div>
-    )}
-    </div>
-)
-}
-
-function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
+function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
 
   const [avlidenNamn, setAvlidenNamn] = useState("");
   const [id, setID] = useState("");
@@ -468,7 +32,7 @@ function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, set
   const [activeKyrkogard, setActiveKyrkogard] = useState("");
   const [activeGodkannanden, setActiveGodkannanden] = useState(null);
   const [showMore, setShowMore] = useState(null);
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState([]);
   const [godkannandeToEdit, setGodkannandeToEdit] = useState(null);
   const [visaKundG, setVisaKundG] = useState(true);
   const [visaKyrkogardG, setVisaKyrkogardG] = useState(true);
@@ -481,6 +45,30 @@ function ArendeTab({ arenden, godkannanden, setArenden, kyrkogardar, kunder, set
   const [designEdit, setDesignEdit] = useState(false);
   const [typeToSearch, setTypeToSearch] = useState("");
 
+  const statusColor = {
+    "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
+    "Väntar svar av kund":["rgb(200,155,255)", "rgb(255, 225, 115)"],
+    "Väntar svar av kyrkogård":["rgb(200,155,255)", "rgb(243, 100, 255)"],
+    "Väntar svar av kund och kyrkogård":["rgb(200,155,255)", "rgb(123, 245, 200)"],
+    "Godkänd av kund" : ["rgb(240, 245, 145)", "rgb(255, 225, 115)"],
+    "Godkänd av kund, väntar svar av kyrkogård" : ["rgb(240, 245, 145)","rgb(243, 100, 255)"],
+    "Godkänd av kyrkogård" : ["rgb(243, 145, 228)", "rgb(243, 100, 255) "],
+    "Godkänd av kyrkogård, väntar svar av kund" : ["rgb(243, 145, 228)", "rgb(255, 225, 115)"],
+    "Redo" : ["rgb(153, 245, 153)",  "rgb(123, 245, 200)"],
+    "Stängt" : ["rgb(196, 196, 196)", "rgb(199, 199, 199)"],
+    "LEGACY" : ["rgb(213, 223, 215)",  "rgb(223, 233, 225)"],
+    "raderad" : ["rgb(200,155,255)", "rgb(200,198,255)"]
+  }
+
+  const typeColor = {
+    "Ny sten": ["rgba(211, 229, 255, 1)", "rgba(211, 229, 255, 1)"],
+    "Stabilisering": ["rgba(245, 211, 179, 1)", "rgba(245, 211, 179, 1)"],
+    "Nyinskription": ["rgba(255, 211, 242, 1)", "rgba(255, 211, 242, 1)"],
+    "Ommålning": ["rgba(255, 211, 211, 1)", "rgba(255, 211, 211, 1)"],
+    "Rengöring": ["rgba(255, 248, 211, 1)", "rgba(255, 248, 211, 1)"],
+    "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"]
+  }
+  
 useEffect(() => {
   if (!activeArende) return;
 
@@ -726,29 +314,7 @@ async function handleStatusChange(approver) {
   const updatedGodk = await getGodkannanden();
   setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id));
 }
-function findTicketAmount(filter, results){
 
-  const resultsfiltered = results.filter(r => r.arendeTyp === typeToSearch || typeToSearch === "");
-
-  if(filter === "all"){
-    return resultsfiltered.length
-  }
-  if(filter === "Nytt"){
-    return resultsfiltered.filter(r => r.status === "Nytt" || r.status === "Väntar svar av kund" || r.status === "Väntar svar av kyrkogård").length;
-  }
-  if(filter === "Godkänd av kund"){
-    return resultsfiltered.filter(r => r.status.includes("Godkänd av kund")).length;
-  }
-  if(filter === "Godkänd av kyrkogård"){
-    return resultsfiltered.filter(r => r.status.includes("Godkänd av kyrkogård")).length;
-  }
-  if (filter === "Väntande"){
-    return resultsfiltered.filter(r => r.status.toLowerCase().includes("vänt")).length
-  }
-  if(filter === "Redo"){
-    return resultsfiltered.filter(r => r.status === "Redo").length;
-  }
-}
   const result = arenden.filter((arende) => {
     const matchName = avlidenNamn
       ? (arende.avlidenNamn ?? "").toLowerCase().includes(avlidenNamn.toLowerCase())
@@ -875,25 +441,19 @@ function findTicketAmount(filter, results){
               />
             </div>
           </form>
-          <button onClick = {() => setFilter("raderade")}>Visa raderade ärenden</button>
+          <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>
           </div>
           {!skapaArende && <div>
-          <div className = "arende-card-filter-panel">
-            <button onClick = {() => setFilter(null)} className = {filter === null ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Alla ({findTicketAmount("all", resultSorted)})</button>
-            <button onClick = {() => setFilter("nytt")} className = {filter === "nytt" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Nya ({findTicketAmount("Nytt", resultSorted)})</button>
-            <button onClick = {() => setFilter("godkänd av kund")} className = {filter === "godkänd av kund" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Godkänt kund ({findTicketAmount("Godkänd av kund", resultSorted)})</button>
-            <button onClick = {() => setFilter("godkänd av kyrkogård")} className = {filter === "godkänd av kyrkogård" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Godkänt kyrkogård ({findTicketAmount("Godkänd av kyrkogård", resultSorted)})</button>
-            <button onClick = {() => setFilter("redo")} className = {filter === "redo" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Redo ({findTicketAmount("Redo", resultSorted)})</button>
-            <button onClick = {() => setFilter("vänta")} className = {filter === "vänta" ? "arende-card-filter-panel-button-selected": "arende-card-filter-panel-button-normal"}>Väntande ({findTicketAmount("Väntande", resultSorted)})</button>
-          </div>
+          <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount}/>
           <div className = "scrollable-box">
-          {resultSorted.filter(k => !filter && k.status !== "raderad" && typeToSearch === ""
-          || filter === "raderade" && k.status === "raderad" 
-          || typeToSearch === k.arendeTyp
-          || k.status.toLowerCase().includes(filter) 
-          || ((k.status === "Väntar svar av kyrkogård" 
-          || k.status === "Väntar svar av kund") && filter === "nytt")).slice(0,50).map((arende) => (
-            <div key={arende.id}   className={`arende-card-${arende.status === "Redo" ? "redo": arende.status === "Godkänd av kund" ? "kund": arende.status === "Godkänd av kyrkogård" ? "kyrkogard": arende.status === "LEGACY" ? "legacy": arende.status === "Stängt" ? "stangt" : "ny"}`}>
+          {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === ""
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f === k.status.toLowerCase()) || filter.length === 0)).slice(0,50).map((arende) => (
+            <div key={arende.id} className= "arende-card-ny"
+              style={{
+              '--status-color-start': statusColor[arende.status]?.[0] || 'transparent',
+              '--status-color-end': statusColor[arende.status]?.[1] || 'transparent',
+              '--arendeType-color-start': typeColor[arende.arendeTyp]?.[0] || 'transparent',
+              '--arende-type-color-end': typeColor[arende.arendeTyp]?.[1] || 'transparent'}}>
               <div>
               <div className = "arende-card-header-and-button">
               <h3 className = "truncate" onClick={() => {setActiveArende(arende); setActiveArendeKyrkogard(findKyrkogard(arende.id, kyrkogardar)); setShowMore(null); setArendeDetailState("oversikt")}}>{arende.avlidenNamn}: {arende.status}</h3>
@@ -901,13 +461,7 @@ function findTicketAmount(filter, results){
               {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
               </div>
               <h4 className = "dense-h4">{arende.arendeTyp}</h4>
-              {(arende.status === "Godkänd av kund" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kund, väntar svar av kyrkogård", arende)}>Skickat skiss →→</button>}
-              {(arende.status === "Nytt" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button-ny" onClick = {() => updateArendeStatus("Väntar svar av kund", arende)}>Skickat skiss →→</button>}
-              {(arende.status === "Godkänd av kyrkogård" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Godkänd av kyrkogård, väntar svar av kund", arende)}>Skickat skiss →→</button>}
-              {(arende.status === "Nytt" )&&<button className = "send-button-ny" onClick = {() => updateArendeStatus("Väntar svar av kyrkogård", arende)}>Skickat ansökan →→</button>}
-              {(arende.status === "Redo")&&<button className = "send-button" onClick = {() => updateArendeStatus("Stängt", arende)}>Arbete utfört</button>}
-              {(arende.status === "Väntar svar av kund" )&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat ansökan →→</button>}
-              {(arende.status === "Väntar svar av kyrkogård" && (arende.arendeTyp === "Nyinskription" || arende.arendeTyp === "Ny sten"))&&<button className = "send-button" onClick = {() => updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat skiss →→</button>}
+              <ArendeCardButtons arende = {arende} updateArendeStatus = {updateArendeStatus}/>
               {showMore === arende.id && <div>
               <p><strong>{arende.status}</strong></p>
               <div className = "arende-card-info-entry"> 
@@ -939,7 +493,7 @@ function findTicketAmount(filter, results){
           </div>}
           </div>
           <div className = "new-stone-form-arenden">
-          {skapaArende && <NewStoneForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} set = {setSkapaArende}/>}
+          {skapaArende && <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>}
           </div>
           </div>
         </>
@@ -1018,7 +572,7 @@ function findTicketAmount(filter, results){
         <DownloadPdfButton arendeId = {activeArende.id}></DownloadPdfButton>
         </div>
 }
-{oversiktEdit && <OversiktEditForm arende = {activeArende} setOversiktEdit={setOversiktEdit} setActiveArende={setActiveArende}/>}
+{oversiktEdit && <OversiktEditForm arende = {activeArende} setOversiktEdit={setOversiktEdit} setActiveArende={setActiveArende} kyrkogardar = {kyrkogardar}/>}
         </div>
 
         </div>
@@ -1079,7 +633,7 @@ function findTicketAmount(filter, results){
           {!designEdit && <div>
           <p>Modell: <strong>{activeArende.modell}</strong></p>
           <p>Material: <strong>{activeArende.material}</strong></p>
-          <p>Sockel?: <strong>{activeArende.sockel === 1 ? "Ja": "Nej"}</strong></p>
+          <p>Sockel?: <strong>{activeArende.sockel === true ? "Ja": "Nej"}</strong></p>
           <p>Typsnitt: <strong>{activeArende.typsnitt ?? "Typsnitt saknas"}</strong></p>
           <p>Färg: <strong>{activeArende.farg ?? "Färg saknas"}</strong></p>
           <p>Försänkt/Förhöjd: <strong>{activeArende.forsankt ?? "Information saknas"}</strong></p>
@@ -1154,12 +708,13 @@ function findTicketAmount(filter, results){
   );
 }
 
-function KundTab({kunder, setKunder}) {
+function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
   
     const [kundNamn, setKundNamn] = useState("");
     const [id, setID] = useState("");
     const [email, setEmail] = useState("");
     const [tel, setTel] = useState("");
+    const [activeKund, setActiveKund] = useState(null)
 
     async function handleDelete (id) {
 
@@ -1185,7 +740,8 @@ function KundTab({kunder, setKunder}) {
       return (matchName && matchID && matchEmail && matchTel);
     });
   return (
-    <div className = "search-menu">
+    <div>
+    {!activeKund && <div className = "search-menu">
       <form className = "searchbar-kund">
       <h3>Sök kund</h3>
       <div className = "input-field-searchbar-kund">
@@ -1208,7 +764,7 @@ function KundTab({kunder, setKunder}) {
       
     <div className = "kund-results">
       {result.slice(0,50).map((kund) => (
-        <div key={kund.id} className="kund-card">
+        <div key={kund.id} className="kund-card" onClick = {() => setActiveKund(kund)}>
           <div className = "kund-card-h-and-button">
           <h3>{kund.id}: {kund.bestallare}</h3>
           <button className = "delete-button" onClick = {(e) =>{e.stopPropagation(); handleDelete(kund.id)}}>Radera</button>
@@ -1223,6 +779,24 @@ function KundTab({kunder, setKunder}) {
         </div>
       ))}
       </div>
+    </div>}
+    {activeKund && <div>
+      <div className = "kund-menu">
+      <div className = "kund-info-field">
+      <h4> {activeKund.bestallare}</h4>
+      <p><strong>Telefon:</strong> {activeKund.telefonnummer}</p>
+      <p><strong>E-post:</strong> {activeKund.email}</p>
+      </div>
+      <div>
+        <h4>{activeKund.bestallare}s ärenden:</h4>
+        {arenden.filter(a => a.bestallare === activeKund.bestallare).map(a => <div>
+          <p className = "kund-to-arende-link" onClick = {() => {setActiveTab('Ärenden'); setActiveArende(a); setActiveKund(null)}}><strong>#{a.id} {a.avlidenNamn}</strong></p>
+          </div>
+          )}
+      </div>
+      </div>
+      <button onClick = {() => {setActiveKund(null)}}>Tillbaka</button>
+      </div>}
     </div>
   )
 }
@@ -1575,7 +1149,7 @@ function App(user) {
         <div className="tab-content">
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
           {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
-          {activeTab === 'Kunder' && <KundTab kunder = {kunder} setKunder = {setKunder}/>}
+          {activeTab === 'Kunder' && <KundTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} arenden = {arenden} kunder = {kunder} setKunder = {setKunder}/>}
           {activeTab === 'Leverantörer' && <LeverantorTab/>}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
