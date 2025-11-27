@@ -1,0 +1,72 @@
+.form {
+  display: grid;
+  grid-template-columns: 150px 150px 150px; /* Two equal columns */
+  gap: 0.1rem 2rem; /* Space between form fields */
+  max-width: 525px;
+  background-color: rgb(233, 243, 235);
+  padding: 20px;
+  padding-right: 40px;
+  border-radius: 15px;
+  max-height: 670px;
+  margin-top: -40px;
+}
+
+.form button {
+  margin: 10px 0px;
+  padding: 5px 0px;
+  border: solid black 1px;
+
+}
+
+.form h4 {
+  padding: 0px;
+  margin-bottom: 2px;
+}
+
+.new-stone-form-arenden {
+  position: relative;
+  top: -610px;
+}
+
+.new-stone-form-top{
+  display:flex;
+  flex-direction:row;
+  height: 30px;
+  gap: 65px;
+  width: 400px;
+}
+
+.new-stone-form-top button{
+  padding: 0 5px 0 5px;
+  margin: 0;
+}
+
+.exit-button{
+  position: relative;
+  top: -640px;
+  right: 30px;
+  width: 200px;
+}
+
+.exit-button:hover{
+  color: white;
+  background-color: rgb(230, 0, 0);
+}
+
+.select {
+  max-width: 165px;
+}
+
+.form select{
+    font-family: inherit;
+}
+
+.form input {
+    border: solid rgb(223, 233, 225);
+    border-radius: 20px;
+}
+
+.input-error {
+    border: solid red;
+    border-radius: 20px;
+}

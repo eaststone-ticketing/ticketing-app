@@ -1,0 +1,17 @@
+.arende-card-filter-panel{
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
+  background:linear-gradient(to bottom, rgb(243, 243, 245) 0%, rgb(243, 243, 245) 95%, rgb(200, 200, 200) 95%,  rgb(255,255,255) 100%);
+  padding: 10px;
+  border-radius: 15px 15px 0 0;
+  margin-left: 2px;
+  margin-bottom: 5px;
+  gap: 2px;
+}
+
+.arende-card-filter-panel button{
+  padding:6px;
+  margin-bottom: 3px;
+  background-color: rgb(233, 243, 235);
+}
