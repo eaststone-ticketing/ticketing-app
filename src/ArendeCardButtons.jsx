@@ -6,11 +6,11 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
             return <div>
                 <button className = "send-button" 
                 onClick = {() => 
-                updateArendeStatus("Väntar svar av kund", arende)}>Skickat skiss →→
+                updateArendeStatus("Väntar svar av kund", arende)}>Skickat ansökan →→
                 </button>
                 <button className = "send-button"
                 onClick = {() =>
-                updateArendeStatus("Väntar svar av kyrkogård", arende)}>Skickat ansökan →→
+                updateArendeStatus("Väntar svar av kyrkogård", arende)}>Skickat skiss →→
                 </button>
             </div>
         } else if (arende.arendeTyp === "Stabilisering" || arende.arendeTyp === "Rengöring" || arende.arendeTyp === "Ommålning"){

@@ -141,6 +141,7 @@ await db.exec(`
   );
 `);
 
+
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
 
