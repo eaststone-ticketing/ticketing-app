@@ -1,4 +1,5 @@
 //import SearchArenden from './ArendeTab/SearchArenden.jsx'
+//Something
 import { useState } from 'react'
 import NewArendeForm from './ArendeTab/NewArendeForm/NewArendeForm.jsx'
 
@@ -26,6 +27,13 @@ export default function EmailTab({arenden, setArenden, kyrkogardar, kunder, setK
       preview: 'Det var trevligt att ses på eventet.',
       date: '2025-10-10',
     },
+    {
+      id: 4,
+      sender: 'Someone',
+      subject: 'Something',
+      preview: 'Something',
+      date: '2025-11-24'
+    }
   ]
 
 const [activeEmail, setActiveEmail] = useState(null)
