@@ -527,7 +527,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.staende) form.getCheckBox("Check Box18").check();
     if (arende.GRO) form.getCheckBox("Check Box20").check();
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
-    if (arende.forsankt) form.getCheckBox("Check Box24").check();
+    if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
 
     // Save the filled PDF
     let filledPdfBytes;
