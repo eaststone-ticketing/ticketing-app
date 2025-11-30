@@ -250,11 +250,11 @@ app.post("/godkannanden", authenticateToken, async(req,res) => {
     })
 
 app.post("/kommentarer", authenticateToken, async(req,res) => {
-  const {arendeID, innehall, tagged_users} = req.body;
+  const {arendeID, innehall, tagged_users, seen} = req.body;
   const result = await db.run(`
     INSERT INTO kommentarer(arendeID, innehall, tagged_users, seen)
     VALUES(?,?,?,?)
-    `,[arendeID, innehall, tagged_users])
+    `,[arendeID, innehall, tagged_users, seen])
   const newKommentar = {
     id: result.lastID,
     arendeID,
