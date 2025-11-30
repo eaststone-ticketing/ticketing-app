@@ -17,6 +17,8 @@ import NewArendeForm from './ArendeTab/NewArendeForm/NewArendeForm.jsx'
 import EmailTab from './EmailTab.jsx'
 import findTicketAmount from './ArendeTab/findTicketAmount.jsx'
 import ArendeCardFilterPanel from './ArendeTab/ArendeCardFilterPanel.jsx'
+import LeveransTab from './LeveransTab/LeveransTab.jsx'
+
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
 
@@ -801,10 +803,6 @@ function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
   )
 }
 
-function LeverantorTab() {
-  return <div>Leverantörslista</div>
-}
-
 function ActiveKyrkogardView({setKyrkogardTabState, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard, kyrkogardar}) {
   const [formData, setFormData] = useState({
     namn: activeKyrkogard.namn,
@@ -1087,7 +1085,7 @@ function App(user) {
   const isAdmin = (JSON.parse(localStorage.getItem('user')) === "admin" ? true:false)
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 'AdminView' : 'Översikt')
-  const tabs = ['Översikt', 'Ärenden', 'Kunder', 'Leverantörer', 'Kyrkogårdar']
+  const tabs = ['Översikt', 'Ärenden', 'Kunder', 'Leveranser', 'Kyrkogårdar']
   const [arenden, setArenden] = useState([])
   const [kyrkogardar, setKyrkogardar] = useState([])
   const [kunder, setKunder] = useState([])
@@ -1150,7 +1148,7 @@ function App(user) {
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
           {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
           {activeTab === 'Kunder' && <KundTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} arenden = {arenden} kunder = {kunder} setKunder = {setKunder}/>}
-          {activeTab === 'Leverantörer' && <LeverantorTab/>}
+          {activeTab === 'Leveranser' && <LeveransTab/>}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
           {activeTab === 'AdminView' && <AdminView/>}

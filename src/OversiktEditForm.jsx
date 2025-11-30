@@ -1,8 +1,8 @@
-import { updateArende } from './api';
+import { updateArende, getKyrkogardar } from './api';
 import './OversiktEditForm.css'
 import {useState} from 'react'
 
-export default function OverSiktEditForm({arende, setOversiktEdit, setActiveArende}){
+export default function OverSiktEditForm({arende, setOversiktEdit, setActiveArende, kyrkogardar}){
 
     const [formData, setFormData] = useState({
     avlidenNamn: arende.avlidenNamn,
@@ -13,7 +13,7 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
     gravnummer: arende.gravnummer
     })
 
-    function onSubmit(){
+    async function onSubmit(){
         const newArende = {
         ...arende, 
         avlidenNamn: formData.avlidenNamn,
@@ -23,13 +23,17 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
         kvarter: formData.kvarter,
         gravnummer: formData.gravnummer
     };
-        updateArende(arende.id, newArende)
+        await updateArende(arende.id, newArende)
         setActiveArende(newArende)
         setOversiktEdit(false)
     }
 
     return <div>
         <form className = "oversikt-edit-form" onSubmit = {(e) => {e.preventDefault(); onSubmit()}}>
+            <div className = "edit-form-entry">
+                <label><strong>Namn:</strong></label>
+                <input value = {formData.avlidenNamn} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "avlidenNamn"></input>
+            </div>
             <div className = "edit-form-entry">
                 <label><strong>Dödsdatum:</strong></label>
                 <input type ="date" value = {formData.dodsDatum} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "dodsDatum"></input>
@@ -50,7 +54,8 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
             <div className = "edit-form-entry">
                 <label><strong>Kyrkogård:</strong></label>
                 <select onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "kyrkogard">
-                    <option>{formData.kyrkogard}</option>
+                    <option>{arende.kyrkogard}</option>
+                    {[...kyrkogardar].sort((a,b) => a.namn.localeCompare(b.namn)).map(k => <option>{k.namn}</option>)}
                 </select>
             </div>
             <div className = "edit-form-entry">

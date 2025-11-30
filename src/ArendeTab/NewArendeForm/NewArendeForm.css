@@ -7,7 +7,7 @@
   padding: 20px;
   padding-right: 40px;
   border-radius: 15px;
-  max-height: 670px;
+  max-height: 700px;
   margin-top: -40px;
 }
 
@@ -28,27 +28,24 @@
   top: -610px;
 }
 
-.new-stone-form-top{
-  display:flex;
-  flex-direction:row;
-  height: 30px;
-  gap: 65px;
-  width: 400px;
+.new-stone-form-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
 }
 
-.new-stone-form-top button{
-  padding: 0 5px 0 5px;
-  margin: 0;
-}
-
-.exit-button{
-  position: relative;
-  top: -640px;
-  right: 30px;
+.tillbaka-till-oversikt-button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; 
+  padding: 0.5rem 1rem;
   width: 200px;
+  z-index: 10;
 }
 
-.exit-button:hover{
+.tillbaka-till-oversikt-button:hover{
   color: white;
   background-color: rgb(230, 0, 0);
 }
@@ -69,4 +66,15 @@
 .input-error {
     border: solid red;
     border-radius: 20px;
+}
+
+.GRO-checkbox {
+  margin-top: 25px;
+}
+
+.gravsten-entries {
+  padding-top: 3px;
+}
+.utsmyckning-entries{
+    padding-top: 3px;
 }

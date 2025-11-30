@@ -129,7 +129,8 @@ await db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     arendeID INTEGER,
     innehall TEXT,
-    tagged_users TEXT
+    tagged_users TEXT,
+    seen INTEGER
   );
 `)
 
@@ -251,8 +252,8 @@ app.post("/godkannanden", authenticateToken, async(req,res) => {
 app.post("/kommentarer", authenticateToken, async(req,res) => {
   const {arendeID, innehall, tagged_users} = req.body;
   const result = await db.run(`
-    INSERT INTO kommentarer(arendeID, innehall, tagged_users)
-    VALUES(?,?,?)
+    INSERT INTO kommentarer(arendeID, innehall, tagged_users, seen)
+    VALUES(?,?,?,?)
     `,[arendeID, innehall, tagged_users])
   const newKommentar = {
     id: result.lastID,
@@ -417,14 +418,14 @@ app.put("/godkannanden/:id", authenticateToken, async (req, res) => {
 
 app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
   const {id} = req.params;
-  const{arendeID, innehall, tagged_users} = req.body;
+  const{arendeID, innehall, tagged_users, seen} = req.body;
 
   try {
     await db.run(
       `UPDATE kommentarer
-      SET arendeID = ?, innehall = ?, tagged_users = ?
+      SET arendeID = ?, innehall = ?, tagged_users = ?, seen = ?
       WHERE id = ?`,
-      [arendeID, innehall, tagged_users]
+      [arendeID, innehall, tagged_users, seen]
     );
     res.json({message: `Godkännande with ID ${id} updated successfully`})
   } catch (err) {
@@ -528,6 +529,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.GRO) form.getCheckBox("Check Box20").check();
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
+    if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box23").check();
 
     // Save the filled PDF
     let filledPdfBytes;

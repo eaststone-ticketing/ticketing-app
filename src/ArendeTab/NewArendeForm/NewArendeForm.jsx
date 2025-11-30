@@ -39,7 +39,7 @@ const mapInputFields = (entryArray, sectionLabel, errors) => {
       <h4>{sectionLabel}</h4>
       {entryArray.map((entry, index) => (
         <div key={index}>
-            {inputField(entry.label, entry.name, "text", entryValidations.hasOwnProperty(entry.name) ? entryValidations[entry.name] : false )}
+            {inputField(entry.label, entry.name, entry.type, entryValidations.hasOwnProperty(entry.name) ? entryValidations[entry.name] : false )}
         </div>
       ))}
     </div>
@@ -107,7 +107,8 @@ const onSubmit = async (data) => {
   const bearbetningEntries = [
     {label: "Framsida", type: "text", name: "framsida"},
     {label: "Kanter", type: "text", name: "kanter"},
-    {label: "Sockel", type: "text", name: "sockelBearbetning"}
+    {label: "Sockel", type: "text", name: "sockelBearbetning"},
+    {label: "Gravrättsinnehavare", type: "text", name: "gravrattsinnehavare"}
   ]
 
   const utsmyckningEntries = [
@@ -120,6 +121,7 @@ const onSubmit = async (data) => {
 
   return <form onSubmit={handleSubmit(onSubmit)} className="form">
     <div className = "new-stone-form-top">
+
       <select name = "arendeTyp" {...register("arendeTyp", {required: "Välj ärendetyp"})}>
         <option value = "">Välj ärendetyp</option>
         <option>Ny sten</option>
@@ -129,6 +131,16 @@ const onSubmit = async (data) => {
         <option>Inspektion</option>
         <option>Ommålning</option>
       </select>
+
+      <div>
+        {arendeTypValue !== "Ny sten" && arendeTypValue !== "Välj ärendetyp" && arendeTypValue !== "" && <div> 
+          {inputField("Nuvarande Text", "nuvarandeText", "text", false)}
+        </div> }
+      </div>
+      
+      {skapaArende && <button className = "tillbaka-till-oversikt-button" onClick = {() => setSkapaArende(false)}><strong>X</strong> Tillbaka till översikt</button>}
+
+
     </div>
 
     <div>
@@ -139,12 +151,17 @@ const onSubmit = async (data) => {
 
     <div className = "avliden-gravsten">
       {mapInputFields(avlidenEntries, "Avliden", errors)}
+      <div className = "faktura-till-dodsbo-checkbox">
       {inputField("Faktura till dödsbo?", "fakturaTillDodsbo", "checkbox", false)}
+      </div>
       <div className = "gravsten-entries">
         {mapInputFields(gravstenEntries, "Gravsten", errors)}
         {inputField("Sockel?", "sockel", "checkbox", false)}
         <div></div>
         {inputField("Stående?", "staende", "checkbox", false)}
+          <div>
+        {inputField("Pris", "pris", "text", false)}
+      </div>
       </div>
     </div>
 
@@ -189,22 +206,13 @@ const onSubmit = async (data) => {
           <option>Förhöjd</option>
           <option>Försänkt</option>
         </select>
+        <div className = "GRO-checkbox">
+        {inputField("GRO-sockel?", "GRO", "checkbox", false)}
+        </div>
         </div>
       </div>
     </div>
-    <div>
-        {inputField("Pris", "pris", "text", false)}
-    </div>
-    <div>
-      {arendeTypValue !== "Ny sten" && arendeTypValue !== "Välj ärendetyp" && arendeTypValue !== "" && <div> 
-        {inputField("Nuvarande Text", "nuvarandeText", "text", false)}
-      </div> }
-    </div>
     <div></div>
-    <div>
-        {inputField("GRO-sockel?", "GRO", "checkbox", false)}
-    </div>
     <button type = "submit">Skapa ärende</button>
-    {skapaArende && <button className = "exit-button" onClick = {() => setSkapaArende(false)}><strong>X</strong> Tillbaka till översikt</button>}
-  </form>
+    </form>
 }

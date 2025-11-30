@@ -139,7 +139,7 @@
     linear-gradient(to left, rgb(223,233,225), rgb(200,235,200)),
     linear-gradient(to bottom, rgb(243,253,245), rgb(233,243,235));
 
-  background-size: 100% 35px, 100% 100%;
+  background-size: 100% 40px, 100% 100%;
   background-position: top, top;
   background-repeat: no-repeat, no-repeat;
 }

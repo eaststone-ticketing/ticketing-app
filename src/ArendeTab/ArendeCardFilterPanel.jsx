@@ -13,7 +13,7 @@ export default function ArendeCardFilterPanel({
     { statuses: ["godkänd av kund"], label: "Godkänt av kund", key: "Godkänd av kund" },
     { statuses: ["godkänd av kyrkogård"], label: "Godkänt av kyrkogård", key: "Godkänd av kyrkogård" },
     { statuses: ["redo"], label: "Redo", key: "Redo" },
-    { statuses: ["vänta"], label: "Väntande", key: "Väntande" }
+    { statuses: ["väntar svar av kund", "väntar svar av kyrkogård", "Godkänd av kund, väntar svar av kyrkogård", "Godkänd av kyrkogård, väntar svar av kund", "Väntar svar av kund och kyrkogård"], label: "Väntande", key: "Väntande" }
   ];
 
   return (
