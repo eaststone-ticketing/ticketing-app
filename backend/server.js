@@ -259,7 +259,8 @@ app.post("/kommentarer", authenticateToken, async(req,res) => {
     id: result.lastID,
     arendeID,
     innehall,
-    tagged_users
+    tagged_users,
+    seen
   };
 
   res.json(newKommentar)
