@@ -225,7 +225,6 @@ export async function getKommentarer() {
                   "Authorization": `Bearer ${await getToken()}`},
                   credentials: 'include'
                  });
-    console.log(res.json())
     if (!res.ok) {
         console.log(`Error: ${res.status} - ${res.statusText}`);
         throw new Error(`Failed to fetch godkannanden: ${res.status} ${res.statusText}`);
