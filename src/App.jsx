@@ -214,7 +214,7 @@ async function addNewKommentar(innehall, id, e) {
   const numberID = Number(id)
   console.log(numberID)
   const tags = JSON.stringify(findTaggedUsers(innehall))
-  const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags}
+  const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen:0}
   await addKommentarer(kommentar)
   setKommentarer(prevKommentarer => [...prevKommentarer, kommentar]);
   setCurrentKommentar("");
