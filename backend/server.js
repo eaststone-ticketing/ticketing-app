@@ -568,7 +568,7 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", authenticateToken, async (req,res) => {
 
-  const alterTableSQL = 'ALTER TABLE kyrkogardar ADD COLUMN kyrkogard_grupp DEFAULT NULL';
+  const alterTableSQL = 'ALTER TABLE kommentarer ADD COLUMN seen INTEGER DEFAULT 0';
 
   db.run(alterTableSQL, (err) => {
       if (err) {
@@ -576,7 +576,7 @@ app.get("/alter-table", authenticateToken, async (req,res) => {
           return res.status(500).json({ error: "Failed to alter table" });
       } else {
           console.log('Column kyrkogard_grupp added successfully.');
-          res.status(200).json({ message: "Column deleted_at added successfully." });
+          res.status(200).json({ message: "Column seen added successfully." });
       }
     });
 })
