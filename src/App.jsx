@@ -1021,7 +1021,6 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   useEffect(() => {
   const fetchKommentarer = async () => {
     const allKommentarer = await getKommentarer();
-    console.log(allKommentarer)
     const filtered = allKommentarer.filter(
       k => k.tagged_users.includes(user.userName)
     )

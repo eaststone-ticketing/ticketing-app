@@ -426,7 +426,7 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
       `UPDATE kommentarer
       SET arendeID = ?, innehall = ?, tagged_users = ?, seen = ?
       WHERE id = ?`,
-      [arendeID, innehall, tagged_users, seen]
+      [arendeID, innehall, tagged_users, seen, id]
     );
     res.json({message: `Godkännande with ID ${id} updated successfully`})
   } catch (err) {
