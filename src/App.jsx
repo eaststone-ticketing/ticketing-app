@@ -18,6 +18,7 @@ import EmailTab from './EmailTab.jsx'
 import findTicketAmount from './ArendeTab/findTicketAmount.jsx'
 import ArendeCardFilterPanel from './ArendeTab/ArendeCardFilterPanel.jsx'
 import LeveransTab from './LeveransTab/LeveransTab.jsx'
+import SkapaKyrkogardsgrupp from './KyrkogardTab/SkapaKyrkogardsgrupp.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -196,7 +197,7 @@ async function changeGodkannandeDetails(id, godkannare, data) {
 function appendNameAndDate(innehall){
   const user = JSON.parse(localStorage.getItem('user') )
     const time = new Date();
-    const timestamp = `${time.getFullYear()}-${time.getMonth()}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 10 ? time.getMinutes(): `0${time.getMinutes()}`}`
+    const timestamp = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 10 ? time.getMinutes(): `0${time.getMinutes()}`}`
   if(user){
     const newContent = `\n\n${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}\n${timestamp}`
     return innehall + newContent
@@ -214,7 +215,7 @@ async function addNewKommentar(innehall, id, e) {
   const numberID = Number(id)
   console.log(numberID)
   const tags = JSON.stringify(findTaggedUsers(innehall))
-  const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen:0}
+  const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
   await addKommentarer(kommentar)
   setKommentarer(prevKommentarer => [...prevKommentarer, kommentar]);
   setCurrentKommentar("");
@@ -930,13 +931,13 @@ function KyrkogardForm({kyrkogardar, setKyrkogardar, formData, setFormData}) {
 
 function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
 
-  const [formVisible, setFormVisible] = useState(false)
-  const [activeKyrkogard, setActiveKyrkogard] = useState(null)
-  const [redigering, setRedigering] = useState(false)
-  const [kyrkogardTabState, setKyrkogardTabState] = useState(null)
-  const [searchNamn, setSearchNamn] = useState("")
-  const [searchGrupp, setSearchGrupp] = useState("")
-  const [loadMax, setLoadMax] = useState(50)
+  const [formVisible, setFormVisible] = useState(false);
+  const [activeKyrkogard, setActiveKyrkogard] = useState(null);
+  const [redigering, setRedigering] = useState(false);
+  const [kyrkogardTabState, setKyrkogardTabState] = useState(null);
+  const [searchNamn, setSearchNamn] = useState("");
+  const [searchGrupp, setSearchGrupp] = useState("");
+  const [loadMax, setLoadMax] = useState(50);
 
   async function handleDelete(id) {
   try {
@@ -986,7 +987,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       </form>
   <div className = "kyrkogard-list">
   {[...kyrkogardar].filter(k => k && k.namn && k.namn.includes(searchNamn) && (k.kyrkogard_grupp?.includes(searchGrupp) || searchGrupp === "")).sort((a, b) => a.namn.localeCompare(b.namn)).slice(0,loadMax).map((kyrkogard) => (
-    <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setKyrkogardTabState(kyrkogard.id);}}>
+    <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setKyrkogardTabState(kyrkogard.id); console.log(kyrkogard)}}>
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>
       <div>
@@ -1006,17 +1007,65 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
     </div>
 }
 {kyrkogardTabState === "slaihop" && <SlaIhopMenu kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
+{kyrkogardTabState === "skapagrupp" && <SkapaKyrkogardsgrupp setKyrkogardTabState = {setKyrkogardTabState} kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar}/>}
 {(activeKyrkogard !== null) && <ActiveKyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
 </div>
 }
 
 function OversiktTab({setActiveTab, setActiveArende, arenden}) {
+
+  async function seKommentar(kommentar){
+    if(kommentar.seen === 2){
+      return
+    }
+    const newKommentar =  {...kommentar, seen: Number(1)}
+    try{
+
+    console.log(newKommentar)
+    await updateKommentar(kommentar.id, newKommentar)
+    } catch (err){
+      console.log(err)
+    }
+    setKommentarer(prev =>
+    prev.map(k =>
+      k.id === kommentar.id ? newKommentar : k
+      )
+    )
+  }
+
+  async function arkiveraKommentar(kommentar){
+
+    let number
+
+    if (kommentar.seen === 2){
+      number = Number(1)
+    }
+    else{
+      number = Number(2)
+    }
+    
+    const newKommentar =  {...kommentar, seen: number}
+    try{
+
+    console.log(newKommentar)
+    await updateKommentar(kommentar.id, newKommentar)
+    } catch (err){
+      console.log(err)
+    }
+    setKommentarer(prev =>
+    prev.map(k =>
+      k.id === kommentar.id ? newKommentar : k
+      )
+    )
+  }
+
   const user = JSON.parse(localStorage.getItem('user'))
   const now = new Date();
   const [kommentarer, setKommentarer] = useState(null);
   const [showDetail, setShowDetail] = useState(null);
   const [newPassword, setNewPassword] = useState(null);
   const [passwordChecker, setPasswordChecker] = useState(null);
+  const [activeNotificationTab, setActiveNotificationTab] = useState("dina");
 
   useEffect(() => {
   const fetchKommentarer = async () => {
@@ -1058,16 +1107,20 @@ return <div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
   </div>
   <div>
-  <div className = "feed">
-    <h3>Dina ärenden</h3>
-  </div>
     <div className = "feed-container">
-    {kommentarer?.filter(k => arenden.find(a => k.arendeID === a.id)).map(k => <div className = "feed-card">
-      <div className = "feed-item-container" onClick = {() => setShowDetail(showDetail === k.id ? null: k.id)}>
+      <div className = "notification-feed-tabs">
+        <h4 className = {`notification-tab ${activeNotificationTab === "dina" ? "active" : ""}`} onClick = {() => setActiveNotificationTab("dina")}>Dina notifikationer</h4>
+        <h4 className = {`notification-tab ${activeNotificationTab === "arkiverade" ? "active" : ""}`} onClick = {() => setActiveNotificationTab("arkiverade")}>Arkiverade notifikationer</h4>
+      </div>
+    {(kommentarer ?? []).filter(k => arenden.find(a => k.arendeID === a.id) && 
+    (k.seen !== 2 && activeNotificationTab === "dina") || 
+    (k.seen === 2 && activeNotificationTab === "arkiverade") ).map(k => <div className = "feed-card">
+      <div className = {`feed-item-container ${k.seen === 0 ? "new" : ""}`} onClick = {async () => {setShowDetail(showDetail === k.id ? null: k.id); await seKommentar(k)}}>
       <div className = "feed-item-preview">
-      <p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
+      <p className = "ny-notifikation">{k.seen === 0 ? "Nytt!" : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
       {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
-      {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed" onClick = {() => setShowDetail(showDetail === k.id ? null: k.id)}></IoMdArrowDropdown>}
+      {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed"></IoMdArrowDropdown>}
+      <p className = "arkivera-kommentar" onClick = {(e) =>{e.stopPropagation(); arkiveraKommentar(k)}}>{k.seen === 2 ? "Ta ur arkiv" : "Arkivera"}</p>
       </div>
       {showDetail === k.id && <p><pre className = "pre">{k.innehall}</pre></p>}
       </div>
@@ -1148,7 +1201,7 @@ function App(user) {
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
           {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
           {activeTab === 'Kunder' && <KundTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} arenden = {arenden} kunder = {kunder} setKunder = {setKunder}/>}
-          {activeTab === 'Leveranser' && <LeveransTab/>}
+          {activeTab === 'Leveranser' && <LeveransTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
           {activeTab === 'AdminView' && <AdminView/>}

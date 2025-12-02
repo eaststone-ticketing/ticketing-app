@@ -1,0 +1,81 @@
+.leverans-menu{
+    display:flex;
+    flex-direction:row;
+    gap: 6px;
+}
+
+.leverans-info-sheet{
+    padding: 15px;
+    background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
+    border-radius: 20px;
+    display:flex;
+    flex-direction:row;
+    gap: 15px;
+    width: 855px;
+    justify-content: space-between;
+}
+
+.leverans-innehall{
+    width: 500px;
+}
+
+.leverans-button-panel{
+    padding: 15px;
+    background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
+    border-radius: 20px;
+    display:flex;
+    flex-direction:column;
+    gap: 15px;
+}
+
+.leverans-button-panel button {
+  width: auto;
+  height: 40px;
+  padding: 0px 10px;
+  background-color: rgb(243, 255, 245);
+}
+
+.associated-arende-entry{
+    background-color: rgb(233, 245, 235);
+    width: 300px;
+    border-radius: 15px;
+    font-weight: 500;
+    padding: 2px;
+    padding-left: 10px;
+    margin-bottom:4px;
+}
+
+.associated-arende-entry:hover{
+    filter: brightness(1.02);
+    text-decoration:underline;
+    cursor:pointer;
+}
+
+.aa-menu {
+    display:flex;
+    flex-direction:row;
+    gap: 15px;
+    background-color: rgb(233, 245, 235); 
+    padding: 25px;
+    border-radius: 20px;
+    width: 1060px;
+    height: 1000px;
+}
+
+.aa-menu button{
+    height: 40px;
+}
+
+.associated-arenden-container{
+    margin-top: -25px;
+    padding-left: 25px;
+}
+
+.associated-arenden-field{
+    background-color:rgb(243, 255, 245);  
+    padding: 15px;
+    width: 400px;
+    border-radius: 20px;
+    height: 400px;
+    overflow-y: auto;
+}

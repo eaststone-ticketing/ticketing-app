@@ -7,9 +7,10 @@ import { useState } from 'react'
 
 const leveranser = [
     {
-        idFranLeverantor: "HBQ110324",
+        idFranLeverantor: "HBIEA110324",
         leverantor: "Haobo",
-        contents: ["SB GH002", "PG LS21", "CC LS02"],
+        innehall: ["SB GH002", "PG LS21", "CC LS02"],
+        arenden: [1298],
         status: "Beställd"
     }
 ]
@@ -17,11 +18,14 @@ const leveranser = [
 const leverantorer = [
     {
         namn: "Haobo",
+        kontaktperson: "Liya",
+        email: "liya@haobo.com",
+        land: "Kina",
         bestallningVidMangd: 40
     }
 ]
 
-export default function LeveransTab() {
+export default function LeveransTab({setActiveTab, setActiveArende}) {
 
     const [leverantor, setLeverantor] = useState(null);
     const [leverantorId, setLeverantorId] = useState(null);
@@ -31,7 +35,7 @@ export default function LeveransTab() {
 
     return <div>
         {leverantorView !== null && <LeverantorView setLeverantorView = {setLeverantorView} leverantor = {leverantorView} />}
-        {leveransView !== null && <LeveransView setLeveransView = {setLeveransView} leverans = {leveransView} />}
+        {leveransView !== null && <LeveransView setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setLeveransView = {setLeveransView} leverans = {leveransView} />}
         { (!leveransView && !leverantorView) && <div className = "leverans-header">
         <button><strong>+ Lägg till leverans</strong> </button>
             <div className = "leverans-body">

@@ -133,7 +133,7 @@ const onSubmit = async (data) => {
       </select>
 
       <div>
-        {arendeTypValue !== "Ny sten" && arendeTypValue !== "Välj ärendetyp" && arendeTypValue !== "" && <div> 
+        {arendeTypValue !== "Ny sten" && arendeTypValue !== "Välj ärendetyp" && arendeTypValue !== "" && <div className = "nuvarande-text-input"> 
           {inputField("Nuvarande Text", "nuvarandeText", "text", false)}
         </div> }
       </div>

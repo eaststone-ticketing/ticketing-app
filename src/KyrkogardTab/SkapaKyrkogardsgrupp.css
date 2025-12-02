@@ -1,0 +1,16 @@
+.skapa-kyrkogardsgrupp-menu{
+    display:flex;
+    flex-direction:row;
+    gap: 6px;
+}
+
+.skapa-kyrkogardsgrupp-menu label{
+    margin-right: 6px;
+}
+
+.grupp-kandidat{
+    display:flex;
+    flex-direction:row;
+    gap:6px;
+    justify-items: center;
+}

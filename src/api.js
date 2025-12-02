@@ -225,6 +225,7 @@ export async function getKommentarer() {
                   "Authorization": `Bearer ${await getToken()}`},
                   credentials: 'include'
                  });
+
     if (!res.ok) {
         console.log(`Error: ${res.status} - ${res.statusText}`);
         throw new Error(`Failed to fetch godkannanden: ${res.status} ${res.statusText}`);
@@ -247,7 +248,7 @@ export async function addKommentarer(kommentar) {
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to add kommentar: ${res.statusText}`);
+      throw new Error(`Failed to add kommentar: ${res.statusText} This is the object ${JSON.stringify(kommentar)}`);
     }
 
     const newKommentar = await res.json();
