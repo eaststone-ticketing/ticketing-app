@@ -466,8 +466,16 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Ärende not found" });
     }
 
+    let formName
+
+    if (arende.arendeTyp === "Ny sten") {
+      formName = "form.pdf"
+    } else {
+      formName = "form_ovrigt.pdf"
+    }
+
     // Define the template path
-    const templatePath = path.join(__dirname, "templates", "form.pdf");
+    const templatePath = path.join(__dirname, "templates", formName);
 
     // Log template path
     console.log("Template Path:", templatePath);
@@ -502,6 +510,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     const form = pdfDoc.getForm();
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
 
+    if (arende.arendeTyp === "Ny sten"){
     // Fill in the form fields (you can uncomment your form filling logic here)
     form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
     form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
@@ -516,13 +525,16 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Kvarter").setText(arende.kvarter || "");
     form.getTextField("Platsnummer").setText(arende.gravnummer || "");
     form.getTextField("Model").setText(arende.modell || "");
+    form.getTextField("Granit").setText(arende.material || "");
     form.getTextField("Typsnitt").setText(arende.typsnitt || "");
+    form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
     form.getTextField("Dekor").setText(arende.dekor || "");
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
     form.getTextField("Totalpris").setText(arende.pris || "");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
+    form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || "");
 
     // Handle checkboxes
     if (arende.sockel) form.getCheckBox("Check Box16").check();
@@ -530,8 +542,44 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.GRO) form.getCheckBox("Check Box20").check();
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
-    if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box23").check();
+    if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
+    }
 
+    else {
+      form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
+      form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
+      form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
+      form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
+      form.getTextField("Adress").setText(arende.adress || "");
+      form.getTextField("Postadress").setText(arende.ort || "");
+      form.getTextField("Post Nr").setText(arende.postnummer || "");
+      form.getTextField("Telefon").setText(arende.tel || "");
+      form.getTextField("Epost").setText(arende.email || "");
+      form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
+      form.getTextField("Kvarter").setText(arende.kvarter || "");
+      form.getTextField("Platsnummer").setText(arende.gravnummer || "");
+      form.getTextField("Granit").setText(arende.material || "");
+      form.getTextField("Typsnitt").setText(arende.typsnitt || "");
+      form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
+      form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
+      form.getTextField("Dekor").setText(arende.dekor || "");
+      form.getTextField("Tillbehor").setText(arende.tillbehor || "");
+      form.getTextField("Totalpris").setText(arende.pris || "");
+      form.getTextField("Datum").setText(arende.datum || "");
+      form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || "");
+
+      //Handle checkboxes
+      if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
+      if (arende.GRO) form.getCheckBox("Check Box20").check();
+
+      if (arende.arendeTyp === "Nyinskription") form.getCheckBox("Check Box18").check();
+      if (arende.arendeTyp === "Rengöring") form.getCheckBox("Check Box5").check();
+      if (arende.arendeTyp === "Stabilisering") form.getCheckBox("Check Box6").check();
+      if (arende.arendeTyp === "Förgyllning") form.getCheckBox("Check Box7").check();
+
+      if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
+      if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
+    }
     // Save the filled PDF
     let filledPdfBytes;
     try {
