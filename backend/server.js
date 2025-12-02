@@ -525,7 +525,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Kvarter").setText(arende.kvarter || "");
     form.getTextField("Platsnummer").setText(arende.gravnummer || "");
     form.getTextField("Model").setText(arende.modell || "");
-    form.getTextField("Granit").setText(arende.material || "");
     form.getTextField("Typsnitt").setText(arende.typsnitt || "");
     form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
     form.getTextField("Dekor").setText(arende.dekor || "");
@@ -558,7 +557,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
       form.getTextField("Kvarter").setText(arende.kvarter || "");
       form.getTextField("Platsnummer").setText(arende.gravnummer || "");
-      form.getTextField("Granit").setText(arende.material || "");
       form.getTextField("Typsnitt").setText(arende.typsnitt || "");
       form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
       form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
