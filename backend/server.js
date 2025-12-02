@@ -60,7 +60,8 @@ await db.exec(`
     telefonnummer TEXT,
     address TEXT,
     ort TEXT,
-    postnummer INTEGER
+    postnummer INTEGER,
+    kyrkogard_grupp TEXT
   );
 `);
 
@@ -144,12 +145,12 @@ await db.exec(`
 
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
-    const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
+    const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
 
     const result = await db.run(`
-        INSERT INTO kyrkogardar (namn, kontaktperson, email, telefonnummer, address, ort, postnummer)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer]);
+        INSERT INTO kyrkogardar (namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp]);
 
     const newKyrkogard = {
         id: result.lastID,
@@ -159,7 +160,8 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
         telefonnummer,
         address,
         ort,
-        postnummer
+        postnummer,
+        kyrkogard_grupp
     };
 
     res.json(newKyrkogard);
@@ -339,14 +341,14 @@ app.delete("/kommentarer/:id", authenticateToken, async(req, res) => {
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer } = req.body;
+  const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
 
   try {
     await db.run(
       `UPDATE kyrkogardar 
-       SET namn = ?, kontaktperson = ?, email = ?, telefonnummer = ?, address = ?, ort = ?, postnummer = ?
+       SET namn = ?, kontaktperson = ?, email = ?, telefonnummer = ?, address = ?, ort = ?, postnummer = ?, kyrkogard_grupp = ?
        WHERE id = ?`,
-      [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, id]
+      [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, id]
     );
 
     res.json({ message: `Kyrkogård with ID ${id} updated successfully` });
