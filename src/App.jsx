@@ -234,76 +234,76 @@ function findTaggedUsers(comment) {
 }
 
 
-async function handleStatusChange(approver) {
-  let newStatus = activeArende.status;
+async function handleStatusChange(approver, arende) {
+  let newStatus = arende.status;
 
   if (approver === "kund") {
-    if (activeArende.status === "Nytt") {
+    if (arende.status === "Nytt") {
       newStatus = "Godkänd av kund";
-      await addDefaultGodkannande(activeArende.id, "kund");
+      await addDefaultGodkannande(arende.id, "kund");
       setVisaKundG(true);
-    } else if (activeArende.status === "Godkänd av kund") {
+    } else if (arende.status === "Godkänd av kund") {
       newStatus = "Nytt";
-      await findAndRemoveGodkannande(activeArende.id, "kund");
+      await findAndRemoveGodkannande(arende.id, "kund");
       setVisaKundG(false);
-    } else if (activeArende.status === "Godkänd av kyrkogård") {
+    } else if (arende.status === "Godkänd av kyrkogård") {
       newStatus = "Redo";
-      await addDefaultGodkannande(activeArende.id, "kund");
+      await addDefaultGodkannande(arende.id, "kund");
       setVisaKundG(true);
-    } else if (activeArende.status === "Redo") {
+    } else if (arende.status === "Redo") {
       newStatus = "Godkänd av kyrkogård";
-      await findAndRemoveGodkannande(activeArende.id, "kund");
+      await findAndRemoveGodkannande(arende.id, "kund");
       setVisaKundG(false);
-    } else if ( activeArende.status ==="Godkänd av kyrkogård, väntar svar av kund"){
+    } else if ( arende.status ==="Godkänd av kyrkogård, väntar svar av kund"){
       newStatus = "Redo";
-      await addDefaultGodkannande(activeArende.id, "kund")
-    } else if (activeArende.status ==="Godkänd av kund, väntar svar av kyrkogård"){
+      await addDefaultGodkannande(arende.id, "kund")
+    } else if (arende.status ==="Godkänd av kund, väntar svar av kyrkogård"){
       newStatus = "Väntar svar av kyrkogård";
-      await findAndRemoveGodkannande(activeArende.id, "kund")
-    } else if (activeArende.status ==="Väntar svar av kund och kyrkogård"){
+      await findAndRemoveGodkannande(arende.id, "kund")
+    } else if (arende.status ==="Väntar svar av kund och kyrkogård"){
       newStatus = "Godkänd av kund, väntar svar av kyrkogård"
-      await addDefaultGodkannande(activeArende.id, "kund")
-    }  else if (activeArende.status === "Väntar svar av kyrkogård") {
+      await addDefaultGodkannande(arende.id, "kund")
+    }  else if (arende.status === "Väntar svar av kyrkogård") {
       newStatus = "Godkänd av kund, väntar svar av kyrkogård"
-      await addDefaultGodkannande(activeArende.id, "kund")
-    } else if (activeArende.status === "Väntar svar av kund") {
+      await addDefaultGodkannande(arende.id, "kund")
+    } else if (arende.status === "Väntar svar av kund") {
       newStatus = "Godkänd av kund"
-      await addDefaultGodkannande(activeArende.id, "kund")
+      await addDefaultGodkannande(arende.id, "kund")
     }
   }
 
   if (approver === "kyrkogård") {
-    if (activeArende.status === "Nytt") {
+    if (arende.status === "Nytt") {
       newStatus = "Godkänd av kyrkogård";
-      await addDefaultGodkannande(activeArende.id, "kyrkogård");
+      await addDefaultGodkannande(arende.id, "kyrkogård");
       setVisaKyrkogardG(true);
-    } else if (activeArende.status === "Godkänd av kyrkogård") {
+    } else if (arende.status === "Godkänd av kyrkogård") {
       newStatus = "Nytt";
-      await findAndRemoveGodkannande(activeArende.id, "kyrkogård");
+      await findAndRemoveGodkannande(arende.id, "kyrkogård");
       setVisaKyrkogardG(false);
-    } else if (activeArende.status === "Godkänd av kund") {
+    } else if (arende.status === "Godkänd av kund") {
       newStatus = "Redo";
-      await addDefaultGodkannande(activeArende.id, "kyrkogård");
+      await addDefaultGodkannande(arende.id, "kyrkogård");
       setVisaKyrkogardG(true);
-    } else if (activeArende.status === "Redo") {
+    } else if (arende.status === "Redo") {
       newStatus = "Godkänd av kund";
-      await findAndRemoveGodkannande(activeArende.id, "kyrkogård");
+      await findAndRemoveGodkannande(arende.id, "kyrkogård");
       setVisaKyrkogardG(false);
-    } else if (activeArende.status ==="Godkänd av kund, väntar svar av kyrkogård"){
+    } else if (arende.status ==="Godkänd av kund, väntar svar av kyrkogård"){
       newStatus = "Redo";
-      await addDefaultGodkannande(activeArende.id, "kyrkogård")
-    } else if (activeArende.status ==="Godkänd av kyrkogård, väntar svar av kund"){
+      await addDefaultGodkannande(arende.id, "kyrkogård")
+    } else if (arende.status ==="Godkänd av kyrkogård, väntar svar av kund"){
       newStatus = "Väntar svar av kund";
-      await findAndRemoveGodkannande(activeArende.id, "kyrkogård")
-    } else if (activeArende.status ==="Väntar svar av kund och kyrkogård"){
+      await findAndRemoveGodkannande(arende.id, "kyrkogård")
+    } else if (arende.status ==="Väntar svar av kund och kyrkogård"){
       newStatus = "Godkänd av kyrkogård, väntar svar av kund"
-      await addDefaultGodkannande(activeArende.id, "kyrkogård")
-    } else if (activeArende.status === "Väntar svar av kyrkogård") {
+      await addDefaultGodkannande(arende.id, "kyrkogård")
+    } else if (arende.status === "Väntar svar av kyrkogård") {
       newStatus = "Godkänd av kyrkogård"
-      await addDefaultGodkannande(activeArende.id, "kyrkogård")
-    } else if (activeArende.status === "Väntar svar av kund") {
+      await addDefaultGodkannande(arende.id, "kyrkogård")
+    } else if (arende.status === "Väntar svar av kund") {
       newStatus = "Godkänd av kyrkogård, väntar svar av kund"
-      await addDefaultGodkannande(activeArende.id, "kyrkogård")
+      await addDefaultGodkannande(arende.id, "kyrkogård")
     }
   }
 
@@ -388,13 +388,22 @@ async function handleStatusChange(approver) {
                 Ny sten
               </option>
               <option>
-                Stabilisering
-              </option>
-              <option>
                 Nyinskription
               </option>
               <option>
+                Stabilisering
+              </option>
+              <option>
+                Rengöring
+              </option>
+              <option>
                 Inspektering
+              </option>
+              <option>
+                Ommålning
+              </option>
+              <option>
+                Övrigt
               </option>
             </select>
             </div>
@@ -463,7 +472,19 @@ async function handleStatusChange(approver) {
               {showMore !== arende.id && <IoMdArrowDropright className = "dropdown-arrow" onClick = {() => {setShowMore(arende.id)}}/>}
               {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
               </div>
+              <div className = "arende-typ-checkboxes-and-header">
               <h4 className = "dense-h4">{arende.arendeTyp}</h4>
+              {(arende.arendeTyp === "Ny sten" || arende.arendeTyp === "Nyinskription") && <div className = "arende-typ-checkboxes">
+              <div>
+              <label>Kund</label>
+              <input type = "checkbox"></input>
+              </div>
+              <div>
+              <label>Kyrkogård</label>
+              <input type = "checkbox"></input>
+              </div>
+              </div>}
+              </div>
               <ArendeCardButtons arende = {arende} updateArendeStatus = {updateArendeStatus}/>
               {showMore === arende.id && <div>
               <p><strong>{arende.status}</strong></p>
@@ -512,6 +533,7 @@ async function handleStatusChange(approver) {
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
+        <button onClick = {() => setArendeDetailState("bestallningar")}>Att beställa</button>
         </div>
         {arendeDetailState === "oversikt" && <div>
         <div className = "arende-detail-main">
@@ -525,6 +547,7 @@ async function handleStatusChange(approver) {
         <p><strong>ID:</strong> {activeArende.id}</p>
         </div>
         <div className = "arende-checkboxes-container">
+          {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <div>
           <div className = "arende-checkboxes">
           <label><strong>Godkänd av kund</strong></label>
           <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kund, väntar svar av kyrkogård"}  onChange = {()=> handleStatusChange("kund")}></input>
@@ -535,6 +558,7 @@ async function handleStatusChange(approver) {
           <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård")}></input>
           </div>
           <div className = "godkannande-info">{activeGodkannanden && displayGodkannande(activeGodkannanden, "kyrkogård")}</div>
+          </div>}
         <div>
         </div>
         {!oversiktEdit && <div>
@@ -704,6 +728,9 @@ async function handleStatusChange(approver) {
           </div>}
         {arendeDetailState === "historik" && <div className = "historik-container">
           <p>Historik kommer finnas här</p>
+          </div>}
+        {arendeDetailState === "bestallningar" && <div>
+          <p>pp</p>
           </div>}
         </div>
         </div>}
@@ -986,7 +1013,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       </div>
       </form>
   <div className = "kyrkogard-list">
-  {[...kyrkogardar].filter(k => k && k.namn && k.namn.includes(searchNamn) && (k.kyrkogard_grupp?.includes(searchGrupp) || searchGrupp === "")).sort((a, b) => a.namn.localeCompare(b.namn)).slice(0,loadMax).map((kyrkogard) => (
+  {[...kyrkogardar].filter(k => k && k.namn && k.namn.toLowerCase().includes(searchNamn.toLowerCase()) && (k.kyrkogard_grupp?.toLowerCase().includes(searchGrupp.toLowerCase()) || searchGrupp === "")).sort((a, b) => (a.namn ?? "").localeCompare((b.namn ?? ""))).slice(0,loadMax).map((kyrkogard) => (
     <div key={kyrkogard.id} className="kyrkogard-card" onClick={() => {setActiveKyrkogard(kyrkogard); setKyrkogardTabState(kyrkogard.id); console.log(kyrkogard)}}>
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>

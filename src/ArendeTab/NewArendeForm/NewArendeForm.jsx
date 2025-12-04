@@ -128,8 +128,9 @@ const onSubmit = async (data) => {
         <option>Nyinskription</option>
         <option>Stabilisering</option>
         <option>Rengöring</option>
-        <option>Inspektion</option>
+        <option>Inspektering</option>
         <option>Ommålning</option>
+        <option>Övrigt</option>
       </select>
 
       <div>

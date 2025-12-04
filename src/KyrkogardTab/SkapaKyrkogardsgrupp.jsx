@@ -24,9 +24,7 @@ export default function SkapaKyrkogardsgrupp({setKyrkogardTabState, kyrkogardar,
             setKyrkogardar(updatedKyrkogardar)
         }
     }
-
-    return <div className = "skapa-kyrkogardsgrupp-menu">
-        
+    return <div className = "skapa-kyrkogardsgrupp-menu">   
         <div>
             <button onClick = {() => setKyrkogardTabState(null)}>Tillbaka</button>
             <form>

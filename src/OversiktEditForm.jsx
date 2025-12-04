@@ -55,7 +55,7 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
                 <label><strong>Kyrkogård:</strong></label>
                 <select onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "kyrkogard">
                     <option>{arende.kyrkogard}</option>
-                    {[...kyrkogardar].sort((a,b) => a.namn.localeCompare(b.namn)).map(k => <option>{k.namn}</option>)}
+                    {[...kyrkogardar].sort((a,b) => (a.namn ?? "").localeCompare((b.namn ?? ""))).map(k => <option>{k.namn}</option>)}
                 </select>
             </div>
             <div className = "edit-form-entry">
