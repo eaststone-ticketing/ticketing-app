@@ -660,7 +660,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
     // Set response headers for PDF download
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=${arende.avlidenNamn ?? "undefined"}.pdf`);
+    res.setHeader("Content-Disposition", `attachment; filename="${(arende.avlidenNamn ?? "undefined").replace(/"/g, "'")}.pdf"`);
 
     // Send the PDF as response
     res.send(Buffer.from(filledPdfBytes));
