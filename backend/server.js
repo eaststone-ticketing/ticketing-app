@@ -143,6 +143,17 @@ await db.exec(`
   );
 `);
 
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS leveranser (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    namn TEXT,
+    leverantor TEXT,
+    innehall TEXT,
+    arenden TEXT,
+    status TEXT
+  );
+`);
+
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
@@ -268,6 +279,25 @@ app.post("/kommentarer", authenticateToken, async(req,res) => {
   res.json(newKommentar)
 })
 
+app.post("/leveranser", authenticateToken, async(req,res) => {
+  const {namn, leverantor, innehall, arenden, status} = req.body;
+  const result = await db.run(`
+    INSERT INTO leveranser(namn, leverantor, innehall, arenden, status)
+    VALUES(?,?,?,?,?)
+    `,[namn, leverantor, JSON.stringify(innehall), JSON.stringify(arenden), status])
+  const newLeverans = {
+    id: result.lastID,
+    namn, 
+    leverantor, 
+    innehall, 
+    arenden, 
+    status
+  };
+
+  res.json(newLeverans)
+})
+
+
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const kyrkogardar = await db.all("SELECT * FROM kyrkogardar");
     res.json(kyrkogardar);
@@ -298,6 +328,17 @@ app.get("/users", authenticateToken, async (req, res) => {
     res.json(users);
 });
 
+app.get("/leveranser", authenticateToken, async (req, res) => {
+  const rows = await db.all("SELECT * FROM leveranser");
+
+  const leveranser = rows.map(row => ({
+    ...row,
+    innehall: JSON.parse(row.innehall || "[]"),
+    arenden: JSON.parse(row.arenden || "[]")
+  }));
+
+  res.json(leveranser);
+});
 
 app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
@@ -337,6 +378,14 @@ app.delete("/kommentarer/:id", authenticateToken, async(req, res) => {
   await db.run ("DELETE FROM kommentarer WHERE id = ?", id);
 
   res.json({message: `Kommentar with ID ${id} deleted`  })
+})
+
+app.delete("/leveranser/:id", authenticateToken, async(req, res) => {
+  const {id} = req.params;
+
+  await db.run ("DELETE FROM leveranser WHERE id = ?", id);
+
+  res.json({message: `Leverans with ID ${id} deleted`  })
 })
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
@@ -430,12 +479,31 @@ app.put("/kommentarer/:id", authenticateToken, async (req, res) => {
       WHERE id = ?`,
       [arendeID, innehall, tagged_users, seen, id]
     );
-    res.json({message: `Godkännande with ID ${id} updated successfully`})
+    res.json({message: `Kommentar with ID ${id} updated successfully`})
   } catch (err) {
     console.error(err);
     res.status(500).json({error: "Failed to update kommentarer"})
   }
 });
+
+app.put("/leveranser/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  const{namn, leverantor, innehall, arenden, status} = req.body;
+
+  try {
+    await db.run(
+      `UPDATE leveranser
+      SET namn = ?, leverantor = ?, innehall = ?, arenden = ?, status = ?
+      WHERE id = ?`,
+      [namn, leverantor, JSON.stringify(innehall), JSON.stringify(arenden), status, id]
+    );
+    res.json({message: `Leverans with ID ${id} updated successfully`})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Failed to update leveranser"})
+  }
+});
+
 
 app.put("/users/:id", authenticateToken, async (req, res) => {
   const {id} = req.params;

@@ -228,7 +228,7 @@ export async function getKommentarer() {
 
     if (!res.ok) {
         console.log(`Error: ${res.status} - ${res.statusText}`);
-        throw new Error(`Failed to fetch godkannanden: ${res.status} ${res.statusText}`);
+        throw new Error(`Failed to fetch kommentarer: ${res.status} ${res.statusText}`);
     }
     const newToken = res.headers.get("Authorization");
     if (newToken && newToken.startsWith("Bearer ")) {
@@ -259,9 +259,61 @@ export async function addKommentarer(kommentar) {
   }
 }
 
-
 export async function removeKommentarer(id) {
     const res = await fetch (`${API_URL}/kommentarer/${id}`, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function getLeveranser() {
+    const res = await fetch (`${API_URL}/leveranser`, {
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                  credentials: 'include'
+                 });
+
+    if (!res.ok) {
+        console.log(`Error: ${res.status} - ${res.statusText}`);
+        throw new Error(`Failed to fetch leveranser: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function addLeveranser(leverans) {
+  try {
+    const res = await fetch(`${API_URL}/leveranser`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include',
+      body: JSON.stringify(leverans),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to add leverans: ${res.statusText} This is the object ${JSON.stringify(leverans)}`);
+    }
+
+    const newLeverans = await res.json();
+    return newLeverans;
+  } catch (error) {
+    console.error("Error adding leverans:", error);
+    throw error;  // You can re-throw or handle the error here
+  }
+}
+
+export async function removeLeveranser(id) {
+    const res = await fetch (`${API_URL}/leveranser/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json",
                   "Authorization": `Bearer ${await getToken()}`},
