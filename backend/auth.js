@@ -36,11 +36,14 @@ router.post("/login", async(req, res) => {
     );
 
     // Set the refresh token in a cookie (HttpOnly cookie, secure and sameSite are important for security)
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,  // Cannot be accessed by JavaScript, only sent with requests to your server
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
       secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days expiration for refresh token
+      sameSite: "none",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
+
 
     res.json({
       token,
