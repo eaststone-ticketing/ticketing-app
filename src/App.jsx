@@ -306,16 +306,19 @@ async function handleStatusChange(approver, arende) {
       await addDefaultGodkannande(arende.id, "kyrkogård")
     }
   }
-
-  setActiveArende(prev => ({ ...prev, status: newStatus }));
-  await updateArende(activeArende.id, { status: newStatus });
+  
+  if (activeArende){
+  setActiveArende(prev => ({ ...prev, status: newStatus }));}
+  await updateArende(arende.id, { status: newStatus });
 
   const data = await getArenden();
   setArenden(data);
 
+  if (activeArende){
+
   // Refresh godkannanden for display
   const updatedGodk = await getGodkannanden();
-  setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id));
+  setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id));}
 }
 
   const result = arenden.filter((arende) => {
@@ -477,11 +480,11 @@ async function handleStatusChange(approver, arende) {
               {(arende.arendeTyp === "Ny sten" || arende.arendeTyp === "Nyinskription") && <div className = "arende-typ-checkboxes">
               <div>
               <label>Kund</label>
-              <input type = "checkbox"></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onClick = {() => handleStatusChange("kund", arende)}></input>
               </div>
               <div>
               <label>Kyrkogård</label>
-              <input type = "checkbox"></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onClick = {() => handleStatusChange("kyrkogard", arende)}></input>
               </div>
               </div>}
               </div>
@@ -550,12 +553,12 @@ async function handleStatusChange(approver, arende) {
           {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <div>
           <div className = "arende-checkboxes">
           <label><strong>Godkänd av kund</strong></label>
-          <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kund, väntar svar av kyrkogård"}  onChange = {()=> handleStatusChange("kund")}></input>
+          <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kund, väntar svar av kyrkogård"}  onChange = {()=> handleStatusChange("kund", activeArende)}></input>
           </div>
           <div className = "godkannande-info">{activeGodkannanden && displayGodkannande(activeGodkannanden, "kund")}</div>
           <div className = "arende-checkboxes">
           <label><strong>Godkänd av kyrkogård</strong></label>
-          <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård")}></input>
+          <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård", activeArende)}></input>
           </div>
           <div className = "godkannande-info">{activeGodkannanden && displayGodkannande(activeGodkannanden, "kyrkogård")}</div>
           </div>}
@@ -709,11 +712,11 @@ async function handleStatusChange(approver, arende) {
           )}
           <div className = "arende-checkboxes">
           <label><strong>Godkänd av kund</strong></label>
-          <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt"}  onChange = {()=> handleStatusChange("kund")}></input>
+          <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt"}  onChange = {()=> handleStatusChange("kund", activeArende)}></input>
           </div>          
           <div className = "arende-checkboxes">
           <label><strong>Godkänd av kyrkogård</strong></label>
-          <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt"} onChange = { () => handleStatusChange("kyrkogård")}></input>
+          <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt"} onChange = { () => handleStatusChange("kyrkogård", activeArende)}></input>
           </div>
           </div>}
         {arendeDetailState === "kommentarer" && <div className = "kommentar-container">
