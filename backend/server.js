@@ -672,7 +672,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 });
 
 app.post("/refresh-token", async (req, res) => {
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.sendStatus(401);
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
