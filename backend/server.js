@@ -154,6 +154,15 @@ await db.exec(`
   );
 `);
 
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS komponenter (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    arendeID INTEGER,
+    leveransID INTEGER,
+    body TEXT
+    )
+  `
+)
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
@@ -297,6 +306,22 @@ app.post("/leveranser", authenticateToken, async(req,res) => {
   res.json(newLeverans)
 })
 
+app.post("/komponenter", authenticateToken, async(req, res) => {
+  const {arendeID, leveransID, body} = req.body;
+  const result = await db.run(`
+    INSERT INTO komponenter(arendeID, leveransID, body)
+    VALUES(?,?,?)
+    `, [arendeID, leveransID, JSON.stringify(body)])
+    const newKomponent = {
+      id: result.lastID,
+      arendeID,
+      leveransID,
+      body
+    };
+    
+    res.json(newKomponent)
+})
+
 
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const kyrkogardar = await db.all("SELECT * FROM kyrkogardar");
@@ -339,6 +364,17 @@ app.get("/leveranser", authenticateToken, async (req, res) => {
 
   res.json(leveranser);
 });
+
+app.get("/komponenter", authenticateToken, async (req, res) => {
+  const rows = await db.all("SELECT * FROM komponenter")
+
+  const komponenter = rows.map(row => ({
+    ...row,
+    body: JSON.parse(row.body || "{}")
+  }));
+
+  res.json(komponenter)
+})
 
 app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
@@ -386,6 +422,14 @@ app.delete("/leveranser/:id", authenticateToken, async(req, res) => {
   await db.run ("DELETE FROM leveranser WHERE id = ?", id);
 
   res.json({message: `Leverans with ID ${id} deleted`  })
+})
+
+app.delete("/komponenter/:id", authenticateToken, async(req, res) => {
+  const {id} = req.params;
+
+  await db.run ("DELETE FROM komponenter WHERE id = ?", id);
+
+  res.json({message: `Leverans with ID ${id} deleted`})
 })
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
@@ -503,6 +547,24 @@ app.put("/leveranser/:id", authenticateToken, async (req, res) => {
     res.status(500).json({error: "Failed to update leveranser"})
   }
 });
+
+app.put("/komponenter/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  const {arendeID, leveransID, body} = req.body;
+
+  try {
+    await db.run(
+      `UPDATE komponenter
+      SET arendeID = ?, leveransID = ?, body = ?
+      WHERE id = ?`,
+      [arendeID, leveransID, JSON.stringify(body), id]
+    );
+    res.json({message: `Komponent with ID ${id} updated successfully`})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Failed to update komponenter"})
+  }
+})
 
 
 app.put("/users/:id", authenticateToken, async (req, res) => {
@@ -658,7 +720,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       return res.status(500).json({ error: "Failed to save filled PDF" });
     }
 
-    // Set response headers for PDF download
+     // Set response headers for PDF download
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${(arende.avlidenNamn ?? "undefined").replace(/"/g, "'")}.pdf"`);
 
