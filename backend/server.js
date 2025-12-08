@@ -322,6 +322,20 @@ app.post("/komponenter", authenticateToken, async(req, res) => {
     res.json(newKomponent)
 })
 
+app.post("/traces", authenticateToken, async(req, res) => {
+const {arendeID, body} = req.body;
+const result = await db.run(`
+  INSERT INTO traces(arendeID, body)
+  VALUES(?,?)
+  `, [arendeID, body])
+  const newTrace = {
+    id: result.lastID,
+    arendeID,
+    body
+  };
+
+  res.json(newTrace)
+})
 
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const kyrkogardar = await db.all("SELECT * FROM kyrkogardar");
@@ -376,6 +390,11 @@ app.get("/komponenter", authenticateToken, async (req, res) => {
   res.json(komponenter)
 })
 
+app.get("/traces", authenticateToken, async (req, res) => {
+    const traces = await db.all("SELECT * FROM traces");
+    res.json(traces);
+});
+
 app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
 
@@ -428,6 +447,14 @@ app.delete("/komponenter/:id", authenticateToken, async(req, res) => {
   const {id} = req.params;
 
   await db.run ("DELETE FROM komponenter WHERE id = ?", id);
+
+  res.json({message: `Leverans with ID ${id} deleted`})
+})
+
+app.delete("/traces/:id", authenticateToken, async(req, res) => {
+  const {id} = req.params;
+
+  await db.run ("DELETE FROM traces WHERE id = ?", id);
 
   res.json({message: `Leverans with ID ${id} deleted`})
 })
@@ -563,6 +590,24 @@ app.put("/komponenter/:id", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({error: "Failed to update komponenter"})
+  }
+})
+
+app.put("/traces/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  const {arendeID, body} = req.body;
+
+  try {
+    await db.run(
+      `UPDATE traces
+      SET arendeID = ?, leveransID = ?, body = ?
+      WHERE id = ?`,
+      [arendeID, body, id]
+    );
+    res.json({message: `Trace with ID ${id} updated successfully`})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Failed to update traces"})
   }
 })
 
