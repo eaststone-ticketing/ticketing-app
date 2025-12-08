@@ -164,6 +164,14 @@ await db.exec(`
   `
 )
 
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS traces (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  arendeID INTEGER,
+  body TEXT
+  )
+  `)
+
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
 
