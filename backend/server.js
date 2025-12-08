@@ -608,7 +608,7 @@ app.put("/traces/:id", authenticateToken, async (req, res) => {
   try {
     await db.run(
       `UPDATE traces
-      SET arendeID = ?, leveransID = ?, body = ?
+      SET arendeID = ?, body = ?
       WHERE id = ?`,
       [arendeID, body, id]
     );
