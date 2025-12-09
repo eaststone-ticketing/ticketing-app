@@ -1,0 +1,8 @@
+.trace-container{
+    background-image:
+        linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 400px;
+    border-radius: 15px;
+}

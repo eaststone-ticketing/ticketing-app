@@ -325,6 +325,116 @@ export async function removeLeveranser(id) {
     return res.json();
 }
 
+
+export async function getKomponenter() {
+    const res = await fetch (`${API_URL}/komponenter`, {
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                  credentials: 'include'
+                 });
+
+    if (!res.ok) {
+        console.log(`Error: ${res.status} - ${res.statusText}`);
+        throw new Error(`Failed to fetch komponenter: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function addKomponenter(komponent) {
+  try {
+    const res = await fetch(`${API_URL}/komponenter`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include',
+      body: JSON.stringify(komponent),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to add komponent: ${res.statusText} This is the object ${JSON.stringify(komponent)}`);
+    }
+
+    const newKomponent = await res.json();
+    return newKomponent;
+  } catch (error) {
+    console.error("Error adding komponent:", error);
+    throw error;  
+  }
+}
+
+export async function removeKomponenter(id) {
+    const res = await fetch (`${API_URL}/komponenter/${id}`, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+
+export async function getTraces() {
+    const res = await fetch (`${API_URL}/traces`, {
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                  credentials: 'include'
+                 });
+
+    if (!res.ok) {
+        console.log(`Error: ${res.status} - ${res.statusText}`);
+        throw new Error(`Failed to fetch traces: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function addTraces(trace) {
+  try {
+    const res = await fetch(`${API_URL}/traces`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include',
+      body: JSON.stringify(trace),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to add trace: ${res.statusText} This is the object ${JSON.stringify(trace)}`);
+    }
+
+    const newTrace = await res.json();
+    return newTrace;
+  } catch (error) {
+    console.error("Error adding trace:", error);
+    throw error;  
+  }
+}
+
+export async function removeTraces(id) {
+    const res = await fetch (`${API_URL}/traces/${id}`, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+
+
 export async function updateGodkannande(id,data) {
     const res = await fetch(`${API_URL}/godkannanden/${id}`, {
     method: "PUT",
@@ -389,6 +499,51 @@ export async function updateKund(id, data) {
 
 export async function updateKommentar(id, data) {
   const res = await fetch(`${API_URL}/kommentarer/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()} `},
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+  return res.json();
+}
+
+export async function updateLeverans(id, data) {
+  const res = await fetch(`${API_URL}/leveranser/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()} `},
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+  return res.json();
+}
+
+export async function updateKomponent(id, data) {
+  const res = await fetch(`${API_URL}/komponenter/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()} `},
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+  return res.json();
+}
+
+export async function updateTrace(id, data) {
+  const res = await fetch(`${API_URL}/traces/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json",
                   "Authorization": `Bearer ${await getToken()} `},

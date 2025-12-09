@@ -61,7 +61,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
                 <button
                 className = "send-button"
                 onClick = {() => 
-                updateArendeStatus("Väntar svar av kyrkogård, väntar svar av kund", arende)}>Skickat skiss →→
+                updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat skiss →→
                 </button>
             </div>}else {
             console.log(`Should tickets of type ${arende.arendeTyp} really have the status ${arende.status}?`)
@@ -76,7 +76,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
                 <button
                 className = "send-button"
                 onClick = {() => 
-                updateArendeStatus("Väntar svar av av kund och kyrkogård", arende)}>Skickat ansökan →→
+                updateArendeStatus("Väntar svar av kund och kyrkogård", arende)}>Skickat ansökan →→
                 </button>
             </div>
         }else {

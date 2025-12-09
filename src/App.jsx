@@ -19,6 +19,9 @@ import findTicketAmount from './ArendeTab/findTicketAmount.jsx'
 import ArendeCardFilterPanel from './ArendeTab/ArendeCardFilterPanel.jsx'
 import LeveransTab from './LeveransTab/LeveransTab.jsx'
 import SkapaKyrkogardsgrupp from './KyrkogardTab/SkapaKyrkogardsgrupp.jsx'
+import ArendeComponentPage from './ArendeTab/ArendeDetailViews/ArendeComponentPage/ArendeComponentPage.jsx'
+import laggTillTrace from './laggTillTrace.jsx'
+import HistorikPage from './ArendeTab/ArendeDetailViews/HistorikView/HistorikPage.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -37,8 +40,6 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
   const [showMore, setShowMore] = useState(null);
   const [filter, setFilter] = useState([]);
   const [godkannandeToEdit, setGodkannandeToEdit] = useState(null);
-  const [visaKundG, setVisaKundG] = useState(true);
-  const [visaKyrkogardG, setVisaKyrkogardG] = useState(true);
   const [newDatum, setNewDatum] = useState(null);
   const [newKalla, setNewKalla] = useState(null);
   const [kommentarer, setKommentarer] = useState(null);
@@ -134,11 +135,18 @@ useEffect(() => {
         await updateArende(arende.id, data)
         const arenden = await getArenden();
         setArenden(arenden);
+        laggTillTrace("återställde ärendet", arende)
       }else {
         const data = {...arende, status: "raderad", deleted_at: new Date().toISOString()}
+        const godkannanden = await getGodkannanden();
+        const toDelete = godkannanden.filter(g => g.arendeID === arende.id);
+
+        // WAIT for all delete requests to finish
+        await Promise.all(toDelete.map(g => removeGodkannande(g.id)));
         await updateArende(arende.id, data)
         const arenden = await getArenden();
-        setArenden(arenden);}
+        setArenden(arenden);
+        laggTillTrace("raderade ärendet", arende)}
     } else {
     }
   }
@@ -151,11 +159,19 @@ function findKyrkogard(arende, kyrkogardar) {
 async function addDefaultGodkannande(id, godkannare){
       const godkannandeData = {arendeID: Number(id), godkannare: godkannare, datum: new Date().toISOString().split('T')[0], kalla: "Email"}
       await addGodkannande(godkannandeData)
+      await laggTillTrace(`lade till godkännande av ${godkannare}`, arenden.find(a => a.id === id))
 }
 
 async function updateArendeStatus(newStatus, arende){
+
+  //Update the status
   const updatedArende = {...arende, status: newStatus};
   await updateArende(arende.id, updatedArende)
+
+  // Add trace
+  await laggTillTrace(`ändrade status till ${newStatus}`, arende)
+
+  //Set the live version to correspond to the database
   const arenden = await getArenden();
   setArenden(arenden)
 }
@@ -165,7 +181,8 @@ async function findAndRemoveGodkannande(id, godkannare){
   const toRemove = godkannanden.find(g => g.arendeID === id && g.godkannare === godkannare)
   if (toRemove){
   await removeGodkannande(toRemove.id)
-  console.log("badabing")}
+  await laggTillTrace(`tog bort godkännande av ${godkannare}`, arenden.find(a => a.id === id))
+}
  
   else {
     console.warn(`No matching godkännande found for ${godkannare} on ärende ${id}`);
@@ -197,7 +214,7 @@ async function changeGodkannandeDetails(id, godkannare, data) {
 function appendNameAndDate(innehall){
   const user = JSON.parse(localStorage.getItem('user') )
     const time = new Date();
-    const timestamp = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 10 ? time.getMinutes(): `0${time.getMinutes()}`}`
+    const timestamp = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 9 ? time.getMinutes(): `0${time.getMinutes()}`}`
   if(user){
     const newContent = `\n\n${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}\n${timestamp}`
     return innehall + newContent
@@ -241,19 +258,19 @@ async function handleStatusChange(approver, arende) {
     if (arende.status === "Nytt") {
       newStatus = "Godkänd av kund";
       await addDefaultGodkannande(arende.id, "kund");
-      setVisaKundG(true);
+
     } else if (arende.status === "Godkänd av kund") {
       newStatus = "Nytt";
       await findAndRemoveGodkannande(arende.id, "kund");
-      setVisaKundG(false);
+
     } else if (arende.status === "Godkänd av kyrkogård") {
       newStatus = "Redo";
       await addDefaultGodkannande(arende.id, "kund");
-      setVisaKundG(true);
+
     } else if (arende.status === "Redo") {
       newStatus = "Godkänd av kyrkogård";
       await findAndRemoveGodkannande(arende.id, "kund");
-      setVisaKundG(false);
+
     } else if ( arende.status ==="Godkänd av kyrkogård, väntar svar av kund"){
       newStatus = "Redo";
       await addDefaultGodkannande(arende.id, "kund")
@@ -276,19 +293,15 @@ async function handleStatusChange(approver, arende) {
     if (arende.status === "Nytt") {
       newStatus = "Godkänd av kyrkogård";
       await addDefaultGodkannande(arende.id, "kyrkogård");
-      setVisaKyrkogardG(true);
     } else if (arende.status === "Godkänd av kyrkogård") {
       newStatus = "Nytt";
       await findAndRemoveGodkannande(arende.id, "kyrkogård");
-      setVisaKyrkogardG(false);
     } else if (arende.status === "Godkänd av kund") {
       newStatus = "Redo";
       await addDefaultGodkannande(arende.id, "kyrkogård");
-      setVisaKyrkogardG(true);
     } else if (arende.status === "Redo") {
       newStatus = "Godkänd av kund";
       await findAndRemoveGodkannande(arende.id, "kyrkogård");
-      setVisaKyrkogardG(false);
     } else if (arende.status ==="Godkänd av kund, väntar svar av kyrkogård"){
       newStatus = "Redo";
       await addDefaultGodkannande(arende.id, "kyrkogård")
@@ -480,11 +493,11 @@ async function handleStatusChange(approver, arende) {
               {(arende.arendeTyp === "Ny sten" || arende.arendeTyp === "Nyinskription") && <div className = "arende-typ-checkboxes">
               <div>
               <label>Kund</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onClick = {() => handleStatusChange("kund", arende)}></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onChange = {() => handleStatusChange("kund", arende)}></input>
               </div>
               <div>
               <label>Kyrkogård</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onClick = {() => handleStatusChange("kyrkogard", arende)}></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onChange = {() => handleStatusChange("kyrkogård", arende)}></input>
               </div>
               </div>}
               </div>
@@ -566,14 +579,13 @@ async function handleStatusChange(approver, arende) {
         </div>
         {!oversiktEdit && <div>
         <div className = "arende-detail">
-        <p><strong>Dödsdatum:</strong> {activeArende.dodsDatum}</p>
-        </div>
-
-        <div className = "arende-detail">
         <p><strong>Födelsedatum:</strong> {activeArende.fodelseDatum}</p>
         </div>
         <div className = "arende-detail">
-        <p><strong>Beställare:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeBestallare(true); setActiveArendeKyrkogard(false)}} > {activeArende.bestallare}</p>
+        <p><strong>Dödsdatum:</strong> {activeArende.dodsDatum}</p>
+        </div>
+        <div className = "arende-detail">
+        <p><strong>Beställare:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeBestallare(!activeArendeBestallare); setActiveArendeKyrkogard(false)}} > {activeArende.bestallare}</p>
         </div>
         <div className = "arende-detail">
         <p><strong>Email:</strong> {activeArende.email}</p>
@@ -582,7 +594,7 @@ async function handleStatusChange(approver, arende) {
         <p><strong>Telefonnummer:</strong> {activeArende.tel}</p>
         </div>
         <div className = "arende-detail">
-        <p><strong>Kyrkogård:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeKyrkogard(true); setActiveArendeBestallare(false); setActiveKyrkogard(kyrkogardar.find(k => k.namn === activeArende.kyrkogard))}}>{activeArende.kyrkogard}</p>
+        <p><strong>Kyrkogård:</strong></p><p className = "arende-detail-kyrkogard-p" onClick = {() => {setActiveArendeKyrkogard(!activeArendeKyrkogard); setActiveArendeBestallare(false); setActiveKyrkogard(kyrkogardar.find(k => k.namn === activeArende.kyrkogard))}}>{activeArende.kyrkogard}</p>
         </div>
         <div className = "arende-detail">
         <p><strong>Kvarter:</strong> {activeArende.kvarter}</p>
@@ -730,11 +742,9 @@ async function handleStatusChange(approver, arende) {
           </form>}
           </div>}
         {arendeDetailState === "historik" && <div className = "historik-container">
-          <p>Historik kommer finnas här</p>
+          <HistorikPage arende = {activeArende}/>
           </div>}
-        {arendeDetailState === "bestallningar" && <div>
-          <p>pp</p>
-          </div>}
+        {arendeDetailState === "bestallningar" && <ArendeComponentPage arende = {activeArende}/>}
         </div>
         </div>}
     </div>

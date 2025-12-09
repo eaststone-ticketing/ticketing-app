@@ -1,0 +1,58 @@
+.main {
+    margin-left: 20px;
+    background-image:
+        linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+    padding: 10px;
+    width: 840px;
+    height:445px;
+    border-radius:15px;
+}
+
+.skapa-komponent-innehall select {
+    width: 200px;
+    margin-right: 50px;
+    margin-top: 15px;
+    max-height:30px;
+    background: rgb(243, 243, 245);
+    border: 3px solid rgb(223, 233, 225);
+    border-radius: 15px;
+    font-family: inherit;
+    margin-bottom: 10px;
+}
+
+.component-entry-field{
+    padding-left:10px;
+    padding-right:10px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+
+    margin-bottom: 14px;
+
+    background-image:
+    linear-gradient(to left, rgb(233,243,235), rgb(243,253,245));
+
+    border-radius:15px;
+}
+
+.skapa-komponent{
+    margin-left: 20px;
+    background-image:
+        linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+    padding: 10px;
+    width: 840px;
+    height:445px;
+    border-radius:15px;
+}
+
+.skapa-komponent-innehall{
+    display:flex;
+    flex-direction: column;
+}
+
+.skapa-komponent-innehall button{
+    width: 100px;
+}
+
+.buttons button{
+    margin-right: 6px;
+}
