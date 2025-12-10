@@ -319,19 +319,27 @@ async function handleStatusChange(approver, arende) {
       await addDefaultGodkannande(arende.id, "kyrkogård")
     }
   }
+
+  setArenden(prev =>
+    prev.map(a =>
+      a.id === arende.id ? { ...a, status: newStatus } : a
+    )
+  );
   
+  //If activeArende is not null, that means we are in the detail view. 
+  //Should still be redone to be more safe
   if (activeArende){
   setActiveArende(prev => ({ ...prev, status: newStatus }));}
-  await updateArende(arende.id, { status: newStatus });
 
-  const data = await getArenden();
-  setArenden(data);
+  updateArende(arende.id, { status: newStatus });
+
+  getArenden().then(data => setArenden(data));
 
   if (activeArende){
 
   // Refresh godkannanden for display
-  const updatedGodk = await getGodkannanden();
-  setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id));}
+  getGodkannanden().then(updatedGodk => setActiveGodkannanden(updatedGodk.filter(g => g.arendeID === activeArende.id)))
+  }
 }
 
   const result = arenden.filter((arende) => {
@@ -493,11 +501,11 @@ async function handleStatusChange(approver, arende) {
               {(arende.arendeTyp === "Ny sten" || arende.arendeTyp === "Nyinskription") && <div className = "arende-typ-checkboxes">
               <div>
               <label>Kund</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onChange = {() => handleStatusChange("kund", arende)}></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kund, väntar svar av kyrkogård"} onChange = {() => handleStatusChange("kund", arende)}></input>
               </div>
               <div>
               <label>Kyrkogård</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status == "LEGACY" || arende.status == "Stängt"} onChange = {() => handleStatusChange("kyrkogård", arende)}></input>
+              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kyrkogård, väntar svar av kund"} onChange = {() => handleStatusChange("kyrkogård", arende)}></input>
               </div>
               </div>}
               </div>
@@ -545,7 +553,7 @@ async function handleStatusChange(approver, arende) {
         <button onClick = {() => {setActiveTab('Ärenden'); setActiveArende(null); setCreateKommentar(false)}}>← Tillbaka till sökfält</button>
         <button onClick = {() => setArendeDetailState("oversikt")}> Översikt</button>
         <button onClick = {() => setArendeDetailState("design")}>Design</button>
-        <button onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
+        <button disabled = {activeArende.arendeTyp !== "Nyinskription" && activeArende.arendeTyp !== "Ny sten"} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
