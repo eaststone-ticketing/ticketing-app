@@ -1,9 +1,9 @@
 import './Entries.css'
 import {useState} from 'react'
 
-export default function BronsEntries({setKomponent}) {
+export default function MarmorEntries({setKomponent}) {
     const [formData, setFormData] = useState({
-        Namn : "",
+        Välj : "",
         leverantor: null
     })
 
@@ -15,8 +15,8 @@ export default function BronsEntries({setKomponent}) {
 
         const entries = [
         {
-            label: "Namn",
-            options: []
+            label: "Välj",
+            options: ["Duva, vit", "Duva, guld", "Duva, brons", "Sparv", "Ängel, stående", "Ängel, sittande", "Ängel, huvud", "Övrigt"]
         }
     ]
         return <div>

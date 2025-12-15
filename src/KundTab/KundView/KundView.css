@@ -1,0 +1,10 @@
+.kund-menu {
+  display:flex;
+  flex-direction:row;
+  gap:6px;
+}
+
+.kund-to-arende-link:hover {
+  text-decoration:underline;
+  cursor: pointer;
+}

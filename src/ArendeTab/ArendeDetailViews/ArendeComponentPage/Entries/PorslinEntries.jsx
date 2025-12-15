@@ -7,7 +7,8 @@ export default function PorslinEntries(){
                 Form : "",
                 Storlek : "",
                 Färg : "",
-                Kant : ""
+                Kant : "",
+                leverantor: null
             })
         
             function handleChange(label, value){

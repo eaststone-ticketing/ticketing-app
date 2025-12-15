@@ -799,7 +799,7 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", authenticateToken, async (req,res) => {
 
-  const alterTableSQL = 'ALTER TABLE kommentarer ADD COLUMN seen INTEGER DEFAULT 0';
+  const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN gravrattsinnehavare TEXT';
 
   db.run(alterTableSQL, (err) => {
       if (err) {
@@ -811,6 +811,7 @@ app.get("/alter-table", authenticateToken, async (req,res) => {
       }
     });
 })
+
 
 
 const PORT = process.env.PORT || 5000;

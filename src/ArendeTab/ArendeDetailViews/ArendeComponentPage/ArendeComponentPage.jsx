@@ -1,11 +1,15 @@
 import './ArendeComponentPage.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {getKomponenter} from '../../../api.js'
 
 import StenEntries from './Entries/StenEntries.jsx'
 import SockelEntries from './Entries/SockelEntries.jsx'
 import PorslinEntries from './Entries/PorslinEntries.jsx'
 import BronsEntries from './Entries/BronsEntries.jsx'
 import VasEntries from './Entries/VasEntries.jsx'
+import LyktaEntries from './Entries/LyktaEntries.jsx'
+import LykthusEntries from './Entries/LykthusEntries.jsx'
+import MarmorEntries from './Entries/MarmorEntries'
 import tilldelaKomponent from './tilldelaKomponent.jsx'
 
 
@@ -16,10 +20,14 @@ function GenerateEntries({type, setKomponent}){
         {type === "Porslinsporträtt" && <PorslinEntries setKomponent = {setKomponent}/>}
         {type === "Brons" && <BronsEntries setKomponent = {setKomponent}/>}
         {type === "Vas" && <VasEntries setKomponent = {setKomponent}/>}
+        {type === "Lykta" && <LyktaEntries setKomponent = {setKomponent}/> }
+        {type === "Lykthus" && <LykthusEntries setKomponent = {setKomponent}/>}
+        {type === "Marmor" && <MarmorEntries setKomponent = {setKomponent}/>}
     </div>
 }
 
 async function addKomponent(komponent, setSkapaKomponent, arende){
+    if (!komponent || Object.keys(komponent).length === 0) return;
     setSkapaKomponent(false)
     await tilldelaKomponent(komponent, arende)
 }
@@ -33,14 +41,25 @@ export default function ArendeComponentPage({arende}) {
     
     const [skapaKomponent, setSkapaKomponent] = useState(null);
     const [typ, setTyp] = useState(null)
-    const [komponent, setKomponent] = useState(null)
+    const [leverantor, setLeverantor] = useState(null)
+    const [komponent, setKomponent] = useState({}) //Komponent att lägga till
+    const [komponenter, setKomponenter] = useState([]) //Lista av redan existerande komponenter
+
+    useEffect(() => {
+            async function loadKomponenter() {
+            const dataKomponenter = await getKomponenter()
+            setKomponenter(dataKomponenter)
+            console.log(dataKomponenter)
+            }
+            loadKomponenter()
+        }, [setKomponent])
 
     return <div>
         {!skapaKomponent && <div className = "main">
         <h3>Att beställa</h3>
         <div className = "component-entry-field">
-        {components.map( c => <div className = "component-entry">
-            <p>{c.namn}</p>
+        {komponenter.map( c => <div className = "component-entry">
+            <p>{c.body.name}</p>
             </div>)}
         </div>
         <button onClick = {() => setSkapaKomponent(true)}><strong>+ Lägg till</strong></button>
@@ -50,25 +69,55 @@ export default function ArendeComponentPage({arende}) {
             <select onChange = {(e) => setTyp(e.target.value)} className = "special-select">
                 <option value = "">Välj typ</option>
                 <option>
-                    Sten
+                    Brons
                 </option>
                 <option>
-                    Sockel
+                    Lykta
+                </option>
+                <option>
+                    Lykthus
+                </option>
+                <option>
+                    Marmor
                 </option>
                 <option>
                     Porslinsporträtt
                 </option>
                 <option>
-                    Brons
+                    Sockel
+                </option>
+                <option>
+                    Sten
                 </option>
                 <option>
                     Vas
                 </option>
             </select>
             <GenerateEntries type = {typ} setKomponent = {setKomponent}/>
+            <select onChange = {(e) => {setLeverantor(e.target.value); console.log(leverantor)}}>
+                <option value = "">Välj leverantör</option>
+                <option>
+                    Haobo
+                </option>
+                <option>
+                    Siedlecki
+                </option>
+                <option>
+                    Paasikivi
+                </option>
+                <option>
+                    Sverige
+                </option>
+            </select>
             <div className = "buttons">
             <button onClick = {() => {setSkapaKomponent(false); setTyp(null)}}><strong>Avbryt</strong></button>
-            <button onClick = {async () => await addKomponent(komponent, setSkapaKomponent, arende)}>Lägg till</button>
+            <button onClick = {async () => {const fullKomponent = {typ: typ, ...komponent, leverantor: leverantor}; 
+                                            console.log(fullKomponent); 
+                                            await addKomponent(fullKomponent, setSkapaKomponent, arende); 
+                                            setKomponent({});
+                                            const updatedKomponenter = await getKomponenter();
+                                            setKomponenter(updatedKomponenter);
+                                            }}>Lägg till</button>
             </div>
             </div>
             </div>}

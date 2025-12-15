@@ -7,7 +7,8 @@ export default function StenEntries({setKomponent}){
         Stentyp : "-",
         Höjd : "",
         Bredd : "",
-        Djup : ""
+        Djup : "",
+        leverantor: null
     })
 
     function handleChange(label, value){

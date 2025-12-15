@@ -6,6 +6,7 @@ export default function VasEntries({setKomponent}) {
         Material : "-",
         Modell : "",
         Storlek : "",
+        leverantor: null
     })
 
     function handleChange(label, value){

@@ -1,9 +1,13 @@
 import './Entries.css'
 import {useState} from 'react'
 
-export default function BronsEntries({setKomponent}) {
+export default function LykthusEntries({setKomponent}) {
     const [formData, setFormData] = useState({
-        Namn : "",
+        Form : "-",
+        Storlek : "",
+        Färg : "",
+        Glasfärg : "",
+        Glasmönster : "",
         leverantor: null
     })
 
@@ -15,8 +19,29 @@ export default function BronsEntries({setKomponent}) {
 
         const entries = [
         {
-            label: "Namn",
-            options: []
+            label: "Form",
+            options: ["Valvram", 
+            "Gotisk", 
+            "Fyrkant", 
+            "Oval", 
+            "Hjärta", 
+            "Övrigt"]
+        },
+        {
+            label: "Storlek",
+            options: ["Mini 12 bred 24/25 h", "Liten 14 bred 32/33 h", "Normal 18 bred 37/38 h", "18 cm oval", "18 cm hjärta", "21 cm hjärta", "Övrigt"]
+        },
+        {
+            label: "Färg",
+            options: ["Ljus hållbarhetslackerad", "Guldpläterad", "Silver blank", "Silver kulblästrad", "Mörkpatinerad", "Övrigt"]
+        },
+        {
+            label: "Glasfärg",
+            options: ["Klart", "Gul"]
+        },
+        {
+            label: "Glasmönster",
+            options: ["Slätt", "Mönstrat"]
         }
     ]
         return <div>

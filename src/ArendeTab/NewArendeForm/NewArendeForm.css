@@ -7,8 +7,6 @@
   padding: 20px;
   padding-right: 40px;
   border-radius: 15px;
-  max-height: 700px;
-  margin-top: -40px;
 }
 
 .form button {
@@ -77,4 +75,9 @@
 }
 .utsmyckning-entries{
     padding-top: 3px;
+}
+
+.skapaarende-kommentar{
+  width: 48vw;
+  height: 10vw;
 }

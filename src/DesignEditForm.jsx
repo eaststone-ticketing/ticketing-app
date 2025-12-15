@@ -7,6 +7,7 @@ export default function DesignEditForm({ arende, setDesignEdit, setActiveArende 
     const [formData, setFormData] = useState({
         modell: arende.modell,
         material: arende.material,
+        sockel: arende.sockel,
         typsnitt: arende.typsnitt,
         farg: arende.farg,
         forsankt: arende.forsankt,
@@ -52,6 +53,17 @@ export default function DesignEditForm({ arende, setDesignEdit, setActiveArende 
                         name="material"
                         value={formData.material}
                         onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    />
+                </div>
+
+                <div className="edit-form-entry">
+                    <label><strong>Sockel:</strong></label>
+                    <input
+                        name="sockel"
+                        value={formData.sockel}
+                        type = "checkbox"
+                        checked={formData.sockel === 1}
+                        onChange={(e) => {setFormData({ ...formData, sockel: e.target.checked ? 1 : 0 }) ; console.log(`${formData.sockel}`)}}
                     />
                 </div>
 

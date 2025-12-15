@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword } from "./api.js";
 import { TbGrave2 } from "react-icons/tb";
+import { GoDotFill } from "react-icons/go";
 import { BsTelephone } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail } from "react-icons/md";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
@@ -22,6 +23,7 @@ import SkapaKyrkogardsgrupp from './KyrkogardTab/SkapaKyrkogardsgrupp.jsx'
 import ArendeComponentPage from './ArendeTab/ArendeDetailViews/ArendeComponentPage/ArendeComponentPage.jsx'
 import laggTillTrace from './laggTillTrace.jsx'
 import HistorikPage from './ArendeTab/ArendeDetailViews/HistorikView/HistorikPage.jsx'
+import KundView from './KundTab/KundView/KundView.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -70,7 +72,8 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
     "Nyinskription": ["rgba(255, 211, 242, 1)", "rgba(255, 211, 242, 1)"],
     "Ommålning": ["rgba(255, 211, 211, 1)", "rgba(255, 211, 211, 1)"],
     "Rengöring": ["rgba(255, 248, 211, 1)", "rgba(255, 248, 211, 1)"],
-    "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"]
+    "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"],
+    "Övrigt" : ["rgba(200, 200, 200, 1)", "rgba(200, 200, 200, 1)"]
   }
   
 useEffect(() => {
@@ -683,7 +686,7 @@ async function handleStatusChange(approver, arende) {
           {!designEdit && <div>
           <p>Modell: <strong>{activeArende.modell}</strong></p>
           <p>Material: <strong>{activeArende.material}</strong></p>
-          <p>Sockel?: <strong>{activeArende.sockel === true ? "Ja": "Nej"}</strong></p>
+          <p>Sockel: <strong>{activeArende.sockel === 1 ? "Ja": "Nej"}</strong></p>
           <p>Typsnitt: <strong>{activeArende.typsnitt ?? "Typsnitt saknas"}</strong></p>
           <p>Färg: <strong>{activeArende.farg ?? "Färg saknas"}</strong></p>
           <p>Försänkt/Förhöjd: <strong>{activeArende.forsankt ?? "Information saknas"}</strong></p>
@@ -831,23 +834,7 @@ function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
       ))}
       </div>
     </div>}
-    {activeKund && <div>
-      <div className = "kund-menu">
-      <div className = "kund-info-field">
-      <h4> {activeKund.bestallare}</h4>
-      <p><strong>Telefon:</strong> {activeKund.telefonnummer}</p>
-      <p><strong>E-post:</strong> {activeKund.email}</p>
-      </div>
-      <div>
-        <h4>{activeKund.bestallare}s ärenden:</h4>
-        {arenden.filter(a => a.bestallare === activeKund.bestallare).map(a => <div>
-          <p className = "kund-to-arende-link" onClick = {() => {setActiveTab('Ärenden'); setActiveArende(a); setActiveKund(null)}}><strong>#{a.id} {a.avlidenNamn}</strong></p>
-          </div>
-          )}
-      </div>
-      </div>
-      <button onClick = {() => {setActiveKund(null)}}>Tillbaka</button>
-      </div>}
+    {activeKund && <KundView setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} activeKund = {activeKund} setActiveKund = {setActiveKund} arenden = {arenden}/>}
     </div>
   )
 }
@@ -1148,7 +1135,7 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
     return <h3 className = "greeting">Det är mitt i natten, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
  
-return <div>
+return <div className = "oversikt-view">
   <div className = "sideways">
   <div className = "sideways">
   <Greeting/>
@@ -1165,7 +1152,7 @@ return <div>
     (k.seen === 2 && activeNotificationTab === "arkiverade") ).map(k => <div className = "feed-card">
       <div className = {`feed-item-container ${k.seen === 0 ? "new" : ""}`} onClick = {async () => {setShowDetail(showDetail === k.id ? null: k.id); await seKommentar(k)}}>
       <div className = "feed-item-preview">
-      <p className = "ny-notifikation">{k.seen === 0 ? "Nytt!" : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
+      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
       {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
       {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed"></IoMdArrowDropdown>}
       <p className = "arkivera-kommentar" onClick = {(e) =>{e.stopPropagation(); arkiveraKommentar(k)}}>{k.seen === 2 ? "Ta ur arkiv" : "Arkivera"}</p>

@@ -1,12 +1,11 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
 .card {
-  padding: 2em;
+  padding: 1em;
 }
 
 .read-the-docs {
@@ -30,8 +29,8 @@
 .tab-button {
   background: none;
   border: none;
-  padding: 10px 70px;
-  margin: 0 5px;
+  padding: 2vh 5vw;
+  margin: 0 1vw;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.2s;
@@ -193,7 +192,8 @@
   border-radius: 8px;
   margin: 2px;
   padding: 10px;
-  width: 650px;
+  width: 50vw;
+  max-width:50vw;
   gap: 10px;
   justify-content: space-between;
   background-image:
@@ -309,7 +309,7 @@
   padding: 2px;
   border-radius: 20px;
   font-weight:500;
-  padding-bottom: 100px;
+  padding-bottom: 3.5vw;
 }
 
 .searchbar-arende h3 {
@@ -320,12 +320,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 430px;
-  padding: 10px;
+  width: 30vw;
+  padding: 1vw;
 }
 
 .input-field-searchbar-arende input{
-  width: 300px;
+  width: 20vw;
   height: 20px;
   border: solid rgb(223, 233, 225);
   border-radius: 20px;
@@ -615,8 +615,8 @@
 
 
 .arende-card-filter-panel-create-button{
-  padding:6px;
-  margin-bottom: 3px;
+  padding:1vw;
+  margin-bottom: 0.3vh;
   background-color: rgb(233, 243, 235);
   border:1px solid rgb(100,100,200);
 }
@@ -679,12 +679,16 @@
   width: 550px;
 }
 
+.oversikt-view {
+  max-width: 90vw;
+}
+
 .greeting{
-  margin: -5px 0px;
-  padding: 10px;
+  margin: -0.1vh 0px;
+  padding: 1vw;
   background:linear-gradient(to bottom, rgb(243,253,245), rgb(238, 248, 240));
   border-radius: 15px 15px 0 0;
-  width: 400px;
+  width: 30vw;
 }
 
 .kommentarsfalt{
@@ -742,12 +746,12 @@
 }
 
 .feed-container {
-  margin-left: -73px;
-  margin-top: -5px;
+  margin-top: -0.1vh;
   border-radius:15px;
   background-color: rgb(238, 248, 240);
-  height: 800px;
-  width: 800px;
+  height: 100vh;
+  width: 52vw;
+  margin-left: -6vw;
 }
 
 .feed-item-preview{
@@ -761,11 +765,11 @@
 }
 
 .feed-item-container.new{
-  background-color: rgb(238, 228, 228);
+  background-color: rgb(228, 229, 238);
 }
 
 .ny-notifikation{
-  color:rgb(174, 63, 63);
+  color:rgb(125, 128, 221);
 }
 
 .feed-item-container{
@@ -792,11 +796,11 @@
 }
 
 .logout-button{
-  padding: 0 5px;
-  height: 30px;
-  position:relative;
-  left: -100px;
-  bottom: -5px;
+  padding: 0 1vw;
+  height: 2vw;
+  position: relative;
+  left: -8vw;
+  bottom: -2vh;
   background-color: rgb(228, 238, 230);
 }
 
@@ -904,7 +908,7 @@
 
 .scrollable-box {
   overflow-y: auto;
-  height: 530px;
+  height: 75vh;
   border-radius: 15px;
 }
 
@@ -967,10 +971,10 @@
 }
 
 .header-and-dropdown select {
-  max-width: 200px;
-  margin-right: 50px;
-  margin-top: 15px;
-  max-height:30px;
+  max-width: 20vw;
+  margin-right: 4vw;
+  margin-top: 1.2vw;
+  max-height:2vw;
   background: rgb(243, 243, 245);
   border: 3px solid rgb(223, 233, 225);
   border-radius: 15px;
@@ -990,17 +994,6 @@
   padding-left: 22px;
 }
 
-.kund-menu {
-  display:flex;
-  flex-direction:row;
-  gap:6px;
-}
-
-.kund-to-arende-link:hover {
-  text-decoration:underline;
-  cursor: pointer;
-}
-
 .notification-feed-tabs{
   display:flex;
   flex-direction:row;
@@ -1008,8 +1001,8 @@
 }
 
 .notification-tab{
-  padding:10px;
-  margin:15px;
+  padding:1vw;
+  margin:1vw;
   border-radius: 15px;
   background-color:rgb(223, 233, 225);
 }
@@ -1040,4 +1033,18 @@
   display:flex;
   flex-direction:row;
   gap:6px;
+}
+
+.new-notification-dot {
+  color: #3A7BFF;
+  font-size: 5rem;
+  line-height: 0;
+}
+
+.dot-wrapper {
+  width: 10px;
+  height: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -2,6 +2,7 @@ import './NewArendeForm.css'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { addArende, addKund } from '../../api.js'
+import laggTillTrace from '../../laggTillTrace.jsx'
 
 /*
 The new arende form is a form that creates a new arende (job, task or errand) and is designed to correspond to an earlier pdf-form
@@ -23,14 +24,25 @@ const entryValidations = {
 }
 
 
-const inputField = (label, namn, type, required = false) => {
-    return <label htmlFor = {namn}>{label}
+const inputField = (label, namn, type, required = false, options = []) => {
+    return <div>
+    {type !== "dropdown" && <label htmlFor = {namn}>{label}
         <input 
           id = {namn} 
           type = {type}
           {...register(namn , {required: required})}>
         </input>
-    </label>
+    </label>}
+
+    {type === "dropdown" && <label htmlFor = {namn}>{label}
+      <select id = {namn} {...register(namn, {required: required})}>
+        <option>-</option>
+        {options.map(o =>
+          <option>{o}</option>
+        )}
+      </select>
+      </label>}
+    </div>
 }
 
 const mapInputFields = (entryArray, sectionLabel, errors) => {
@@ -55,13 +67,15 @@ const {
   }  = useForm();
 
 const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of nuvarande text input which is only valid for certain arende types
+const sockelValue = watch('sockel');
 
 const onSubmit = async (data) => {
   try {
 
     const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
-        
+    
+    laggTillTrace("har skapat ärendet", newArende.id)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
@@ -71,7 +85,7 @@ const onSubmit = async (data) => {
       const newKund = await addKund({bestallare: data.bestallare, email: data.email, telefonnummer: data.tel, adress: data.adress})
       setKunder([...kunder, newKund])
     }
-    
+
     reset();
   }
 
@@ -139,7 +153,7 @@ const onSubmit = async (data) => {
         </div> }
       </div>
       
-      {skapaArende && <button className = "tillbaka-till-oversikt-button" onClick = {() => setSkapaArende(false)}><strong>X</strong> Tillbaka till översikt</button>}
+      {skapaArende && <button type = "button" className = "tillbaka-till-oversikt-button" onClick = {() => setSkapaArende(false)}><strong>X</strong> Tillbaka till översikt</button>}
 
 
     </div>
@@ -153,13 +167,13 @@ const onSubmit = async (data) => {
     <div className = "avliden-gravsten">
       {mapInputFields(avlidenEntries, "Avliden", errors)}
       <div className = "faktura-till-dodsbo-checkbox">
-      {inputField("Faktura till dödsbo?", "fakturaTillDodsbo", "checkbox", false)}
+      {inputField("Faktura till dödsbo", "fakturaTillDodsbo", "checkbox", false)}
       </div>
       <div className = "gravsten-entries">
         {mapInputFields(gravstenEntries, "Gravsten", errors)}
-        {inputField("Sockel?", "sockel", "checkbox", false)}
+        {inputField("Sockel", "sockel", "checkbox", false)}
         <div></div>
-        {inputField("Stående?", "staende", "checkbox", false)}
+        {inputField("Stående", "staende", "checkbox", false)}
           <div>
         {inputField("Pris", "pris", "text", false)}
       </div>
@@ -208,11 +222,15 @@ const onSubmit = async (data) => {
           <option>Försänkt</option>
         </select>
         <div className = "GRO-checkbox">
-        {inputField("GRO-sockel?", "GRO", "checkbox", false)}
+        {inputField("GRO-sockel", "GRO", "checkbox", false)}
         </div>
         </div>
       </div>
     </div>
+    <label> Kommentar
+    <textarea className = "skapaarende-kommentar" id = "kommentar" {...register("kommentar", {required: false})}></textarea>
+    </label>
+    <div></div>
     <div></div>
     <button type = "submit">Skapa ärende</button>
     </form>

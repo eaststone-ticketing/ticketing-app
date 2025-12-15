@@ -1,9 +1,11 @@
 import './Entries.css'
 import {useState} from 'react'
 
-export default function BronsEntries({setKomponent}) {
+export default function LyktaEntries({setKomponent}) {
     const [formData, setFormData] = useState({
-        Namn : "",
+        Material : "-",
+        Modell : "",
+        Storlek : "",
         leverantor: null
     })
 
@@ -15,8 +17,32 @@ export default function BronsEntries({setKomponent}) {
 
         const entries = [
         {
-            label: "Namn",
-            options: []
+            label: "Material",
+            options: ["Black", 
+            "Swedish Black", 
+            "Impala", 
+            "Pandang", 
+            "Imperial", 
+            "Romantic red", 
+            "Vånga", 
+            "Multired", 
+            "Bohus red", 
+            "Blue pearl", 
+            "Black pearl", 
+            "Bahama Blue", 
+            "Paradiso", 
+            "Himalaya",
+            "Crystal",
+            "Bohus silver", 
+            "Övrigt"]
+        },
+        {
+            label: "Modell",
+            options: ["A", "B", "C", "Övrigt"]
+        },
+        {
+            label: "Storlek",
+            options: ["12,5 x 25", "15 x 25", "15 x 30", "Övrigt"]
         }
     ]
         return <div>

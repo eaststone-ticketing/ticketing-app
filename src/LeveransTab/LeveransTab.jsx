@@ -3,9 +3,10 @@ import LeveranserSearchMenu from './LeveranserSearchMenu'
 import LeveranserSearchResults from './LeveranserSearchResults'
 import LeverantorView from './LeverantorView.jsx'
 import LeveransView from './LeveransView.jsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getLeveranser } from '../api.js'
 
-const leveranser = [
+const leveranserPlaceholder = [
     {
         idFranLeverantor: "HBIEA110324",
         leverantor: "Haobo",
@@ -26,6 +27,17 @@ const leverantorer = [
 ]
 
 export default function LeveransTab({setActiveTab, setActiveArende}) {
+
+    const [leveranser, setLeveranser] = useState([])
+
+      useEffect(() => {
+      async function loadLeveranser() {
+        const data = await getLeveranser(); 
+        console.log("Loaded leveranser:", data);
+        setLeveranser(data); 
+      }
+      loadLeveranser(); 
+      }, []);
 
     const [leverantor, setLeverantor] = useState(null);
     const [leverantorId, setLeverantorId] = useState(null);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import "./LeveransView.css"
-import {getArenden} from '../api.js'
+import {getArenden, getKomponenter} from '../api.js'
 
 async function findArende(id){
     const arenden = await getArenden();
@@ -12,6 +12,7 @@ export default function LeveransView({setActiveTab, setActiveArende, leverans, s
 
     const [viewAssociatedTickets, setViewAssociatedArenden] = useState(false)
     const [arenden, setArenden] = useState([])
+    const [komponenter, setKomponenter] = useState([])
 
     useEffect(() => {
         async function load() {
@@ -20,6 +21,15 @@ export default function LeveransView({setActiveTab, setActiveArende, leverans, s
         }
         load()
     }, [])
+
+    useEffect(() => {
+        async function loadKomponenter() {
+        const dataKomponenter = await getKomponenter()
+        setKomponenter(dataKomponenter)
+        }
+        loadKomponenter()
+    }, [])
+
 
     return <div>
         {viewAssociatedTickets && <div className = "aa-menu">
@@ -43,15 +53,15 @@ export default function LeveransView({setActiveTab, setActiveArende, leverans, s
         <button onClick = {() => setViewAssociatedArenden(true)}>Tillhörande ärenden ({leverans.arenden?.length})</button>
         </div>
         <div className = "leverans-info-sheet">
-        <div classname = "leverans-details">
-            <h2>{leverans.idFranLeverantor}</h2>
+        <div className = "leverans-details">
+            <h2>{leverans.namn} #{leverans.id}</h2>
             <p>Leverantör: <strong>{leverans.leverantor}</strong></p>
             <p>Status: <strong>{leverans.status}</strong></p>
         </div>
         <div className = "leverans-innehall">
             <h2>Innehåll</h2>
-            {leverans.innehall.map(i => 
-                <p>{i}</p>
+            {komponenter.filter(k => k.leveransID === leverans.id).map(i => 
+                <p>{i.body.name}</p>
             )}
         </div>
         </div>
