@@ -101,7 +101,8 @@ await db.exec( `
     sockel INTEGER,
     staende INTEGER,
     GRO INTEGER,
-    status TEXT
+    status TEXT,
+    gravrattsinnehavare
   );
 `);
 
@@ -171,7 +172,6 @@ await db.exec(`
   body TEXT
   )
   `)
-
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
 
@@ -197,11 +197,11 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
 
 
 app.post("/arenden", authenticateToken, async (req, res) => {
-    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status}  = req.body;
+    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare}  = req.body;
     const result = await db.run (`
-        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status]);
+        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare]);
     
     const newArende = {
         id: result.lastID,
@@ -238,7 +238,8 @@ app.post("/arenden", authenticateToken, async (req, res) => {
         sockel,
         staende,
         GRO,
-        status
+        status,
+        gravrattsinnehavare
     };
 
     res.json(newArende);
@@ -718,7 +719,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Totalpris").setText(arende.pris || "");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
-    form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || "");
+    form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
     // Handle checkboxes
     if (arende.sockel) form.getCheckBox("Check Box16").check();
@@ -749,7 +750,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Tillbehor").setText(arende.tillbehor || "");
       form.getTextField("Totalpris").setText(arende.pris || "");
       form.getTextField("Datum").setText(arende.datum || "");
-      form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || "");
+      form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
       //Handle checkboxes
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
@@ -811,7 +812,6 @@ app.get("/alter-table", authenticateToken, async (req,res) => {
       }
     });
 })
-
 
 
 const PORT = process.env.PORT || 5000;
