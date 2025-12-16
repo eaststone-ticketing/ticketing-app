@@ -61,7 +61,8 @@ await db.exec(`
     address TEXT,
     ort TEXT,
     postnummer INTEGER,
-    kyrkogard_grupp TEXT
+    kyrkogard_grupp TEXT,
+    regler TEXT
   );
 `);
 
@@ -173,12 +174,12 @@ await db.exec(`
   )
   `)
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
-    const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
+    const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler } = req.body;
 
     const result = await db.run(`
-        INSERT INTO kyrkogardar (namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp]);
+        INSERT INTO kyrkogardar (namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler]);
 
     const newKyrkogard = {
         id: result.lastID,
@@ -189,7 +190,8 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
         address,
         ort,
         postnummer,
-        kyrkogard_grupp
+        kyrkogard_grupp,
+        regler
     };
 
     res.json(newKyrkogard);
@@ -798,9 +800,9 @@ app.post("/refresh-token", async (req, res) => {
     });
 });
 
-app.get("/alter-table", authenticateToken, async (req,res) => {
+app.get("/alter-table", async (req,res) => {
 
-  const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN gravrattsinnehavare TEXT';
+  const alterTableSQL = 'ALTER TABLE kyrkogardar ADD COLUMN regler TEXT';
 
   db.run(alterTableSQL, (err) => {
       if (err) {
