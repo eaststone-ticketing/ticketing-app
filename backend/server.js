@@ -476,14 +476,14 @@ app.delete("/traces/:id", authenticateToken, async(req, res) => {
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp } = req.body;
+  const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler } = req.body;
 
   try {
     await db.run(
       `UPDATE kyrkogardar 
-       SET namn = ?, kontaktperson = ?, email = ?, telefonnummer = ?, address = ?, ort = ?, postnummer = ?, kyrkogard_grupp = ?
+       SET namn = ?, kontaktperson = ?, email = ?, telefonnummer = ?, address = ?, ort = ?, postnummer = ?, kyrkogard_grupp = ?, regler = ?
        WHERE id = ?`,
-      [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, id]
+      [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, JSON.stringify(regler ?? []), id]
     );
 
     res.json({ message: `Kyrkogård with ID ${id} updated successfully` });
@@ -492,6 +492,7 @@ app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Failed to update kyrkogård" });
   }
 });
+
 
 app.put("/arenden/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
