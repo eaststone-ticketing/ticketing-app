@@ -179,7 +179,7 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const result = await db.run(`
         INSERT INTO kyrkogardar (namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler]);
+    `, [namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, JSON.stringify(regler)]);
 
     const newKyrkogard = {
         id: result.lastID,
@@ -349,10 +349,14 @@ const result = await db.run(`
 })
 
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
-    const kyrkogardar = await db.all("SELECT * FROM kyrkogardar");
+    const rows =  await db.all("SELECT * FROM kyrkogardar");
+
+    const kyrkogardar = rows.map(row => ({
+      ...row,
+      regler: JSON.parse(row.regler || "[]")
+    }))
     res.json(kyrkogardar);
 })
-
 app.get("/arenden", authenticateToken, async (req, res) => {
     const arenden = await db.all("SELECT * FROM arenden")
     res.json(arenden);
