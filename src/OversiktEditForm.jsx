@@ -1,4 +1,4 @@
-import { updateArende, getKyrkogardar } from './api';
+import { updateArende, getKyrkogardar, getGodkannanden, removeGodkannande } from './api';
 import './OversiktEditForm.css'
 import {useState} from 'react'
 
@@ -10,10 +10,26 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
     dodsDatum: arende.dodsDatum,
     kyrkogard: arende.kyrkogard,
     kvarter: arende.kvarter,
-    gravnummer: arende.gravnummer
+    gravnummer: arende.gravnummer,
+    arendeTyp: arende.arendeTyp
     })
 
     async function onSubmit(){
+
+    let newStatus = arende.status
+    
+    //Delete godkännanden if changing into a type that should not have godkännanden
+        if (formData.arendeTyp !== 'Ny sten' && 
+            formData.arendeTyp !== 'Nyinskription' && 
+            (arende.arendeTyp === 'Ny sten' || arende.arendeTyp === 'Nyinskription')){
+            const godkannanden = await getGodkannanden();
+            const toDelete = godkannanden.filter(g => g.arendeID === arende.id);
+            newStatus = "Nytt"
+        
+            // WAIT for all delete requests to finish
+            await Promise.all(toDelete.map(g => removeGodkannande(g.id)));
+        }
+
         const newArende = {
         ...arende, 
         avlidenNamn: formData.avlidenNamn,
@@ -21,8 +37,11 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
         dodsDatum: formData.dodsDatum,
         kyrkogard: formData.kyrkogard,
         kvarter: formData.kvarter,
-        gravnummer: formData.gravnummer
+        gravnummer: formData.gravnummer,
+        arendeTyp: formData.arendeTyp,
+        status: newStatus
     };
+
         await updateArende(arende.id, newArende)
         setActiveArende(newArende)
         setOversiktEdit(false)
@@ -33,6 +52,19 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
             <div className = "edit-form-entry">
                 <label><strong>Namn:</strong></label>
                 <input value = {formData.avlidenNamn} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "avlidenNamn"></input>
+            </div>
+            <div className = "edit-form-entry">
+                <label>Ärendetyp</label>
+                <select value = {formData.arendeTyp} onChange = {(e) => setFormData({...formData, arendeTyp: e.target.value})}>
+                    <option value = "Övrigt">Välj ärendetyp</option>
+                    <option>Ny sten</option>
+                    <option>Nyinskription</option>
+                    <option>Stabilisering</option>
+                    <option>Rengöring</option>
+                    <option>Inspektering</option>
+                    <option>Ommålning</option>
+                    <option>Övrigt</option>
+                </select>
             </div>
             <div className = "edit-form-entry">
                 <label><strong>Dödsdatum:</strong></label>

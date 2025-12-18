@@ -173,6 +173,15 @@ await db.exec(`
   body TEXT
   )
   `)
+
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS stenar (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  namn TEXT,
+  info TEXT
+  );
+  ` 
+);
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler } = req.body;
 
@@ -348,6 +357,21 @@ const result = await db.run(`
   res.json(newTrace)
 })
 
+app.post("/stenar", authenticateToken, async(req, res) => {
+  const {namn, info} = req.body;
+  const result = await db.run (`
+    INSERT INTO stenar(namn, info)
+    VALUES(?,?)`
+  , [namn, info])
+  const newSten = {
+    id: result.lastID,
+    namn,
+    info
+  };
+
+  res.json(newSten)
+})
+
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const rows =  await db.all("SELECT * FROM kyrkogardar");
 
@@ -409,6 +433,12 @@ app.get("/traces", authenticateToken, async (req, res) => {
     const traces = await db.all("SELECT * FROM traces");
     res.json(traces);
 });
+
+app.get("/stenar", authenticateToken, async (req, res) => {
+  const stenar = await db.all("SELECT * FROM stenar")
+  res.json(stenar);
+})
+
 
 app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
     const {id} = req.params;
@@ -472,6 +502,15 @@ app.delete("/traces/:id", authenticateToken, async(req, res) => {
   await db.run ("DELETE FROM traces WHERE id = ?", id);
 
   res.json({message: `Leverans with ID ${id} deleted`})
+})
+
+
+app.delete("/stenar/:id", authenticateToken, async(req, res) => {
+  const {id} = req.params;
+
+  await db.run ("DELETE FROM stenar WHERE id = ?", id);
+
+  res.json({message: `Sten with ID ${id} deleted`})
 })
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
@@ -626,6 +665,25 @@ app.put("/traces/:id", authenticateToken, async (req, res) => {
     res.status(500).json({error: "Failed to update traces"})
   }
 })
+
+app.put("/stenar/:id", authenticateToken, async (req, res) => {
+  const {id} = req.params;
+  const {namn, info} = req.body;
+
+  try {
+    await db.run(
+      `UPDATE stenar
+      SET namn = ?, info = ?
+      WHERE id = ?`,
+      [namn, info]
+    );
+    res.json({message: `Sten with ID ${id} updated successfully`})
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Failed to update stenar"})
+  }
+})
+
 
 
 app.put("/users/:id", authenticateToken, async (req, res) => {

@@ -11,6 +11,7 @@ import LyktaEntries from './Entries/LyktaEntries.jsx'
 import LykthusEntries from './Entries/LykthusEntries.jsx'
 import MarmorEntries from './Entries/MarmorEntries'
 import tilldelaKomponent from './tilldelaKomponent.jsx'
+import {ComponentEntry} from './ComponentEntry.jsx'
 
 
 function GenerateEntries({type, setKomponent}){
@@ -48,19 +49,18 @@ export default function ArendeComponentPage({arende}) {
     useEffect(() => {
             async function loadKomponenter() {
             const dataKomponenter = await getKomponenter()
-            setKomponenter(dataKomponenter)
-            console.log(dataKomponenter)
+            const arendeKomponenter = dataKomponenter?.filter(k => k.arendeID === arende.id)
+            setKomponenter(arendeKomponenter)
+            console.log(arendeKomponenter)
             }
             loadKomponenter()
         }, [setKomponent])
 
     return <div>
-        {!skapaKomponent && <div className = "main">
+        {!skapaKomponent && <div className = "main-arende-component">
         <h3>Att beställa</h3>
         <div className = "component-entry-field">
-        {komponenter.map( c => <div className = "component-entry">
-            <p>{c.body.name}</p>
-            </div>)}
+        {komponenter.map( c => <ComponentEntry component = {c}/>)}
         </div>
         <button onClick = {() => setSkapaKomponent(true)}><strong>+ Lägg till</strong></button>
         </div>}

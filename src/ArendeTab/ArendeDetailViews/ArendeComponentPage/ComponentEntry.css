@@ -1,0 +1,32 @@
+.component-entry {
+    display:flex;
+    flex-direction:row;
+    width: 30vw;
+}
+
+.component-entry-trashcan {
+    margin-top: 11px;
+    font-size: 12px;
+    width: 6vh;
+        background-color: rgb(243,253,245);
+    padding: 0 0.5vw;
+}
+
+.component-entry-trashcan:hover{
+    background-color: rgb(255, 78, 78)
+}
+
+.component-entry-edit-button {
+    margin-top: 11px;
+    font-size: 12px;
+    margin-left: 1vw;
+    background-color: rgb(243,253,245);
+    padding: 0 0.5vw;
+}
+
+.component-entry-buttons {
+    display: flex;
+    width: 3vw;
+    gap: 0.1vw;
+    height: 6vh;
+}

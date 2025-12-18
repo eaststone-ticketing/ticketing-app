@@ -1,0 +1,28 @@
+.regel-entry {
+    display: flex;
+    flex-direction:row;
+}
+
+.regel-entry-trashcan {
+    margin-top: 11px;
+    font-size: 12px;
+}
+
+.regel-entry-trashcan:hover{
+    background-color: rgb(255, 78, 78)
+}
+
+.regel-entry-edit-button {
+    margin-top: 11px;
+    margin-right: -10px;
+    font-size: 12px;
+}
+
+.regel-entry-buttons {
+    display: flex;
+    width: 3vw;
+}
+
+.regel-entry-text {
+    width: 30vw; 
+}

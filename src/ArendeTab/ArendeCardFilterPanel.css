@@ -1,17 +1,28 @@
 .arende-card-filter-panel{
-  display:flex;
-  flex-direction:row;
-  justify-content: space-between;
   background:linear-gradient(to bottom, rgb(243, 243, 245) 0%, rgb(243, 243, 245) 95%, rgb(200, 200, 200) 95%,  rgb(255,255,255) 100%);
   padding: 10px;
   border-radius: 15px 15px 0 0;
   margin-left: 2px;
   margin-bottom: 5px;
   gap: 2px;
+  height: 10vh;
 }
 
 .arende-card-filter-panel button{
   padding:6px;
   margin-bottom: 3px;
   background-color: rgb(233, 243, 235);
+}
+
+.arende-card-filter-panel select {
+  background-color: rgb(243, 243, 245);
+  height: 25px;
+  border-radius: 15px;
+  border: 3px solid rgb(223, 223, 225)
+}
+
+.filter{
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
 }

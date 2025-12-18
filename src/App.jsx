@@ -24,6 +24,8 @@ import ArendeComponentPage from './ArendeTab/ArendeDetailViews/ArendeComponentPa
 import laggTillTrace from './laggTillTrace.jsx'
 import HistorikPage from './ArendeTab/ArendeDetailViews/HistorikView/HistorikPage.jsx'
 import KundView from './KundTab/KundView/KundView.jsx'
+import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
+import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -388,9 +390,13 @@ async function handleStatusChange(approver, arende) {
   "LEGACY"
   ];
 
-  const resultSorted = result.sort((a, b) => {
-  return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+  function sortResults(result) {
+    return result.sort((a, b) => {
+    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
 });
+  }
+
+  const resultSorted = sortResults(result)
 
   const [arendeDetailState, setArendeDetailState] = useState("oversikt");
   const [skapaArende, setSkapaArende] = useState(false);
@@ -401,10 +407,10 @@ async function handleStatusChange(approver, arende) {
           <div>
           <div className = "arende-tab-contents-further">
           <div>
-          <div className = "arende-card-filter-panel">
+          {!skapaArende && <div className = "arende-card-filter-panel">
             <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button"><strong>+ Skapa nytt ärende</strong></button>
-          </div>
-          <form className="searchbar-arende">
+          </div>}
+          {!skapaArende && <form className="searchbar-arende">
             <div className = "header-and-dropdown">
             <h3>Sök ärende</h3>
             <select onChange = {(e) => setTypeToSearch(e.target.value)}>
@@ -433,6 +439,7 @@ async function handleStatusChange(approver, arende) {
                 Övrigt
               </option>
             </select>
+
             </div>
             <div className = "input-field-searchbar-arende">
               <label>Namn på avliden</label>
@@ -479,14 +486,14 @@ async function handleStatusChange(approver, arende) {
                 onChange={(e) => setKyrkogard(e.target.value)}
               />
             </div>
-          </form>
-          <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>
+          </form>}
+          {!skapaArende && <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>}
           </div>
           {!skapaArende && <div>
           <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f === k.status.toLowerCase()) || filter.length === 0)).slice(0,50).map((arende) => (
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,50).map((arende) => (
             <div key={arende.id} className= "arende-card-ny"
               style={{
               '--status-color-start': statusColor[arende.status]?.[0] || 'transparent',
@@ -495,7 +502,7 @@ async function handleStatusChange(approver, arende) {
               '--arende-type-color-end': typeColor[arende.arendeTyp]?.[1] || 'transparent'}}>
               <div>
               <div className = "arende-card-header-and-button">
-              <h3 className = "truncate" onClick={() => {setActiveArende(arende); setActiveArendeKyrkogard(findKyrkogard(arende.id, kyrkogardar)); setShowMore(null); setArendeDetailState("oversikt")}}>{arende.avlidenNamn}: {arende.status}</h3>
+              <h3 className = "truncate" onClick={() => {setActiveArende(arende); setActiveArendeKyrkogard(findKyrkogard(arende.id, kyrkogardar)); setShowMore(null); setTypeToSearch(""); setArendeDetailState("oversikt")}}>{arende.avlidenNamn}: {arende.status}</h3>
               {showMore !== arende.id && <IoMdArrowDropright className = "dropdown-arrow" onClick = {() => {setShowMore(arende.id)}}/>}
               {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
               </div>
@@ -622,7 +629,7 @@ async function handleStatusChange(approver, arende) {
         <div className = "arende-detail">
         <p><strong>Datum skapad:</strong> {activeArende.datum}</p>
         </div>
-        <DownloadPdfButton arendeId = {activeArende.id}></DownloadPdfButton>
+        <DownloadPdfButton arende = {activeArende} />
         </div>
 }
 {oversiktEdit && <OversiktEditForm arende = {activeArende} setOversiktEdit={setOversiktEdit} setActiveArende={setActiveArende} kyrkogardar = {kyrkogardar}/>}
@@ -795,7 +802,7 @@ function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
     });
   return (
     <div>
-    {!activeKund && <div className = "search-menu">
+    {!activeKund && <div  className = "kund-search-menu">
       <form className = "searchbar-kund">
       <h3>Sök kund</h3>
       <div className = "input-field-searchbar-kund">
@@ -834,83 +841,9 @@ function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
       ))}
       </div>
     </div>}
-    {activeKund && <KundView setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} activeKund = {activeKund} setActiveKund = {setActiveKund} arenden = {arenden}/>}
+    {activeKund && <KundView setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} activeKund = {activeKund} setActiveKund = {setActiveKund} arenden = {arenden} setKunder = {setKunder}/>}
     </div>
   )
-}
-
-function ActiveKyrkogardView({setKyrkogardTabState, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard, kyrkogardar}) {
-  const [formData, setFormData] = useState({
-    namn: activeKyrkogard.namn,
-    kontaktperson: activeKyrkogard.kontaktperson,
-    email: activeKyrkogard.email,
-    telefonnummer: activeKyrkogard.telefonnummer,
-    address: activeKyrkogard.address,
-    ort: activeKyrkogard.ort,
-    postnummer: activeKyrkogard.postnummer
-});
-
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })}
-
-  async function handleUpdate (e, id) {
-
-    try{
-    e.preventDefault();
-    await updateKyrkogard(id, formData)
-    setActiveKyrkogard({ ...activeKyrkogard, ...formData });
-    const data = await getKyrkogardar();
-    setKyrkogardar(data);
-
-    }
-    catch (err){
-      console.log(err)
-    }
-  }
-
-      
-  return <div className = "sideways">
-        <div>
-        <div className = "button-panel-kyrkogard">
-        <button onClick = {() => {setKyrkogardTabState(null)}}>← Tillbaka</button>
-        <button onClick = {() => {setRedigering(!redigering);}}>Redigera kyrkogård</button>
-        </div>
-        <h3>{activeKyrkogard.namn}</h3>
-        <div className = "arende-detail">
-        <p><strong>Kontaktperson:</strong> {activeKyrkogard.kontaktperson}</p>
-        </div>
-        <div className = "arende-detail">
-        <p><strong>Epost:</strong> {activeKyrkogard.email}</p>
-        </div>
-        <div className = "arende-detail">
-        <p><strong>Telefonnummer:</strong> {activeKyrkogard.telefonnummer}</p>
-        </div>
-        <div className = "arende-detail">
-        <p><strong>Adress:</strong> {activeKyrkogard.adress}, {activeKyrkogard.postnummer} {activeKyrkogard.ort}</p>
-        </div>
-        </div>
-        {redigering && 
-        <div className = "edit-window">
-          <h3>Redigera kyrkogård</h3>
-        <form className = "edit-form" onSubmit = {(e) => {handleUpdate(e, activeKyrkogard.id)}}>
-          <label >Kontaktperson</label>
-          <input type = "text" name = "kontaktperson" value = {formData.kontaktperson || ""}  onChange = {handleChange}></input>
-          <label>Email</label>
-          <input type = "text" name = "email"  value = {formData.email || ""} onChange = {handleChange}></input>
-          <label>Telefonnummer</label>
-          <input type = "text" name = "telefonnummer"  value = {formData.telefonnummer || ""} onChange = {handleChange}></input>
-          <label>Adress</label>
-          <input type = "text" name = "adress" value = {formData.address || ""} onChange = {handleChange}></input>
-          <label>Ort</label>
-          <input type = "text" name = "ort" value = {formData.ort || ""} onChange = {handleChange}></input>
-          <label>Postnummer</label>
-          <input type = "text" name = "postnummer" value = {formData.postnummer || ""} onChange = {handleChange}></input>
-          <button type = "Submit">Ändra</button>
-          </form>
-          </div>
-          }
-        </div>   
 }
 
 function KyrkogardForm({kyrkogardar, setKyrkogardar, formData, setFormData}) {
@@ -947,13 +880,13 @@ function KyrkogardForm({kyrkogardar, setKyrkogardar, formData, setFormData}) {
       {label:"Email", type:"email", name:"email"},
       {label:"Telefonnummer", type:"text", name:"telefonnummer"},
       {label:"Adress", type:"text", name: "address"},
-      {label:"Ort", type:"text", name:"ort"},
+      {label:"Ort       ", type:"text", name:"ort"},
       {label:"Postnummer", type:"text", name:"postnummer"}
     ]
 
-    return <form onSubmit = {createKyrkogard} className = "form">
+    return <form onSubmit = {createKyrkogard} className = "form-k">
     {entries.map((entry, index) => (
-      <div key = {index} className = "form-entry">
+      <div key = {index} className = "form-entry-k">
         <label>{entry.label}</label>
         <input type = {entry.type} name = {entry.name} onChange = {handleChange} value = {formData[entry.name]}></input>
       </div>
@@ -982,14 +915,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
     console.error("Error deleting kyrkogård:", err);
   }
 }
-  async function handleKyrkogardUpdate(id, new_data) {
-    try {
-      await updateKyrkogard(id, new_data)
-    } catch (err) {
-      console.error("Error updating kyrkogård", err)
-    }
-  }
-  
+
   const [formData, setFormData] = useState({
       namn: "",
       kontaktperson: "",
@@ -1003,7 +929,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   return <div className = "kyrkogard-tab">
     {kyrkogardTabState === null && <div>
     <div className = "kyrkogard-tab-buttons">
-    <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">Lägg till kyrkogård</button>
+    <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">+ Lägg till kyrkogård</button>
     <button onClick = {() => setKyrkogardTabState("skapagrupp")} className = "add-kyrkogard-button">Skapa kyrkogårdsgruppering</button>
     <button onClick = {() => setKyrkogardTabState("slaihop")} className = "add-kyrkogard-button">Slå ihop flera kyrkogårdar</button>
     </div>
@@ -1026,8 +952,8 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       <div className = "kyrkogard-card-header">
       <h3>{kyrkogard.namn}</h3>
       <div>
-      <button onClick = {(e) => {e.stopPropagation; setRedigering(true);}} className = "edit-button">Redigera</button>    
-      <button onClick = {(e) =>{e.stopPropagation; handleDelete(kyrkogard.id);}} className = "del-button">Radera</button> 
+      <button onClick = {() => {setRedigering(true);}} className = "edit-button">Redigera</button>    
+      <button onClick = {(e) =>{e.stopPropagation(); handleDelete(kyrkogard.id);}} className = "del-button">Radera</button> 
       </div> 
       </div>
       <p>Adress: {kyrkogard.address}</p>
@@ -1043,7 +969,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
 }
 {kyrkogardTabState === "slaihop" && <SlaIhopMenu kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
 {kyrkogardTabState === "skapagrupp" && <SkapaKyrkogardsgrupp setKyrkogardTabState = {setKyrkogardTabState} kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar}/>}
-{(activeKyrkogard !== null) && <ActiveKyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
+{(activeKyrkogard !== null) && <KyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
 </div>
 }
 
@@ -1096,6 +1022,7 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
 
   const user = JSON.parse(localStorage.getItem('user'))
   const now = new Date();
+  const [oversiktViewState, setOversiktViewState] = useState(null);
   const [kommentarer, setKommentarer] = useState(null);
   const [showDetail, setShowDetail] = useState(null);
   const [newPassword, setNewPassword] = useState(null);
@@ -1120,25 +1047,29 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
     const hour = now.getHours();
     
     if(hour > 4 && hour < 10){
-      return <h3 className = "greeting">God morgon, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
+      return <h3>God morgon, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
     if(hour >= 10 && hour < 12){
-      return <h3 className = "greeting">God förmiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
+      return <h3>God förmiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
     if(hour >= 12 && hour < 18){
-      return <h3 className = "greeting">God eftermiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
+      return <h3>God eftermiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
     if(hour >= 18 && hour <= 22){
-      return <h3 className = "greeting">God kväll, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
+      return <h3>God kväll, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
 
-    return <h3 className = "greeting">Det är mitt i natten, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
+    return <h3>Det är mitt i natten, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
  
 return <div className = "oversikt-view">
+  {!oversiktViewState && <div>
   <div className = "sideways">
   <div className = "sideways">
+  <div className = "greeting">
   <Greeting/>
+  <button onClick = {() => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
   </div>
   <div>
@@ -1163,7 +1094,8 @@ return <div className = "oversikt-view">
     </div>
   </div>
   </div>
-  
+  </div>}
+  {oversiktViewState === "Stenpedia" && <Stenpedia />}
 </div>
 
 }

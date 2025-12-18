@@ -1,12 +1,12 @@
 .form {
   display: grid;
-  grid-template-columns: 150px 150px 150px; /* Two equal columns */
-  gap: 0.1rem 2rem; /* Space between form fields */
-  max-width: 525px;
+  grid-template-columns: 13vw 12vw 13vw; 
+  gap: 0.1rem 5rem; 
+  width: 50vw;
   background-color: rgb(233, 243, 235);
   padding: 20px;
-  padding-right: 40px;
   border-radius: 15px;
+
 }
 
 .form button {
@@ -23,7 +23,7 @@
 
 .new-stone-form-arenden {
   position: relative;
-  top: -610px;
+  top: -1px;
 }
 
 .new-stone-form-top {
@@ -80,4 +80,20 @@
 .skapaarende-kommentar{
   width: 48vw;
   height: 10vw;
+
+}
+
+.submit-button {
+   grid-column: 1/1;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field-checkbox {
+  display: flex;
+  flex-direction: row;
+  gap: 1vw;
 }

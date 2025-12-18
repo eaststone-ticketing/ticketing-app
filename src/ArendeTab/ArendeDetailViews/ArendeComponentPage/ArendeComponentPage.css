@@ -1,10 +1,10 @@
-.main {
+.main-arende-component {
     margin-left: 20px;
     background-image:
         linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
     padding: 10px;
     width: 840px;
-    height:445px;
+    min-height:445px;
     border-radius:15px;
 }
 
@@ -32,6 +32,8 @@
     linear-gradient(to left, rgb(233,243,235), rgb(243,253,245));
 
     border-radius:15px;
+
+    overflow-y:auto;
 }
 
 .skapa-komponent{

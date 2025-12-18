@@ -26,7 +26,7 @@ const entryValidations = {
 
 const inputField = (label, namn, type, required = false, options = []) => {
     return <div>
-    {type !== "dropdown" && <label htmlFor = {namn}>{label}
+    {type !== "dropdown" && <label className = {`input-field${type === "checkbox" ? "-checkbox":""}`} htmlFor = {namn}>{label}
         <input 
           id = {namn} 
           type = {type}
@@ -34,7 +34,7 @@ const inputField = (label, namn, type, required = false, options = []) => {
         </input>
     </label>}
 
-    {type === "dropdown" && <label htmlFor = {namn}>{label}
+    {type === "dropdown" && <label className = "input-field" htmlFor = {namn}>{label} 
       <select id = {namn} {...register(namn, {required: required})}>
         <option>-</option>
         {options.map(o =>
@@ -74,8 +74,8 @@ const onSubmit = async (data) => {
 
     const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
-    
-    laggTillTrace("har skapat ärendet", newArende.id)
+
+    laggTillTrace("har skapat ärendet", newArende)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
@@ -230,8 +230,6 @@ const onSubmit = async (data) => {
     <label> Kommentar
     <textarea className = "skapaarende-kommentar" id = "kommentar" {...register("kommentar", {required: false})}></textarea>
     </label>
-    <div></div>
-    <div></div>
-    <button type = "submit">Skapa ärende</button>
+    <button className = "submit-button" type = "submit">Skapa ärende</button>
     </form>
 }

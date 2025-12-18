@@ -122,6 +122,43 @@
   margin-left : 100px   
 }
 
+.form-k {
+  display: grid;
+  grid-template-columns: 13vw 12vw 13vw; 
+  gap: 0.1rem 5rem; 
+  width: 75.4vw;
+  background-color: rgb(233, 243, 235);
+  padding: 20px;
+  padding-right: 40px;
+  border-radius: 15px;
+  margin-bottom: 0.4vh;
+}
+
+.form-k button {
+  margin: 10px 0px;
+  padding: 5px 0px;
+  border: solid black 1px;
+
+}
+
+.form-k h4 {
+  padding: 0px;
+  margin-bottom: 2px;
+}
+
+.form-k select{
+    font-family: inherit;
+}
+
+.form-k input {
+    border: solid rgb(223, 233, 225);
+    border-radius: 20px;
+}
+
+.form-entry-k {
+  display: flex;
+  flex-direction: column;
+}
 
 .kyrkogard-card {
   display: flex;
@@ -403,10 +440,10 @@
   gap: 15px 0px;
   background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
   padding: 10px;
-  height: 442px;
+  height: 79.3vh;
   border-radius: 15px;
   margin-right: -45px;
-  width: 200px;
+  width: 14vw;
 }
 
 
@@ -506,23 +543,6 @@
 .sideways {
   display: flex;
   flex-direction: row;
-}
-
-.edit-form {
-  display:flex;
-  flex-direction: column;
-}
-
-.edit-form button {
-  margin: 10px;
-}
-
-.edit-window {
-  background-color: rgb(233, 243, 235);
-  margin: 0 10px;
-  padding: 10px;
-  border: solid black 1px;
-  border-radius: 10px;
 }
 
 .arende-checkboxes {
@@ -810,7 +830,7 @@
   border-radius: 8px;
   margin: 2px;
   padding: 10px;
-  width: 650px;
+  width: 53vw;
   gap: 10px;
   justify-content: space-between;
 
@@ -874,6 +894,11 @@
   padding-bottom:600px
 }
 
+.kund-results {
+  max-height: 84.5vh;
+  overflow-y: auto;
+}
+
 .searchbar-kund h3 {
   padding: 20px;
   margin: 0;
@@ -883,12 +908,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 230px;
+  width: 30vw;
   padding: 10px;
 }
 
 .input-field-searchbar-kund input{
-  width: 200px;
+  width: 20vw;
   height: 20px;
   border: solid rgb(223, 233, 225);
   border-radius: 20px;
@@ -898,13 +923,6 @@
   padding-bottom:2px;
 }
 
-.kund-results{
-  position:relative;
-  top: -980px;
-  right: -445px;
-  overflow-y:auto;
-  max-height: 600px;  
-}
 
 .scrollable-box {
   overflow-y: auto;
@@ -1026,7 +1044,7 @@
   flex-direction:row;
   gap: 6px;
   justify-content:space-between;
-  width: 300px;
+  width: 21vw;
 }
 
 .arende-typ-checkboxes{
