@@ -675,7 +675,7 @@ app.put("/stenar/:id", authenticateToken, async (req, res) => {
       `UPDATE stenar
       SET namn = ?, info = ?
       WHERE id = ?`,
-      [namn, info]
+      [namn, info, id]
     );
     res.json({message: `Sten with ID ${id} updated successfully`})
   } catch (err) {
