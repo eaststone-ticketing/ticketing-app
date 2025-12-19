@@ -7,8 +7,9 @@ export function Stenpedia() {
 
     const [stenpediaState, setStenpediaState] = useState(null)
     
-    return <div>
-        <div className = "stenpedia-button-panel">
+    return <div className = "stenpedia-main">
+        
+            <div className = "stenpedia-button-panel">
             <button onClick = {() => setStenpediaState("Stenar")}>Stenar</button>
         </div>
         <div className = "stenpedia-content">
@@ -16,4 +17,5 @@ export function Stenpedia() {
             {stenpediaState === "Stenar" && <Stenar />}
         </div>
     </div>
+
 }

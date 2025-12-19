@@ -67,7 +67,6 @@ const {
   }  = useForm();
 
 const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of nuvarande text input which is only valid for certain arende types
-const sockelValue = watch('sockel');
 
 const onSubmit = async (data) => {
   try {

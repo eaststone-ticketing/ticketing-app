@@ -433,6 +433,59 @@ export async function removeTraces(id) {
     return res.json();
 }
 
+export async function getStenar() {
+    const res = await fetch (`${API_URL}/stenar`, {
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                  credentials: 'include'
+                 });
+
+    if (!res.ok) {
+        console.log(`Error: ${res.status} - ${res.statusText}`);
+        throw new Error(`Failed to fetch stenar: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function addSten(sten) {
+  try {
+    const res = await fetch(`${API_URL}/stenar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include',
+      body: JSON.stringify(sten),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to add sten: ${res.statusText} This is the object ${JSON.stringify(sten)}`);
+    }
+
+    const newSten = await res.json();
+    return newSten;
+  } catch (error) {
+    console.error("Error adding sten:", error);
+    throw error;  
+  }
+}
+
+export async function removeSten(id) {
+    const res = await fetch (`${API_URL}/stenar/${id}`, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include'});
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
 
 
 export async function updateGodkannande(id,data) {
@@ -552,6 +605,21 @@ export async function updateTrace(id, data) {
   });
     const newToken = res.headers.get("Authorization");
     if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+  return res.json();
+}
+
+export async function updateSten(id, data) {
+  const res = await fetch(`${API_URL}/stenar/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json",
+                "Authorization" : `Bearer ${await getToken()}`},
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
         localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
     }
   return res.json();

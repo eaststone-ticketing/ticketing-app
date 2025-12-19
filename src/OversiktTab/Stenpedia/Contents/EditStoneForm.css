@@ -1,0 +1,35 @@
+.edit-stone-form{
+    display:flex;
+    flex-direction: column;
+    background-color: rgb(233, 243, 235);
+    padding: 20px;
+    border-radius: 15px;
+    margin-left: 1vw;
+}
+
+
+.edit-stone-form input {
+    margin-top: 0.5vh;
+    border: 3px solid rgb(223, 233, 225);
+    border-radius: 5px;
+}
+
+.edit-stone-form textarea{
+    height: 15vh;
+    width: 20vw;
+    margin-top: 0.5vh;
+    border: 3px solid rgb(223, 233, 225);
+    border-radius: 5px;
+}
+
+
+.edit-stone-form button{
+    background-color: rgb(243, 253, 245);;
+    margin: 10px 6px;
+    padding: 5px 5px;
+}
+
+.edit-stone-form-label{
+    display:flex;
+    flex-direction:column;
+}

@@ -1068,7 +1068,8 @@ return <div className = "oversikt-view">
   <div className = "sideways">
   <div className = "greeting">
   <Greeting/>
-  <button onClick = {() => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  
   </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
   </div>

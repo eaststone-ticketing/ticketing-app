@@ -1,0 +1,38 @@
+.stenpedia-stone-button-panel {
+    display:flex;
+    flex-direction:column;
+    padding: 1vh 1vw;
+    background-color: rgb(233,243,235);
+    border-radius: 15px;
+    min-width: 15vw;
+    overflow-y:auto;
+    max-height: 80vh;
+    
+}
+
+.stone-page-main{
+    display:flex;
+    flex-direction: row;
+    gap: 2vw;
+}
+
+.header-and-edit{
+    display:flex;
+    flex-direction: row;
+    gap: 1vw;
+    align-items: center;
+}
+.header-and-edit button{
+    padding: 2px 2px;
+    height: 5vh;
+    background-color: rgba(0,0,0,0);
+}
+
+.stone-button button{
+    padding: 2px 2px;
+    height: 4vh;
+    background-color: rgba(0,0,0,0);
+    border-radius: 0;
+    border-bottom: 1px solid rgb(220, 220, 220);
+    width: 100%;
+}
