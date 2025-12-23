@@ -840,9 +840,16 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     }
 
      // Set response headers for PDF download
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${(arende.avlidenNamn ?? "undefined").replace(/"/g, "'")}.pdf"`);
+    const safeName = arende.avlidenNamn ?? "ärende";
+    const asciiFallback = safeName.replace(/[^\x20-\x7E]/g, "_");
+    const encoded = encodeURIComponent(`${safeName}.pdf`);
 
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encoded}`
+    );
+    
     // Send the PDF as response
     res.send(Buffer.from(filledPdfBytes));
 
