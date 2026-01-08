@@ -97,8 +97,8 @@ const onSubmit = async (data) => {
 
   const avlidenEntries = [
     {label:"Namn", type: "text", name: "avlidenNamn"},
-    {label:"Födelsedatum", type:"date", name:"fodelseDatum"},
-    {label:"Dödsdatum", type: "date", name: "dodsDatum"},
+    {label:"Födelsedatum", type:"text", name:"fodelseDatum"},
+    {label:"Dödsdatum", type: "text", name: "dodsDatum"},
   ]
 
   const bestallareEntries = [
