@@ -778,6 +778,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Model").setText(arende.modell || "");
     form.getTextField("Typsnitt").setText(arende.typsnitt || "");
     form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
+    form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
     form.getTextField("Dekor").setText(arende.dekor || "");
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
@@ -789,6 +790,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     // Handle checkboxes
     if (arende.sockel) form.getCheckBox("Check Box16").check();
     if (arende.staende) form.getCheckBox("Check Box18").check();
+    if (!arende.staende) form.getCheckBox("Check Box19").check();
     if (arende.GRO) form.getCheckBox("Check Box20").check();
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
