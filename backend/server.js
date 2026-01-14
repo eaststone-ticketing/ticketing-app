@@ -778,7 +778,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Model").setText(arende.modell || "");
     form.getTextField("Typsnitt").setText(arende.typsnitt || "");
     form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
-    form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
     form.getTextField("Dekor").setText(arende.dekor || "");
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
