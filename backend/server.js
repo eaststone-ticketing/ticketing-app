@@ -873,7 +873,11 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", async (req,res) => {
 
-  const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN ursprung TEXT';
+  const alterTableSQL = `
+      UPDATE arenden
+      SET ursprung = 'Eaststone'
+      WHERE ursprung IS NULL OR ursprung = ''
+      `;
 
   db.run(alterTableSQL, (err) => {
       if (err) {
