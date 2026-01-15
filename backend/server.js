@@ -873,14 +873,14 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", authenticateToken, async (req,res) => {
 
-  const alterTableSQL = 'ALTER TABLE kyrkogardar ADD COLUMN regler TEXT';
+  const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN ursprung TEXT';
 
   db.run(alterTableSQL, (err) => {
       if (err) {
           console.error('Error altering table:', err.message);
           return res.status(500).json({ error: "Failed to alter table" });
       } else {
-          console.log('Column kyrkogard_grupp added successfully.');
+          console.log('Column ursprung added successfully.');
           res.status(200).json({ message: "Column seen added successfully." });
       }
     });
