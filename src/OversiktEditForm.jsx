@@ -11,7 +11,8 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
     kyrkogard: arende.kyrkogard,
     kvarter: arende.kvarter,
     gravnummer: arende.gravnummer,
-    arendeTyp: arende.arendeTyp
+    arendeTyp: arende.arendeTyp,
+    ursprung: arende.ursprung
     })
 
     async function onSubmit(){
@@ -39,6 +40,7 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
         kvarter: formData.kvarter,
         gravnummer: formData.gravnummer,
         arendeTyp: formData.arendeTyp,
+        ursprung: formData.ursprung,
         status: newStatus
     };
 
@@ -97,6 +99,17 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
             <div className = "edit-form-entry">
                 <label><strong>Gravnummer:</strong></label>
                 <input value = {formData.gravnummer} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "gravnummer"></input>
+            </div>
+            <div className = "edit-form-entry">
+                <label><strong>Ursprung</strong></label>
+                <select value = {formData.ursprung} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "ursprung">
+                    <option>
+                        Eaststone
+                    </option>
+                    <option>
+                        Stockholms Gravstenar
+                    </option>
+                </select>
             </div>
             <div className = "button-panel">
             <button onClick = {() => setOversiktEdit(false)}>Avbryt</button>
