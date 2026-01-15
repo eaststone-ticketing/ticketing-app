@@ -871,7 +871,7 @@ app.post("/refresh-token", async (req, res) => {
     });
 });
 
-app.get("/alter-table", authenticateToken, async (req,res) => {
+app.get("/alter-table", async (req,res) => {
 
   const alterTableSQL = 'ALTER TABLE arenden ADD COLUMN ursprung TEXT';
 
