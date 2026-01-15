@@ -23,6 +23,11 @@ const entryValidations = {
   "tel" : true
 }
 
+const entryDefaults = {
+  "fodelseDatum" : "ÅÅÅÅ eller ÅÅÅÅ-MM-DD",
+  "dodsDatum" : "ÅÅÅÅ eller ÅÅÅÅ-MM-DD"
+}
+
 
 const inputField = (label, namn, type, required = false, options = []) => {
     return <div>
@@ -30,6 +35,7 @@ const inputField = (label, namn, type, required = false, options = []) => {
         <input 
           id = {namn} 
           type = {type}
+          placeholder= {entryDefaults.hasOwnProperty(namn) ? entryDefaults[namn] : ""}
           {...register(namn , {required: required})}>
         </input>
     </label>}
@@ -230,5 +236,19 @@ const onSubmit = async (data) => {
     <textarea className = "skapaarende-kommentar" id = "kommentar" {...register("kommentar", {required: false})}></textarea>
     </label>
     <button className = "submit-button" type = "submit">Skapa ärende</button>
+    <select
+      name = "ursprung"
+      {...register("ursprung", {required: true})}
+    >
+      <option value = "">
+        Välj ursprung
+      </option>
+      <option>
+        Eaststone
+      </option>
+      <option>
+        Stockholms Gravstenar
+      </option>
+    </select>
     </form>
 }

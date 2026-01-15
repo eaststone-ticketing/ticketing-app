@@ -623,6 +623,9 @@ async function handleStatusChange(approver, arende) {
         <div className = "arende-detail">
         <p><strong>Status:</strong> {activeArende.status}</p> 
         </div>
+        <div className = "arende-detail">
+          <p><strong>Ursprung:</strong> {activeArende.ursprung}</p> 
+        </div>
         {activeArende.status === "raderad" && <div className = "arende-detail">
           <p>Raderad: {activeArende.deleted_at }</p>
           </div>}
