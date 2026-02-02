@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function DownloadPDFButton({ arende }) {
   const downloadPDF = async () => {
+    console.log("ARENDE PRIS:", arende.pris);
     const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
       await laggTillTrace("laddade ner PDF", arende)
