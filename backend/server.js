@@ -783,6 +783,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Dekor").setText(arende.dekor || "");
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
+    form.getTextField("Material").setText(arende.material || "")
     form.getTextField("Totalpris").setText(arende.pris || "");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
@@ -813,6 +814,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Platsnummer").setText(arende.gravnummer || "");
       form.getTextField("Typsnitt").setText(arende.typsnitt || "");
       form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
+      form.getTextField("Material").setText(arende.material || "")
       form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
       form.getTextField("Dekor").setText(arende.dekor || "");
       form.getTextField("Tillbehor").setText(arende.tillbehor || "");
