@@ -786,7 +786,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
     form.getTextField("Material").setText(arende.material || "")
-    form.getTextField("Totalpris").setText(arende.pris || "");
+    form.getTextField("Totalpris").setText(arende.pris || " ");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
     form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
@@ -799,7 +799,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
     if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
-    form.updateFieldAppearances();
     }
 
     else {
@@ -821,7 +820,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Nuvarande text").setText(arende.nuvarandeText || "");
       form.getTextField("Dekor").setText(arende.dekor || "");
       form.getTextField("Tillbehor").setText(arende.tillbehor || "");
-      form.getTextField("Totalpris").setText(arende.pris || "");
+      form.getTextField("Totalpris").setText(arende.pris || " ");
       form.getTextField("Datum").setText(arende.datum || "");
       form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
@@ -836,7 +835,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
       if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
       if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
-      form.updateFieldAppearances();
     }
     // Save the filled PDF
     let filledPdfBytes;
