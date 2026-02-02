@@ -799,6 +799,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
     if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
+    form.updateFieldAppearances();
     }
 
     else {
@@ -835,6 +836,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
       if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
       if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
+      form.updateFieldAppearances();
     }
     // Save the filled PDF
     let filledPdfBytes;
