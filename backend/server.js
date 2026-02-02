@@ -880,9 +880,8 @@ app.post("/refresh-token", async (req, res) => {
 app.get("/alter-table", async (req,res) => {
 
   const alterTableSQL = `
-      UPDATE arenden
-      SET nuvarandeText = ''
-      WHERE nuvarandeText IS NULL
+    ALTER TABLE arenden
+    ADD COLUMN nuvarandeText TEXT;
       `;
 
   db.run(alterTableSQL, (err) => {
