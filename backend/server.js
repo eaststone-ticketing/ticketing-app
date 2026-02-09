@@ -723,9 +723,25 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
     let formName
 
+    const kyrkogardar_stockholm = [
+      "Skogskyrkogården", 
+      "Norra Begravningsplatsen", 
+      "Råcksta Begravningsplats", 
+      "Spånga Kyrkogård",
+      "Västberga begravningsplats",
+      "Bromma Kyrkogård",
+      "Hässelby begravningsplats",
+      "Brännkyrka kyrkogård",
+      "Sandsborgs kyrkogård",
+      "Galärvarvet"
+    ]
+
     if (arende.arendeTyp === "Ny sten") {
       formName = "form.pdf"
-    } else {
+    } else if (kyrkogardar_stockholm.includes(arende.kyrkogard)){
+      formName = "formsthlm.pdf"
+    } else
+      {
       formName = "form_ovrigt.pdf"
     }
 
@@ -785,6 +801,10 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Dekor").setText(arende.dekor || "");
     form.getTextField("Ev_Antal_Platser_For_Ytterligare_Namn").setText(arende.platsForFlerNamn || "");
     form.getTextField("Minnesord").setText(arende.minnesord || "");
+    form.getTextField("Framsida").setText(arende.framsida || "");
+    form.getTextField("Kanter").setText(arende.kanter || "");
+    form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
+    form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
     form.getTextField("Material").setText(arende.material || "")
     form.getTextField("Totalpris").setText(arende.pris || " ");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
