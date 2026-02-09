@@ -805,7 +805,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Kanter").setText(arende.kanter || "");
     form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
-    form.getTextField("Material").setText(arende.material || "")
+    form.getTextField("Material").setText(arende.material || "");
     form.getTextField("Totalpris").setText(arende.pris || " ");
     form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
