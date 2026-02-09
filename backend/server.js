@@ -721,7 +721,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Ärende not found" });
     }
 
-    let formName
+    let formName;
 
     const kyrkogardar_stockholm = [
       "Skogskyrkogården", 
@@ -734,7 +734,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       "Brännkyrka kyrkogård",
       "Sandsborgs kyrkogård",
       "Galärvarvet"
-    ]
+    ];
 
     if (arende.arendeTyp === "Ny sten") {
       formName = "form.pdf"
