@@ -738,11 +738,14 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
     if (arende.arendeTyp === "Ny sten") {
       formName = "form.pdf"
-    } else if (kyrkogardar_stockholm.includes(arende.kyrkogard)){
+      console.log(arende.kyrkogard)
+    } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny Sten"){
       formName = "formsthlm.pdf"
+      console.log(arende.kyrkogard)
     } else
       {
       formName = "form_ovrigt.pdf"
+      console.log(arende.kyrkogard)
     }
 
     // Define the template path
