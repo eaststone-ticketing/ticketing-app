@@ -805,7 +805,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Minnesord").setText(arende.minnesord || "");
     form.getTextField("Framsida").setText(arende.framsida || "");
     form.getTextField("Kanter").setText(arende.kanter || "");
-    if (formName !== "formsthlm"){
+    if (formName !== "form_sthlm.pdf"){
     form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
     }
