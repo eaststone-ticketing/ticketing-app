@@ -736,7 +736,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       "Galärvarvet"
     ];
 
-    if (arende.arendeTyp === "Ny sten") {
+    if (arende.arendeTyp === "Ny sten" && !kyrkogardar_stockholm.includes(arende.kyrkogard)) {
       formName = "form.pdf"
       console.log(arende.kyrkogard);
     } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny sten"){
