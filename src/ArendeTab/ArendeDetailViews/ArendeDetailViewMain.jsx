@@ -190,7 +190,7 @@ return (<div>
         </div>}
         </div>
                 <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Pris"} 
-        fields = {[["Total", "pris"]
+        fields = {[["Total", "pris", "text"]
                   ]} />
                 <div className = "arende-detail-checkboxes-container">
           {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <GodkannandeDisplayOversikt activeArende = {activeArende} activeGodkannanden = {activeGodkannanden} setArenden = {setArenden} setActiveArende = {setActiveArende} setActiveGodkannanden = {setActiveGodkannanden}/>}
