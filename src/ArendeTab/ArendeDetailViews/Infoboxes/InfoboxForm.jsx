@@ -1,7 +1,21 @@
-import { useState } from 'react';
-import { updateArende } from '../../../api.js'
+import { useState, useEffect } from 'react';
+import { getKyrkogardar, updateArende } from '../../../api.js'
 
 export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
+    
+    const [kyrkogardar, setKyrkogardar] = useState([]);
+    
+    useEffect(() => {
+        (async () => {
+        try {
+            const data = await getKyrkogardar();
+            setKyrkogardar(data ?? []);
+        } catch (e) {
+            console.error(e);
+            setKyrkogardar([]);
+        }
+        })();
+    }, []);
 
    const [formData, setFormData] = useState(() =>
         Object.fromEntries(
@@ -28,11 +42,15 @@ export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
 
 
     return <form onSubmit = {async (e) => {onSubmit(e)}}>
-        {fields.map(([label, key]) => <div className = "bestallare-infobox-form-entry">
-            <label>
+        {fields.map(([label, key, type]) => <div className = "bestallare-infobox-form-entry">
+            {type === "kyrkogard" && <select value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})}>
+                {kyrkogardar.map((k) => <option value = {k.namn}>{k.namn}</option>)}
+                </select>}
+            
+            {type === "text" && <label>
                 <strong>{label}: </strong>
                 <input value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})} type = "text" />
-            </label>
+            </label>}
         </div>)}
         <button type = "submit">Bekräfta ändringar</button>
     </form>

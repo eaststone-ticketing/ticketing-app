@@ -13,7 +13,7 @@ import { InfoboxForm } from './InfoboxForm.jsx'
                 <button onClick = {() => setEdit(!edit)}><FaRegEdit /></button>
             </div>
             {edit && <InfoboxForm activeArende = {activeArende} setActiveArende = {setActiveArende} setEdit = {setEdit} fields = {fields}/>}
-            {!edit && fields.map(([label, key]) => 
+            {!edit && fields.map(([label, key, _]) => 
                 <div className = "arende-detail"> 
                     <p><strong>{label}: </strong>{activeArende?.[key]}</p>
                 </div>

@@ -156,19 +156,19 @@ return (<div>
         <div className = "arende-detail-oversikt-content-grid">
 
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"} 
-        fields = { [["Födelsedatum", "fodelseDatum"], 
-                    ["Dödsdatum", "dodsDatum"]]}/>
+        fields = { [["Födelsedatum", "fodelseDatum", "text"], 
+                    ["Dödsdatum", "dodsDatum", "text"]]}/>
       
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
-        fields = { [["Namn", "bestallare"], 
-                    ["Email", "email"], 
-                    ["Telefonnummer", "tel"], 
-                    ["Gravrättsinnehavare", "gravrattsinnehavare"]]}/>
+        fields = { [["Namn", "bestallare", "text"], 
+                    ["Email", "email", "text"], 
+                    ["Telefonnummer", "tel", "text"], 
+                    ["Gravrättsinnehavare", "gravrattsinnehavare", "text"]]}/>
         
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Kyrkogård"} 
-        fields = {[["Namn", "kyrkogard"],
-                  ["Kvarter", "kvarter"],
-                  ["Gravnummer", "gravnummer"]
+        fields = {[["Namn", "kyrkogard", "kyrkogard"],
+                  ["Kvarter", "kvarter", "text"],
+                  ["Gravnummer", "gravnummer", "text"]
                   ]} />
         
         <div className = "arende-detail-arende-infobox">
