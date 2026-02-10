@@ -386,78 +386,6 @@
   border: solid black 1px;
 }
 
-.arende-detail{
-  padding: 2px;
-  margin: 2px;
-  max-width: 300px;
-  gap: 10px 10px;
-}
-.arende-detail p{
-  margin: 2px 2px;
-  line-height: 1.2;
-}
-
-.arende-detail-kyrkogard-p{
-  text-decoration: underline;
-  color: blue;
-  cursor: pointer;
-}
-
-.arende-detail-container {
-  display: flex;
-  flex-direction: row;
-  gap: 50px 50px;
-}
-
-.header-and-close-button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between; 
-  margin-top: -6px;
-  padding: 2px;  
-  gap: 1rem;             
-}
-
-.header-and-close-button button {
-  background-color: rgb(233, 243, 235);
-  border-radius: 2px;
-  padding:0px 3px;
-  border:none;
-  color:rgb(0, 0, 0);
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.header-and-close-button button:hover {
-  background-color: rgb(230, 0, 0);
-  color: white;
-}
-
-.buttons-arende-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 15px 0px;
-  background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
-  padding: 10px;
-  height: 79.3vh;
-  border-radius: 15px;
-  margin-right: -45px;
-  width: 14vw;
-}
-
-
-.buttons-arende-detail button {
-  width: auto;
-  height: 30px;
-  padding: 0px 10px;
-  background-color: rgb(243, 255, 245);
-}
-
-.buttons-arende-detail button:hover {
-  background-color: rgb(243, 253, 245);
-}
-
 .delete-button {
   background-color: rgb(233, 243, 235);
   color: black;
@@ -484,34 +412,6 @@
 .delete-button-card:hover {
   background-color: rgb(230, 0, 0);
   cursor: pointer;
-}
-
-.arende-detail-main {
-  display: flex;
-  flex-direction: row;
-  padding: 20px;
-  margin: 0px;
-  background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
-  border-radius: 15px;
-  width: 860px;
-}
-
-.arende-detail-main h2 {
-  padding: 2px;
-  margin: 0px;
-  line-height: 1.5;
-}
-
-.arende-detail-main h3 {
-  padding: 2px 0px 10px 0;
-  margin: 2px;
-  line-height: 0.5;
-  margin-bottom: 10px;
-}
-
-.further-detail-field {
-  padding: 5px 15px;
-  margin-left: 10px;
 }
 
 .arende-tab-contents {
@@ -543,35 +443,6 @@
 .sideways {
   display: flex;
   flex-direction: row;
-}
-
-.arende-checkboxes {
-  display:flex;
-  flex-direction:row;
-  justify-content: space-between;
-  padding: 2px;
-  margin: 2px;
-
-}
-
-.arende-checkboxes-container {
-  display:flex;
-  flex-direction:column;
-  margin: 0;
-}
-
-
-.godkannande-info{
-  display:flex;
-  flex-direction:column;
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
-  background-color: rgb(233, 243, 235);
-}
-
-.godkannande-info p{
-  margin: 2px 0 5px 0;
-  line-height: 1.2;
 }
 
 .arende-card-bottom {
@@ -630,54 +501,11 @@
   margin-top: -5px;
 }
 
-
-
-
-
 .arende-card-filter-panel-create-button{
   padding:1vw;
   margin-bottom: 0.3vh;
   background-color: rgb(233, 243, 235);
   border:1px solid rgb(100,100,200);
-}
-
-.godkannande-container {
-  background-color: rgb(233, 243, 235);
-  padding: 10px;
-  padding-top: 0px;
-  border-radius: 15px;
-  margin-bottom: 10px;
-  width: 400px;
-}
-
-.godkannande-container p{
-  margin: 2px 0 10px 0;
-  line-height: 1.2;
-}
-
-.godkannande-container label{
-  margin: 2px 0 10px 0;
-  line-height: 1.2;
-}
-
-
-.godkannande-container input{
-  margin: 2px 0 10px 0;
-  line-height: 1.2;
-}
-
-.godkannande-header {
-  display:flex;
-  flex-direction:row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0px;
-}
-
-.godkannande-header button {
-  padding: 5px;
-  font-size: 12px;
-  height: 24px;
 }
 
 .send-button{
@@ -711,20 +539,6 @@
   width: 30vw;
 }
 
-.kommentarsfalt{
-  height: 300px;
-  width: 510px;
-  position: relative;
-  top: -43px;
-  border-radius: 15px;
-  border: 5px solid rgb(223, 233, 225);
-}
-
-.lagg-till-kommentar-button{
-  position: relative;
-  left: -178px;
-}
-
 .pre {
   font-family: 'Arial', sans-serif; /* Change to your preferred font */
   width: 500px;
@@ -734,16 +548,6 @@
   padding: 10px; /* Optional: add padding around the text */
   border-radius: 15px; /* Optional: rounded corners */
   white-space: pre-wrap; /* Optional: wrap long lines instead of breaking */
-}
-
-.kommentar-container {
-  width: 880px;
-  padding: 3px 15px;
-  background-color: rgb(238, 248, 240);
-  margin: -8px 0px;
-  border-radius:15px;
-  position:relative;
-  top: 7px;
 }
 
 .feed{
@@ -934,19 +738,6 @@
   line-height: 1;
   padding: 0;
   margin:0; 
-}
-
-.arende-detail-main-header-and-edit-button {
-  display: flex;
-  flex-direction: sideways;
-  gap: 15px;
-  padding-right: 0;
-  margin-right: 0;
-}
-.arende-detail-main-header-and-edit-button button {
-  padding: 0;
-  margin: 0;
-  font-size: 12px;
 }
 
 .kyrkogard-main{

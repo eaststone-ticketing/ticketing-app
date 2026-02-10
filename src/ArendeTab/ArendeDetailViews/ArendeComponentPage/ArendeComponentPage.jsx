@@ -33,11 +33,6 @@ async function addKomponent(komponent, setSkapaKomponent, arende){
     await tilldelaKomponent(komponent, arende)
 }
 
-const components = [
-    {namn: "Porslinsporträtt 16cmx10cm, rund", type: "Porslinsporträtt", attributeA: "whatever", attributeB: 23},
-    {namn: "Gravsten 60cmx60cmx10cm Shanxi Black", type: "Porslinsporträtt", differentAttributeA: "badab", differentAttributeB: true},
-]
-
 export default function ArendeComponentPage({arende}) {
     
     const [skapaKomponent, setSkapaKomponent] = useState(null);
@@ -54,11 +49,11 @@ export default function ArendeComponentPage({arende}) {
             console.log(arendeKomponenter)
             }
             loadKomponenter()
-        }, [setKomponent])
+        }, [komponent])
 
     return <div>
         {!skapaKomponent && <div className = "main-arende-component">
-        <h3>Att beställa</h3>
+        <h3>Tillbehör</h3>
         <div className = "component-entry-field">
         {komponenter.map( c => <ComponentEntry component = {c}/>)}
         </div>
@@ -97,6 +92,9 @@ export default function ArendeComponentPage({arende}) {
             <select onChange = {(e) => {setLeverantor(e.target.value); console.log(leverantor)}}>
                 <option value = "">Välj leverantör</option>
                 <option>
+                    N/A
+                </option>
+                <option>
                     Haobo
                 </option>
                 <option>
@@ -115,8 +113,6 @@ export default function ArendeComponentPage({arende}) {
                                             console.log(fullKomponent); 
                                             await addKomponent(fullKomponent, setSkapaKomponent, arende); 
                                             setKomponent({});
-                                            const updatedKomponenter = await getKomponenter();
-                                            setKomponenter(updatedKomponenter);
                                             }}>Lägg till</button>
             </div>
             </div>

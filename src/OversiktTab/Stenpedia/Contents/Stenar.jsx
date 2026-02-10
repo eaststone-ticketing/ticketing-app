@@ -32,7 +32,7 @@ export function Stenar() {
         )}
     <button onClick = {() => {setIsStoneFormVisible(true); setStoneToShow(null)}}>+Lägg till sten</button>
     </div>}
-    {stoneToShow && <StenEntry sten = {stenar.find(s => s.id === stoneToShow)} setStenar = {setStenar}/>}
+    {stoneToShow !== null && <StenEntry sten = {stenar.find(s => s.id === stoneToShow)} setStenar = {setStenar}/>}
     </div>
 
     {isStoneFormVisible && <AddStoneForm setIsStoneFormVisible = {setIsStoneFormVisible} setStenar = {setStenar}/>}

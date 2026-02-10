@@ -2,3 +2,8 @@
     display:flex;
     flex-direction:row;
 }
+
+.stenpedia-backbutton {
+    padding: 5px 5px;
+    margin-bottom: 1vh;
+}

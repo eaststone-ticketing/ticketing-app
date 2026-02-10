@@ -1,0 +1,232 @@
+.arende-detail-container {
+  display: flex;
+  flex-direction: row;
+  gap: 50px 50px;
+}
+
+.buttons-arende-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 15px 0px;
+  background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
+  padding: 10px;
+  height: 79.3vh;
+  border-radius: 15px;
+  margin-right: -45px;
+  width: 14vw;
+}
+
+.buttons-arende-detail button {
+  width: auto;
+  height: 30px;
+  padding: 0px 10px;
+  background-color: rgb(243, 255, 245);
+}
+
+.buttons-arende-detail button:hover {
+  background-color: rgb(243, 253, 245);
+}
+
+.arende-detail-main {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  margin: 0px;
+  background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
+  border-radius: 15px;
+  width: 66vw;
+  height: 77vh
+}
+
+.arende-detail-main h2 {
+  padding: 2px;
+  margin: 0px;
+  line-height: 1.5;
+}
+
+.arende-detail-main h3 {
+  padding: 2px 0px 10px 0;
+  margin: 2px;
+  line-height: 0.5;
+  margin-bottom: 10px;
+}
+
+.arende-detail-main-header {
+ background-color: rgb(248,255,250);
+ padding: 5px;
+ border-radius: 15px;
+ width: 50vw;
+ height: 10vh;
+ max-height: 100px;
+ align-content: center;
+}
+
+.arende-detail-main-header-and-edit-button {
+  display: flex;
+  flex-direction: sideways;
+  gap: 15px;
+  padding-right: 0;
+  margin-right: 0;
+  
+}
+.arende-detail-main-header-and-edit-button button {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+
+.arende-detail{
+  gap: 10px 10px;
+}
+
+.arende-detail p{
+  margin: 2px;
+  max-width: 30vw;
+}
+
+.arende-detail-oversikt-content-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 60vh;
+    margin-top: 5vh;
+}
+
+.arende-detail-checkboxes-container {
+  display:flex;
+  flex-direction:column;
+  min-width: 225px;
+  width: 15vw;
+  margin: 0;
+}
+
+.arende-detail-infobox-header-and-edit-button{
+    display:flex;
+    flex-direction:row;
+    gap: 6px;
+    align-content: center;
+}
+
+.arende-detail-infobox-header-and-edit-button button{
+    background-color: rgba(0,0,0,0);
+    padding:0;
+    margin:0;
+    font-size: 14px;
+    height: 5px;
+}
+
+.arende-detail-checkboxes {
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
+  padding: 2px;
+  margin: 2px;
+}
+
+.godkannande-info{
+  display:flex;
+  flex-direction:column;
+  background-color: rgb(233, 243, 235);
+}
+
+.godkannande-info p{
+  margin: 0.5vh 0 0.4vh 0.2vw;
+  line-height: 1.2;
+}
+
+.arende-detail-kyrkogard-p{
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+.further-detail-field {
+  padding: 5px 15px;
+  margin-left: 10px;
+}
+
+.header-and-close-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; 
+  margin-top: -6px;
+  padding: 2px;  
+  gap: 1rem;             
+}
+
+.header-and-close-button button {
+  background-color: rgb(233, 243, 235);
+  border-radius: 2px;
+  padding:0px 3px;
+  border:none;
+  color:rgb(0, 0, 0);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.header-and-close-button button:hover {
+  background-color: rgb(230, 0, 0);
+  color: white;
+}
+
+.godkannande-container {
+  background-color: rgb(233, 243, 235);
+  padding: 10px;
+  padding-top: 0px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  width: 400px;
+}
+
+.godkannande-container p{
+  margin: 2px 0 10px 0;
+  line-height: 1.2;
+}
+
+.godkannande-container label{
+  margin: 2px 0 10px 0;
+  line-height: 1.2;
+}
+
+.godkannande-container input{
+  margin: 2px 0 10px 0;
+  line-height: 1.2;
+}
+
+.godkannande-header {
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.godkannande-header button {
+  padding: 5px;
+  font-size: 12px;
+  height: 24px;
+}
+
+.kommentar-container {
+  width: 880px;
+  padding: 3px 15px;
+  background-color: rgb(238, 248, 240);
+  margin: -8px 0px;
+  border-radius:15px;
+  position:relative;
+  top: 7px;
+}
+
+.kommentarsfalt{
+  height: 300px;
+  width: 510px;
+  position: relative;
+  top: -43px;
+  border-radius: 15px;
+  border: 5px solid rgb(223, 233, 225);
+}
+
+.lagg-till-kommentar-button{
+  position: relative;
+  left: -178px;
+}

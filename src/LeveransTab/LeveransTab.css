@@ -23,7 +23,7 @@
     padding: 10px;
     margin-top:2px;
     border-radius: 15px;
-    width: 630px;
+    width: 51.5vw;
 }
 
 .leverans-card:hover{
@@ -32,7 +32,7 @@
 
 .leverans-card h3 {
     margin: 0;
-    margin-bottom: -5px;
+    margin-bottom: -5px; 
 }
 
 .leverans-card p {

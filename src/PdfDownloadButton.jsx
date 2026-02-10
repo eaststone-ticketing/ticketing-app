@@ -1,10 +1,10 @@
 import laggTillTrace from "./laggTillTrace";
+import { IoDownloadOutline } from "react-icons/io5";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function DownloadPDFButton({ arende }) {
   const downloadPDF = async () => {
-    console.log("ARENDE PRIS:", arende.pris);
     const token = JSON.parse(localStorage.getItem("user"))?.token;
     try {
       await laggTillTrace("laddade ner PDF", arende)
@@ -19,7 +19,7 @@ function DownloadPDFButton({ arende }) {
     );
   };
 
-  return <button onClick={downloadPDF}>Ladda ner PDF</button>;
+  return <button onClick={downloadPDF}>PDF <IoDownloadOutline/> </button>;
 }
 
 export default DownloadPDFButton;

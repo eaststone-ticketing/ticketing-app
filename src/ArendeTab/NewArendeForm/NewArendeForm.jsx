@@ -12,6 +12,7 @@ Possible improvements could be making the form multi-step since there are many i
 though this would violate one of the original design principles of this project to provide a smooth transition for users.
 Further form validation might also be a good idea, 
 especially as new features for automatically generating design templates are implemented. These require standardized data.
+
 */
 
 export default function NewArendeForm( { arenden, setArenden, kyrkogardar, kunder, setKunder, setSkapaArende, skapaArende } ) {

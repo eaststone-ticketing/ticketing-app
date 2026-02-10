@@ -28,19 +28,29 @@ async function getLeverans(leverantor){
 
 export default async function tilldelaKomponent(komponent, arende){
 
-    const leverantor = komponent.leverantor
-        if (!leverantor) {
-            console.log("Okänd leverantör")
-            return
-        }
-
-    const leverans = await getLeverans(leverantor); //ATT GÖRA (codex go to hell!)
-    const leveransID = leverans.id
     const arendeID = arende.id;
     const komponentName = createKomponentName(komponent);
+
+    const leverantor = komponent.leverantor
+        if (!leverantor || leverantor === "") {
+            return
+        }
+    
+    let leveransID = null;
+    if (leverantor !== "N/A"){
+        const leverans = await getLeverans(leverantor);
+        leveransID = leverans.id
+        if (!leverans.arenden.includes(arendeID)){
+            try {
+            await updateLeverans(leveransID, {...leverans, arenden: [...leverans.arenden, arendeID]})
+            } catch (error) {
+                console.error(error)
+            }
+        }
+    }
+    
+    
     const newKomponent = {leveransID: leveransID, arendeID: arendeID, body: {...komponent, name: komponentName}}
     await addKomponenter(newKomponent)
-    if (!leverans.arenden.includes(arendeID)){
-    await updateLeverans(leveransID, {...leverans, arenden: [...leverans.arenden, arendeID]})
-}
+
 }
