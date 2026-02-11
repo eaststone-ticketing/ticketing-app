@@ -229,13 +229,13 @@
   border-radius: 8px;
   margin: 2px;
   padding: 10px;
-  width: 50vw;
-  max-width:50vw;
+  width: 60vw;
+  max-width:60vw;
   gap: 10px;
   justify-content: space-between;
   background-image:
     linear-gradient(to left, var(--status-color-start), var(--status-color-end)),
-    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 20%, rgb(243,253,245) 20%, rgb(243,253,245) 100% ),
+    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 16%, rgb(243,253,245) 16%, rgb(243,253,245) 100% ),
     linear-gradient(to bottom, rgb(243,253,245) 60px, rgb(233,243,235));
 
   background-size: 100% 35px, 100% 60px, 100% 100%;
