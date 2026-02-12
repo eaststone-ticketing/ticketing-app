@@ -34,6 +34,7 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
   const [sorting, setSorting] = useState("default");
   const [bestallare, setBestallare] = useState("");
   const [activeArendeKyrkogard, setActiveArendeKyrkogard] = useState(false);
+  const [arendeSliceLimit, setArendeSliceLimit] = useState(50)
 
   const [showMore, setShowMore] = useState(null);
   const [filter, setFilter] = useState([]);
@@ -272,7 +273,7 @@ async function updateArendeStatus(newStatus, arende){
           <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,50).map((arende) => (
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,arendeSliceLimit).map((arende) => (
             <div key={arende.id} className= "arende-card-ny"
               style={{
               '--status-color-start': statusColor[arende.status]?.[0] || 'transparent',
@@ -326,7 +327,8 @@ async function updateArendeStatus(newStatus, arende){
               </div>
             </div>
           ))}
-          </div>
+          <button className = "load-more-button" onClick = {() => setArendeSliceLimit(arendeSliceLimit+50)}>↓ Ladda fler ärenden ↓</button>
+          </div>  
           </div>}
           </div>
           <div className = "new-stone-form-arenden">
@@ -533,7 +535,7 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
       <p>Kyrkogårdsnummer: {kyrkogard.id}</p>
     </div>
   ))}
-  <button className = "load-more-button-kyrkogard" onClick = {() => setLoadMax(loadMax + 50)}>↓ Ladda mer ↓</button>
+  <button className = "load-more-button-kyrkogard" onClick = {() => setLoadMax(loadMax + 50)}>↓ Ladda fler kyrkogårdar ↓</button>
   </div>
   </div>
     </div>

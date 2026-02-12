@@ -857,3 +857,10 @@
   align-items: center;
   justify-content: center;
 }
+
+.load-more-button{
+  position:relative;
+  left: 25vw;
+  top: 6px;
+  background: rgb(243, 243, 245);
+}
