@@ -31,7 +31,7 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
   const [email, setEmail] = useState("");
   const [tel, setTel] = useState("");
   const [kyrkogard, setKyrkogard] = useState("");
-  const [gravrattsinnehavare, setGravrattsinnehavare] = useState("");
+  const [sorting, setSorting] = useState("default");
   const [bestallare, setBestallare] = useState("");
   const [activeArendeKyrkogard, setActiveArendeKyrkogard] = useState(false);
 
@@ -141,26 +141,43 @@ async function updateArendeStatus(newStatus, arende){
     );
   });
 
-  const statusOrder = [
-  "Nytt",
-  "Godkänd av kund",
-  "Godkänd av kyrkogård",
-  "Redo",
-  "Väntar svar av kund",
-  "Väntar svar av kyrkogård",
-  "Godkänd av kund, väntar svar av kyrkogård",
-  "Godkänd av kyrkogård, väntar svar av kund",
-  "Stängt",
-  "LEGACY"
-  ];
+  function sortResults(result, mode) {
 
-  function sortResults(result) {
-    return result.sort((a, b) => {
-    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-});
+    const statusOrder = [
+      "Nytt",
+      "Godkänd av kund",
+      "Godkänd av kyrkogård",
+      "Redo",
+      "Väntar svar av kund",
+      "Väntar svar av kyrkogård",
+      "Väntar svar av kund och kyrkogård",
+      "Godkänd av kund, väntar svar av kyrkogård",
+      "Godkänd av kyrkogård, väntar svar av kund",
+      "Stängt",
+      "LEGACY"
+    ];
+
+    if (mode === "default"){
+      return result.sort((a, b) => {
+      return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+      });
+      
+    }
+    else if (mode === "Nyaste"){
+      return result.sort((a,b) => b.id - a.id);
+    }
+    else if (mode === "Äldsta"){
+      return result.sort((a,b) => a.id - b.id);
+    }
+    else {
+      return result.sort((a, b) => {
+      return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+      });
+      
+    }
   }
 
-  const resultSorted = sortResults(result)
+  const resultSorted = sortResults(result, sorting)
   const [skapaArende, setSkapaArende] = useState(false);
   return (
     <div>
@@ -252,7 +269,7 @@ async function updateArendeStatus(newStatus, arende){
           {!skapaArende && <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>}
           </div>
           {!skapaArende && <div>
-          <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount}/>
+          <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === ""
           || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,50).map((arende) => (

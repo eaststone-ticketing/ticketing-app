@@ -28,3 +28,9 @@
   flex-direction:row;
   justify-content: space-between;
 }
+
+.filter-button{
+  font-size: 16px;
+  padding:0;
+  margin:0;
+  line-height: 1}

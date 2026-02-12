@@ -8,7 +8,7 @@ We don't return 0 in the end upon not finding a filter because that is a proper 
 
 const statusMap = {
     "all":                      r => r.status !== "raderad",
-    "Nytt":                     r => r.status === "Nytt" || r.status === "Väntar svar av kund" || r.status === "Väntar svar av kyrkogård",
+    "Nytt":                     r => r.status === "Nytt" || r.status === "Väntar svar av kund" || r.status === "Väntar svar av kyrkogård" || r.status === "Väntar svar av kund och kyrkogård",
     "Godkänd av kund":          r => r.status?.includes("Godkänd av kund"),
     "Godkänd av kyrkogård":     r => r.status?.includes("Godkänd av kyrkogård"),
     "Väntande":                 r => r.status?.toLowerCase().includes("vänt"), 
