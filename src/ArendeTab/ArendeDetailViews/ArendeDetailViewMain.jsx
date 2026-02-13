@@ -162,7 +162,10 @@ return (<div>
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
         fields = { [["Namn", "bestallare", "text"], 
                     ["Email", "email", "text"], 
-                    ["Telefonnummer", "tel", "text"], 
+                    ["Telefonnummer", "tel", "text"],
+                    ["Adress", "adress", "text"],
+                    ["Postnummer", "postnummer", "text"],
+                    ["Ort", "ort", "text"],
                     ["Gravrättsinnehavare", "gravrattsinnehavare", "text"]]}/>
         
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Kyrkogård"} 
