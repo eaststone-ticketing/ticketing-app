@@ -179,7 +179,19 @@ const onSubmit = async (data) => {
         {mapInputFields(gravstenEntries, "Gravsten", errors)}
         {inputField("Sockel", "sockel", "checkbox", false)}
         <div></div>
-        {inputField("Stående", "staende", "checkbox", false)}
+                        <select
+          className = "select"
+          name="stande"
+          {...register('staende')}>
+          <option value="">Stående/Liggande</option>
+            <option value = {1}>
+              Stående
+            </option>
+            <option value = {0}>
+              Liggande
+            </option>
+          
+        </select>
           <div>
         {inputField("Pris", "pris", "text", false)}
       </div>
