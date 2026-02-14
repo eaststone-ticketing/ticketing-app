@@ -718,7 +718,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     //Get comment data from DB
     let commentString
     const comments = await db.all("SELECT * FROM kommentarer WHERE arendeID = ?", [arendeId])
-    if (!comments){
+    if (!comments || comments.length === 0){
       console.log("Inga kommentarer")
       commentString = " "
     } else {
