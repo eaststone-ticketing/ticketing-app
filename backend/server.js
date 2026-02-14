@@ -715,6 +715,16 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
     const { arendeId } = req.params;
 
+    //Get comment data from DB
+    let commentString
+    const comments = await db.get("SELECT * FROM kommentarer WHERE arendeID = ?", [arendeId])
+    if (!comments){
+      console.log("Inga kommentarer")
+      commentString = " "
+    } else {
+      commentString = comments.join(",")
+    }
+
     // Get arende data from DB
     const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
     if (!arende) {
@@ -808,6 +818,10 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (formName !== "form_sthlm.pdf"){
     form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
+    form.getTextField("Text3").setText(commentString || "");
+    }
+    if (formName === "form_sthlm.pdf"){
+      form.getTextField("Ovrigt").setText(commentString || "");
     }
     form.getTextField("Material").setText(arende.material || "");
     form.getTextField("Totalpris").setText(arende.pris || " ");
