@@ -722,7 +722,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       console.log("Inga kommentarer")
       commentString = " "
     } else {
-      commentString = comments.join(",")
+       commentString = comments.map(c => c.innehall).join(", ");
     }
 
     // Get arende data from DB
