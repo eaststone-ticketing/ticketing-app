@@ -862,6 +862,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Totalpris").setText(arende.pris || " ");
       form.getTextField("Datum").setText(arende.datum || "");
       form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
+      form.getTextField("Text3").setText(commentString || "");
 
       //Handle checkboxes
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
