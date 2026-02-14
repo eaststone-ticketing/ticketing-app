@@ -722,8 +722,8 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       console.log("Inga kommentarer")
       commentString = " "
     } else {
-      console.log(comments)
       commentString = comments.length > 1 ? comments.map(c => c.innehall).join(", ") : comments.innehall;
+      console.log(commentString)
     }
 
     // Get arende data from DB
