@@ -162,7 +162,7 @@ return (<div>
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
         fields = { [["Namn", "bestallare", "text"], 
                     ["Email", "email", "text"], 
-                    ["Telefonnummer", "tel", "text"],
+                    ["Telefonnummer", "tel", "text"], 
                     ["Adress", "adress", "text"],
                     ["Postnummer", "postnummer", "text"],
                     ["Ort", "ort", "text"],
@@ -268,6 +268,7 @@ return (<div>
           <p>Dödsdatum: <strong>{activeArende.dodsDatum ?? "Dödsdatum saknas"}</strong></p>
           <p>Minnesord: <strong>{activeArende.minnesord ?? "Minnesord saknas"}</strong></p>
           <p>Dekor: <strong>{activeArende.dekor ?? "Dekor saknas"}</strong></p>
+          <p>Stående: <strong>{activeArende.staende === 1 ? "Ja": "Nej"}</strong></p>
           </div>}
           {designEdit && <DesignEditForm arende = {activeArende} setDesignEdit={setDesignEdit} setActiveArende={setActiveArende}/>}
           </div>

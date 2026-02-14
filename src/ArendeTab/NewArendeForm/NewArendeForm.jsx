@@ -1,7 +1,7 @@
 import './NewArendeForm.css'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { addArende, addKund } from '../../api.js'
+import { addArende, addKund, addKommentarer } from '../../api.js'
 import laggTillTrace from '../../laggTillTrace.jsx'
 
 /*
@@ -14,6 +14,41 @@ Further form validation might also be a good idea,
 especially as new features for automatically generating design templates are implemented. These require standardized data.
 
 */
+
+function findTaggedUsers(comment) {
+  const regex = /@([^\s@]+)/g;
+  const tags = [];
+  let match;
+
+  while ((match = regex.exec(comment)) !== null) {
+    tags.push(match[1]);
+  }
+
+  return tags;
+}
+
+function appendNameAndDate(innehall){
+  const user = JSON.parse(localStorage.getItem('user') )
+    const time = new Date();
+    const timestamp = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 9 ? time.getMinutes(): `0${time.getMinutes()}`}`
+  if(user){
+    const newContent = `\n\n${user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}\n${timestamp}`
+    return innehall + newContent
+  }
+  else{
+    const newContent = `\n\n${timestamp}`
+    return innehall + newContent;
+  }
+}
+
+async function addNewKommentar(innehall, id) {
+  
+  const newInnehall = appendNameAndDate(innehall);
+  const numberID = Number(id)
+  const tags = JSON.stringify(findTaggedUsers(innehall))
+  const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
+  await addKommentarer(kommentar)
+}
 
 export default function NewArendeForm( { arenden, setArenden, kyrkogardar, kunder, setKunder, setSkapaArende, skapaArende } ) {
 
@@ -82,6 +117,7 @@ const onSubmit = async (data) => {
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
     laggTillTrace("har skapat ärendet", newArende)
+    addNewKommentar(data.kommentar, newArende.id)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
@@ -179,7 +215,7 @@ const onSubmit = async (data) => {
         {mapInputFields(gravstenEntries, "Gravsten", errors)}
         {inputField("Sockel", "sockel", "checkbox", false)}
         <div></div>
-                        <select
+                <select
           className = "select"
           name="stande"
           {...register('staende')}>
