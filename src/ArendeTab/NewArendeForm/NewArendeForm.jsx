@@ -41,12 +41,13 @@ function appendNameAndDate(innehall){
   }
 }
 
-async function addNewKommentar(innehall, id) {
+async function addNewKommentar(innehall, id, e) {
   
   const newInnehall = appendNameAndDate(innehall);
   const numberID = Number(id)
   const tags = JSON.stringify(findTaggedUsers(innehall))
   const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
+  console.log(kommentar)
   await addKommentarer(kommentar)
 }
 
@@ -117,7 +118,11 @@ const onSubmit = async (data) => {
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
     laggTillTrace("har skapat ärendet", newArende)
+    try {
     await addNewKommentar(data.kommentar, newArende.id)
+    } catch (err) {
+      console.error(err)
+    }
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
