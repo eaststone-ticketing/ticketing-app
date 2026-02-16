@@ -114,14 +114,14 @@ const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of n
 const onSubmit = async (data) => {
   try {
 
+    const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
+    const newArende = await addArende({ datum, ...data, status: 'Nytt'})
+
     try {
     await addNewKommentar(data.kommentar, newArende.id)
     } catch (err) {
       console.error(err)
     }
-
-    const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
-    const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
     laggTillTrace("har skapat ärendet", newArende)
     setArenden([...arenden, newArende]);
