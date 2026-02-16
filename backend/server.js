@@ -722,7 +722,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       console.log("Inga kommentarer")
       commentString = " "
     } else {
-      commentString = comments.length > 1 ? comments.map(c => c.innehall).join(", ") : comments.innehall;
+      commentString = comments.length > 1 ? comments.map(c => c.innehall).join(", ") : comments[0].innehall ?? "";
       console.log(commentString)
     }
 
