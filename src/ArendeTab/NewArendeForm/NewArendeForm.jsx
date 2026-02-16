@@ -47,7 +47,7 @@ async function addNewKommentar(innehall, id) {
   const numberID = Number(id)
   const tags = JSON.stringify(findTaggedUsers(innehall))
   const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
-  console.log(kommentar)
+  console.log(`kommentar: ${kommentar.innehall}`)
   await addKommentarer(kommentar)
 }
 
@@ -114,15 +114,16 @@ const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of n
 const onSubmit = async (data) => {
   try {
 
-    const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
-    const newArende = await addArende({ datum, ...data, status: 'Nytt'})
-
-    laggTillTrace("har skapat ärendet", newArende)
     try {
     await addNewKommentar(data.kommentar, newArende.id)
     } catch (err) {
       console.error(err)
     }
+
+    const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
+    const newArende = await addArende({ datum, ...data, status: 'Nytt'})
+
+    laggTillTrace("har skapat ärendet", newArende)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
