@@ -112,7 +112,10 @@ const {
 const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of nuvarande text input which is only valid for certain arende types
 
 const onSubmit = async (data) => {
+  console.log("Submission has happened at all!")
   try {
+
+    console.log("And we are trying")
 
     const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
