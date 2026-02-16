@@ -47,7 +47,6 @@ async function addNewKommentar(innehall, id) {
   const numberID = Number(id)
   const tags = JSON.stringify(findTaggedUsers(innehall))
   const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
-  console.log(`kommentar: ${kommentar.innehall}`)
   await addKommentarer(kommentar)
 }
 
@@ -112,17 +111,13 @@ const {
 const arendeTypValue = watch('arendeTyp'); //Used for conditional rendering of nuvarande text input which is only valid for certain arende types
 
 const onSubmit = async (data) => {
-  console.log("Submission has happened at all!")
   try {
-
-    console.log("And we are trying")
 
     const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
-    addNewKommentar(data.kommentar, newArende.id)
-
     laggTillTrace("har skapat ärendet", newArende)
+    addNewKommentar(data.kommentar, newArende.id)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
