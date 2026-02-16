@@ -41,7 +41,7 @@ function appendNameAndDate(innehall){
   }
 }
 
-async function addNewKommentar(innehall, id, e) {
+async function addNewKommentar(innehall, id) {
   
   const newInnehall = appendNameAndDate(innehall);
   const numberID = Number(id)
