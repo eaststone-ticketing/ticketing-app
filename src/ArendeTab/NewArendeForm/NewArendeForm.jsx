@@ -120,11 +120,8 @@ const onSubmit = async (data) => {
     const datum = new Date().toISOString().split('T')[0];  //Splitting by T removes the time of day and just leaves the date
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
-    try {
     await addNewKommentar(data.kommentar, newArende.id)
-    } catch (err) {
-      console.error(err)
-    }
+ 
 
     laggTillTrace("har skapat ärendet", newArende)
     setArenden([...arenden, newArende]);
