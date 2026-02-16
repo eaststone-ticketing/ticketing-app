@@ -1,6 +1,6 @@
 import { getArenden } from "../../api";
 import { useState, useEffect, useRef } from 'react'
-import Plotly from "plotly.js-dist-min";
+//import Plotly from "plotly.js-dist-min";
 
 export function DataViewMain() {
 
