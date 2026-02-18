@@ -887,9 +887,13 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     }
 
      // Set response headers for PDF download
-    const safeName = arende.avlidenNamn ?? "ärende";
-    const asciiFallback = safeName.replace(/[^\x20-\x7E]/g, "_");
-    const encoded = encodeURIComponent(`${safeName}.pdf`);
+    const raw = (arende.avlidenNamn ?? "arende").normalize("NFC");
+
+    const fallback = raw
+      .replace(/[^\x20-\x7E]/g, "_")
+      .replace(/["\\]/g, "_");
+
+    const encoded = encodeURIComponent(raw + ".pdf");
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
