@@ -156,7 +156,8 @@ return (<div>
         <div className = "arende-detail-oversikt-content-grid">
 
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"} 
-        fields = { [["Födelsedatum", "fodelseDatum", "text"], 
+        fields = { [["Namn", "avlidenNamn", "text"],
+                    ["Födelsedatum", "fodelseDatum", "text"], 
                     ["Dödsdatum", "dodsDatum", "text"]]}/>
       
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
