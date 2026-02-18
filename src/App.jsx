@@ -672,6 +672,15 @@ return <div className = "oversikt-view">
   </div>
   </div>}
   {oversiktViewState === "Stenpedia" && <Stenpedia setOversiktViewState = {setOversiktViewState}/>}
+  <div>
+    <form onSubmit = {updatePassword(user, newPassword, passwordChecker)}>
+    <p>Nytt lösenord</p>
+    <input onChange = {(e) => setNewPassword(e.target.value)}></input>
+    <p>Bekräfta lösenord</p>
+    <input onChange = {(e) => setNewPassword(e.target.value)}></input>
+    <button>Bekräfta</button>
+    </form>
+  </div>
 </div>
 
 }

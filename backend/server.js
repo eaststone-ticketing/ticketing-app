@@ -894,7 +894,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${asciiFallback}.pdf"; filename*=UTF-8''${encoded}`
+      `attachment; filename="file.pdf"; filename*=UTF-8''${encoded}`
     );
     
     // Send the PDF as response
