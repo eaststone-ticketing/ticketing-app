@@ -1,8 +1,8 @@
 import { getArenden } from "../../api";
 import { useState, useEffect, useRef } from 'react'
-//import Plotly from "plotly.js-dist-min";
+import Plotly from "plotly.js-dist-min";
 
-export function DataViewMain() {
+export function DataView() {
 
     const [arendenData, setArendenData] = useState([])
     const [chartMode, setChartMode] = useState(false)

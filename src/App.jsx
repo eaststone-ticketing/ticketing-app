@@ -23,7 +23,6 @@ import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import handleStatusChange from './handleStatusChange.jsx'
 import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
-import {DataViewMain} from './OversiktTab/DataView/DataViewMain.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -599,8 +598,8 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   const [oversiktViewState, setOversiktViewState] = useState(null);
   const [kommentarer, setKommentarer] = useState(null);
   const [showDetail, setShowDetail] = useState(null);
-  const [newPassword, setNewPassword] = useState(null);
-  const [passwordChecker, setPasswordChecker] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordChecker, setPasswordChecker] = useState("");
   const [activeNotificationTab, setActiveNotificationTab] = useState("dina");
 
   useEffect(() => {

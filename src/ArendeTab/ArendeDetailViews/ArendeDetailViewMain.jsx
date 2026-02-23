@@ -11,6 +11,7 @@ import {GodkannandeDisplayOversikt} from './OversiktPage/GodkannandeDisplayOvers
 import './ArendeDetailViewMain.css'
 import { FaRegEdit } from "react-icons/fa";
 import {Infobox} from "./Infoboxes/Infobox.jsx"
+import StenView from './StenView/StenView'
 
 export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, activeArendeKyrkogard, setActiveArendeKyrkogard, setArenden}) {
 
@@ -136,6 +137,7 @@ return (<div>
         <button onClick = {() => {setActiveTab('Ärenden'); setActiveArende(null); setCreateKommentar(false)}}>← Tillbaka till sökfält</button>
         <button onClick = {() => setArendeDetailState("oversikt")}> Översikt</button>
         <button onClick = {() => setArendeDetailState("design")}>Design</button>
+        <button onClick = {() => setArendeDetailState("sten")}>Sten</button>
         <button disabled = {activeArende.arendeTyp !== "Nyinskription" && activeArende.arendeTyp !== "Ny sten"} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
@@ -275,6 +277,7 @@ return (<div>
           </div>
           </div>
           </div>}
+        {arendeDetailState === "sten" && <StenView activeArende = {activeArende} setActiveArende={setActiveArende}/>}
         {arendeDetailState === "kontaktpersoner" && <div>
           <h2>Kontaktpersoner för {activeArende.avlidenNamn}</h2>
           <p>Gravrättsinnehavare: {activeArende.gravrattsinnehavare}</p>
