@@ -10,10 +10,9 @@
 
 .arende-card-filter-panel button{
   padding: 1vh 1vw;
-  background-color: rgb(233, 243, 235);
 }
 
-.arende-card-filter-panel select {
+.sortera-efter{
   background-color: rgba(233, 243, 235, 0);
   height: 16px;
   border-radius: 3px;
@@ -33,4 +32,25 @@
   font-size: 16px;
   padding:0;
   margin:0;
-  line-height: 1}
+  line-height: 1;
+  background-color: rgb(233, 243, 235);}
+
+.arende-card-filter-panel-transparent-button{
+  background-color: rgba(233, 243, 235, 0);
+  height: 30px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 0.8vh;
+  margin-right: 0.4vw;
+}
+
+.arende-card-filter-panel-selected-button{
+  background-color: rgba(243, 253, 245, 100);
+  height: 30px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 0.8vh;
+  margin-right: 0.4vw
+}

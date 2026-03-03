@@ -23,6 +23,7 @@ import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import handleStatusChange from './handleStatusChange.jsx'
 import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
+import {DataView} from './OversiktTab/DataView/DataViewMain.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -39,6 +40,7 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
   const [showMore, setShowMore] = useState(null);
   const [filter, setFilter] = useState([]);
   const [typeToSearch, setTypeToSearch] = useState("");
+  const [ursprungToSearch, setUrsprungToSearch] = useState("");
 
   const statusColor = {
     "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
@@ -219,6 +221,11 @@ async function updateArendeStatus(newStatus, arende){
                 Övrigt
               </option>
             </select>
+            <select onChange = {(e) => setUrsprungToSearch(e.target.value)}>
+              <option value = "">Välj ursprung</option>
+              <option>Eaststone</option>
+              <option>Stockholms Gravstenar</option>
+            </select>
 
             </div>
             <div className = "input-field-searchbar-arende">
@@ -270,10 +277,10 @@ async function updateArendeStatus(newStatus, arende){
           {!skapaArende && <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>}
           </div>
           {!skapaArende && <div>
-          <ArendeCardFilterPanel typeToSearch = {typeToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting}/>
+          <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting}/>
           <div className = "scrollable-box">
-          {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,arendeSliceLimit).map((arende) => (
+          {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,arendeSliceLimit).map((arende) => (
             <div key={arende.id} className= "arende-card-ny"
               style={{
               '--status-color-start': statusColor[arende.status]?.[0] || 'transparent',
@@ -643,6 +650,7 @@ return <div className = "oversikt-view">
   <Greeting/>
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  <button onClick = {async () => {setOversiktViewState("DataView")}}>Data dashboard</button>
   
   </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
@@ -671,6 +679,7 @@ return <div className = "oversikt-view">
   </div>
   </div>}
   {oversiktViewState === "Stenpedia" && <Stenpedia setOversiktViewState = {setOversiktViewState}/>}
+  {oversiktViewState === "DataView" && <DataView setOversiktViewState = {setOversiktViewState} />}
 </div>
 
 }

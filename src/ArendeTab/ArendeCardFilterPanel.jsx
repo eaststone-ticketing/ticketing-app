@@ -2,9 +2,11 @@ import './ArendeCardFilterPanel.css'
 
 export default function ArendeCardFilterPanel({
   typeToSearch,
+  ursprungToSearch,
   resultSorted,
   setFilter,
   setSorting,
+  sorting,
   findTicketAmount
 }) {
 
@@ -25,25 +27,14 @@ export default function ArendeCardFilterPanel({
           key={key}
           onClick={() => setFilter(statuses)}
         >
-          {label} ({findTicketAmount(key, resultSorted, typeToSearch)})
+          {label} ({findTicketAmount(key, resultSorted, typeToSearch, ursprungToSearch)})
         </button>
       ))}
     </div>
-      <select onChange = {(e) => setSorting(e.target.value)}>
-        <option>
-          Sortera efter:
-        </option>
-        <option>
-          Status
-        </option>
-        <option>
-          Nyaste
-        </option>
-        <option>
-          Äldsta  
-        </option>
-
-      </select>
+      <span className = "sortera-efter" >Sortera efter: </span>
+      <button className = {sorting === "Nyaste" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Nyaste")}>Nyaste</button>
+      <button className = {sorting === "Äldsta" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Äldsta")}>Äldsta</button>
+      <button className = {sorting === "Status" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Status")}>Status</button>
     </div>
   );
 }

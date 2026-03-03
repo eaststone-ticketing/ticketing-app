@@ -31,6 +31,21 @@ const [avlidenEdit, setAvlidenEdit] = useState(false);
 const [bestallareEdit, setBestallareEdit] = useState(false);
 const [kyrkogardEdit, setKyrkogardEdit] = useState(false);
 
+  const statusColor = {
+    "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
+    "Väntar svar av kund":["rgb(200,155,255)", "rgb(255, 225, 115)"],
+    "Väntar svar av kyrkogård":["rgb(200,155,255)", "rgb(243, 100, 255)"],
+    "Väntar svar av kund och kyrkogård":["rgb(200,155,255)", "rgb(123, 245, 200)"],
+    "Godkänd av kund" : ["rgb(240, 245, 145)", "rgb(255, 225, 115)"],
+    "Godkänd av kund, väntar svar av kyrkogård" : ["rgb(240, 245, 145)","rgb(243, 100, 255)"],
+    "Godkänd av kyrkogård" : ["rgb(243, 145, 228)", "rgb(243, 100, 255) "],
+    "Godkänd av kyrkogård, väntar svar av kund" : ["rgb(243, 145, 228)", "rgb(255, 225, 115)"],
+    "Redo" : ["rgb(153, 245, 153)",  "rgb(123, 245, 200)"],
+    "Stängt" : ["rgb(196, 196, 196)", "rgb(199, 199, 199)"],
+    "LEGACY" : ["rgb(213, 223, 215)",  "rgb(223, 233, 225)"],
+    "raderad" : ["rgb(200,155,255)", "rgb(200,198,255)"]
+  }
+
 useEffect(() => {
 
   const fetchKommentarer = async () => {
@@ -147,7 +162,10 @@ return (<div>
         {arendeDetailState === "oversikt" && <div>
         <div className = "arende-detail-main">
         <div className = "arende-detail-main-contents">
-        <div className = "arende-detail-main-header">
+        <div className = "arende-detail-main-header"
+          style={{
+              '--status-color-start': statusColor[activeArende.status]?.[0] || 'transparent',
+              '--status-color-end': statusColor[activeArende.status]?.[1] || 'transparent'}}>
         <div className = "arende-detail-main-header-and-edit-button">
         <h2>{activeArende.avlidenNamn}</h2>
         <DownloadPdfButton arende = {activeArende} />
@@ -158,43 +176,30 @@ return (<div>
         <div className = "arende-detail-oversikt-content-grid">
 
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"} 
-        fields = { [["Namn", "avlidenNamn", "text"],
+        fields = { [["", "avlidenNamn", "text"],
                     ["Födelsedatum", "fodelseDatum", "text"], 
-                    ["Dödsdatum", "dodsDatum", "text"]]}/>
+                    ["Dödsdatum", "dodsDatum", "text"],
+                    ["Ärendetyp", "arendeTyp", "typ"],
+                    ["Kyrkogård", "kyrkogard", "kyrkogard"],
+                  ["Kvarter", "kvarter", "text"],
+                  ["Gravnummer", "gravnummer", "text"]]}/>
       
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
-        fields = { [["Namn", "bestallare", "text"], 
-                    ["Email", "email", "text"], 
-                    ["Telefonnummer", "tel", "text"], 
+        fields = { [["", "bestallare", "text"], 
+                    ["E-post", "email", "text"], 
+                    ["Telefon", "tel", "text"], 
                     ["Adress", "adress", "text"],
                     ["Postnummer", "postnummer", "text"],
                     ["Ort", "ort", "text"],
                     ["Gravrättsinnehavare", "gravrattsinnehavare", "text"]]}/>
         
-        <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Kyrkogård"} 
-        fields = {[["Namn", "kyrkogard", "kyrkogard"],
-                  ["Kvarter", "kvarter", "text"],
-                  ["Gravnummer", "gravnummer", "text"]
-                  ]} />
         
-        <div className = "arende-detail-arende-infobox">
-        <h3>Ärendeinformation</h3>
-        <div className = "arende-detail">
-        <p><strong>ID:</strong> {activeArende.id}</p>
-        </div>
-        <div className = "arende-detail">
-        <p><strong>Status:</strong> {activeArende.status}</p> 
-        <div className = "arende-detail">
-        <p><strong>Datum skapad:</strong> {activeArende.datum}</p>
-        </div>
-        <div className = "arende-detail">
-          <p><strong>Ursprung:</strong> {activeArende.ursprung}</p>
-        </div>
-        </div>
-        {activeArende.status === "raderad" && <div className = "arende-detail">
-          <p>Raderad: {activeArende.deleted_at }</p>
-        </div>}
-        </div>
+        <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Ärendeinformation"} editAllowed = {false}
+        fields = {[["ID", "id", "text"],
+                  ["Status", "status", "text"],
+                  ["Datum skapad", "datum", "text"],
+                  ["Ursprung", "ursprung", "text"]
+                  ]} />
                 <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Pris"} 
         fields = {[["Total", "pris", "text"]
                   ]} />

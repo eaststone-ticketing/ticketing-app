@@ -1,0 +1,21 @@
+.infobox-label{
+    color : gray;
+    font-size: 14px;
+}
+
+.infobox-content {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.infobox-content-header {
+    font-weight: 650;
+    font-size: 16px;
+}
+
+.arende-detail-bestallare-infobox{
+    background-color: rgb(248,255,250);
+    margin: 0 0.5vw 2vh 0.5vw;
+    padding: 1vh 0.5vw 1vh 0.5vw ;
+    border-radius:5px;
+}

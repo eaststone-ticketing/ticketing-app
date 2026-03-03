@@ -1,0 +1,25 @@
+.sten-info-container{
+    display:flex;
+    flex-direction: column;
+    padding: 15px;
+    background-color: rgb(233, 243, 235);
+    border-radius: 15px;
+    width: 67vw;
+}
+
+.sten-info-container button {
+    max-width: 10vw;
+}
+
+.sten-view-form{
+    display:flex;
+    flex-direction: column;
+    margin-bottom: 1vh;
+}
+.sten-field {
+    margin-bottom: 2vh;
+}
+
+.sten-field input {
+    margin-left: 0.2vw
+}

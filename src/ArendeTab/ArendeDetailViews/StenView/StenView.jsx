@@ -1,71 +1,29 @@
 import {useState} from 'react'
-import { updateArende } from '../../../api.js';
+
+import {StenViewForm} from './StenViewForm.jsx'
+import './StenView.css'
 
 export default function StenView({activeArende, setActiveArende}){
 
-const [formData, setFormData] = useState({
-    framsida: activeArende.framsida,
-    kanter: activeArende.kanter,
-    sockelBearbetning: activeArende.sockelBearbetning
-})
+//Format is {label : variableName} where variableName is what it is called in the arende object
 
 const [editSten, setEditSten] = useState(false) 
 
-function onSubmit() {
-        const newArende = {
-            ...activeArende,
-            ...formData
-        };
+const fields = [{label: "Framsida", type: "text", name: "framsida"},
+                {label: "Kanter", type:"text", name: "kanter"},
+                {label: "Sockel", type:"text", name: "sockelBearbetning"},
+                {label: "Modell", type:"text", name: "modell"},
+                {label: "Material", type:"text", name:"material"}
+]   
 
-        updateArende(activeArende.id, newArende);
-        setActiveArende(newArende);
-        setEditSten(false);
-    }
-
-return <div>
+return <div className = "sten-info-container">
 {!editSten && <div>
-    <p>Framsida: <strong>{activeArende.framsida}</strong></p>
-    <p>Kanter: <strong>{activeArende.kanter}</strong></p>
-    <p>Sockel: <strong>{activeArende.sockelBearbetning}</strong></p>
+    <h4>Sten</h4>
+    {fields.map((field) => <p>{field.label}: {activeArende[field.name]}  </p>)}
 </div>}
 
 {editSten && <div> 
-       <form
-            className="design-edit-form"
-            onSubmit={(e) => { e.preventDefault(); onSubmit() }}
-            >
-
-                <div className="edit-form-entry">
-                    <label><strong>Framsida:</strong></label>
-                    <input
-                        name="framsida"
-                        value={formData.framsida}
-                        onChange={(e) => setFormData({ ...formData, framsida: e.target.value })}
-                    />
-                </div>
-
-                <div className="edit-form-entry">
-                    <label><strong>Kanter:</strong></label>
-                    <input
-                        name="kanter"
-                        value={formData.kanter}
-                        onChange={(e) => setFormData({ ...formData, kanter: e.target.value })}
-                    />
-                </div>
-
-                <div className="edit-form-entry">
-                    <label><strong>Sockel:</strong></label>
-                    <input
-                        name="sockelBearbetning"
-                        value={formData.sockelBearbetning}
-                        type = "text"
-                        onChange={(e) => {setFormData({ ...formData, sockelBearbetning: e.target.value})}}
-                    />
-                </div>
-            <button type = "submit">Bekräfta</button>
-            </form>
-
-    
+    <StenViewForm fields = {fields} activeArende = {activeArende} setActiveArende = {setActiveArende} setEditSten = {setEditSten}/>
     </div>}
     <button onClick = {() => setEditSten(!editSten)}>Redigera</button>
 </div>}

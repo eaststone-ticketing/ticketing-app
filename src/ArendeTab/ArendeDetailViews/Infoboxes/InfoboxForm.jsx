@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getKyrkogardar, updateArende } from '../../../api.js'
+import './Infobox.css'
 
 export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
     
@@ -38,7 +39,8 @@ export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
             } catch(err) {
             console.error(err)
             }
-    }
+        }
+
 
 
     return <form onSubmit = {async (e) => {onSubmit(e)}}>
@@ -46,9 +48,20 @@ export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
             {type === "kyrkogard" && <select value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})}>
                 {kyrkogardar.map((k) => <option value = {k.namn}>{k.namn}</option>)}
                 </select>}
+
+            {type === "typ" && <select value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})} className = 'infobox-content'>
+                <option value = "">Välj ärendetyp</option>
+                <option>Ny sten</option>
+                <option>Nyinskription</option>
+                <option>Stabilisering</option> 
+                <option>Rengöring</option>
+                <option>Inspektering</option>
+                <option>Ommålning</option>
+                <option>Övrigt</option>
+            </select>}
             
-            {type === "text" && <label>
-                <strong>{label}: </strong>
+            {type === "text" && <label className = 'infobox-content'>
+                <strong>{label && `${label}:`} </strong>
                 <input value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})} type = "text" />
             </label>}
         </div>)}

@@ -117,8 +117,7 @@ const onSubmit = async (data) => {
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
     laggTillTrace("har skapat ärendet", newArende)
-    if (data.kommentar){
-    addNewKommentar(data.kommentar, newArende.id)}
+    addNewKommentar(data.kommentar, newArende.id)
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;

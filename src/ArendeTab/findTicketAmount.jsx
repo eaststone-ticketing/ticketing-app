@@ -1,5 +1,5 @@
 /* 
-Handles the filtering in two dimensions (type and status) applied by the user in the Arende tab.
+Handles the filtering in three dimensions (ursprung, type and status) applied by the user in the Arende tab.
 
 We don't return 0 in the end upon not finding a filter because that is a proper amount and we have gotten an improper result
 */
@@ -17,11 +17,15 @@ const statusMap = {
     "Redo":                     r => r.status === "Redo"
 }
 
-export default function findTicketAmount(filter, results, typeToSearch){
+export default function findTicketAmount(filter, results, typeToSearch, ursprungToSearch){
+
+    //Filter the results by URSPRUNG
+
+    const filteredByUrsprung = results.filter(r => r.ursprung === ursprungToSearch || ursprungToSearch === "");
 
     //Filter the results by TYPE
 
-  const filteredByType = results.filter(r => r.arendeTyp === typeToSearch || typeToSearch === "");
+    const filteredByType = filteredByUrsprung.filter(r => r.arendeTyp === typeToSearch || typeToSearch === "");
 
     //Filter the results by STATUS
 
