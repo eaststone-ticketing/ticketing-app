@@ -23,7 +23,7 @@ import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import handleStatusChange from './handleStatusChange.jsx'
 import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
-import {UploadButton} from './UploadButton.jsx'
+import UploadButton from './UploadButton.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
