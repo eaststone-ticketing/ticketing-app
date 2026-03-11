@@ -11,8 +11,13 @@ import { PDFDocument } from "pdf-lib";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { r2 } from "./R2Client.js";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
+
+const R2_BUCKET = "ticketing-images"
 
 const app = express();
 app.use(cors({
@@ -184,6 +189,26 @@ await db.exec(`
   );
   ` 
 );
+
+app.post("/api/upload-url", async (req, res) => {
+  const { arendeID, fileType } = req.body;
+
+  const key = `arenden/${arendeID}/${Date.now()}.jpg`;
+
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    ContentType: fileType
+  });
+
+  const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 60 });
+
+  res.json({
+    uploadUrl,
+    key
+  });
+});
+
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler } = req.body;
 

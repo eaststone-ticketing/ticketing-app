@@ -259,6 +259,29 @@ export async function addKommentarer(kommentar) {
   }
 }
 
+export async function uploadPhoto(file, caseId) {
+  const res = await fetch("/api/upload-url", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      caseId,
+      fileType: file.type
+    })
+  });
+
+  const { uploadUrl, key } = await res.json();
+
+  await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": file.type
+    }
+  });
+
+  return key;
+}
+
 export async function removeKommentarer(id) {
     const res = await fetch (`${API_URL}/kommentarer/${id}`, {
         method: "DELETE",

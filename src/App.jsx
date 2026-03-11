@@ -23,6 +23,7 @@ import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import handleStatusChange from './handleStatusChange.jsx'
 import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
+import {UploadButton} from './UploadButton.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -649,6 +650,7 @@ return <div className = "oversikt-view">
   <Greeting/>
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  {user.userName === "felix" && <UploadButton />}
   
   </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
