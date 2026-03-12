@@ -261,6 +261,7 @@ export async function addKommentarer(kommentar) {
 
 export async function uploadPhoto(file, arendeID) {
   const token = await getToken();
+
   const res = await fetch("/api/upload-url", {
     method: "POST",
     headers: {"Content-Type": "application/json",
@@ -272,8 +273,11 @@ export async function uploadPhoto(file, arendeID) {
     })
   });
 
-  const { uploadUrl, key } = await res.json();
+  if (!res.ok){
+    console.error("Failed to get upload URL")
+  }
 
+  const { uploadUrl, key } = await res.json();
   await fetch(uploadUrl, {
     method: "PUT",
     body: file,
@@ -281,7 +285,7 @@ export async function uploadPhoto(file, arendeID) {
       "Content-Type": file.type
     }
   });
-
+  
   return key;
 }
 
