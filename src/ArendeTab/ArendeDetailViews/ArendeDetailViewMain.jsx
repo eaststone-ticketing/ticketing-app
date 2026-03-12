@@ -336,7 +336,7 @@ return (<div>
           <HistorikPage arende = {activeArende}/>
           </div>}
         {arendeDetailState === "bilder" && <div className = "bilder-container"> 
-          <ArendeImageView />
+          <ArendeImageView activeArende = {activeArende}/>
           </div>}
         {arendeDetailState === "bestallningar" && <ArendeComponentPage arende = {activeArende}/>}
         </div>
