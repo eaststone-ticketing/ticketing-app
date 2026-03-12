@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import UploadButton from "../../../UploadButton.jsx";
 import { getBilder } from "../../../api.js";
 
-const R2_URL =
-  "https://ticketing-images.fe0019fa228aaa75fe5c4670e78fbc4b.eu.r2.cloudflarestorage.com";
+const R2_URL_PUB =
+  "https://pub-b57e1e9dcdfe4d67981fce0351584079.r2.dev";
 
 export default function ArendeImageView({ activeArende }) {
   const [bilder, setBilder] = useState([]);
@@ -27,7 +27,7 @@ export default function ArendeImageView({ activeArende }) {
       {arendeBilder.map((bild) => (
         <div key={bild.id}>
           <img
-            src={`${R2_URL}/${bild.key}`}
+            src={`${R2_URL_PUB}/${bild.key}`}
             style={{ width: "200px", margin: "10px" }}
           />
           <p>{bild.key}</p>
