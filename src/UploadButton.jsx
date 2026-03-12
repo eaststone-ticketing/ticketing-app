@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-function UploadButton({ caseId }) {
+const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
+
+function UploadButton({ arendeID }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
 
@@ -14,7 +16,7 @@ function UploadButton({ caseId }) {
     setStatus("Requesting upload URL...");
     
     // Step 1: Ask backend for a presigned URL
-    const res = await fetch("/api/upload-url", {
+    const res = await fetch(`${API_URL}/api/upload-url`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ arendeID:"1", fileType: file.type })
