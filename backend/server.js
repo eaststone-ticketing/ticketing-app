@@ -193,7 +193,7 @@ await db.exec(`
 await db.exec(`CREATE TABLE IF NOT EXISTS bilder (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     arendeID INTEGER,
-    key TEXT,
+    key TEXT
 )`)
 
 app.post("/api/upload-url", authenticateToken, async (req, res) => {
