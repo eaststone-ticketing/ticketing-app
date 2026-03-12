@@ -19,6 +19,10 @@ function UploadButton({ caseId }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ arendeID:"1", fileType: file.type })
     });
+    if (!res.ok) {
+    setStatus("Failed to get upload URL");
+    return;
+  }
     const { uploadUrl, key } = await res.json();
 
     setStatus("Uploading...");
