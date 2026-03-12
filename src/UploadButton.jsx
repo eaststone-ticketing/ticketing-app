@@ -2,9 +2,42 @@ import { useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
+async function getToken() {
+
+  const user = localStorage.getItem('user'); 
+  let token = user ? JSON.parse(user).token : null; 
+
+  if(!token) return null;
+  
+  if (isTokenExpired(token)){
+        try {
+            const res = await fetch(`${API_URL}/refresh-token`, {
+                method: 'POST',
+                credentials: 'include', // send HTTP-only cookie
+            });
+
+            if (!res.ok) {
+                console.error('Refresh token failed');
+                return null;
+            }
+
+            const data = await res.json();
+            // Save the new token in localStorage
+            localStorage.setItem('user', JSON.stringify({ ...JSON.parse(user), token: data.accessToken }));
+            token = data.accessToken;
+        } catch (err) {
+            console.error('Error refreshing token:', err);
+            return null;
+        }
+  }
+  
+    return token;
+}
+
 function UploadButton({ arendeID }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
+  const token = getToken()
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -18,7 +51,9 @@ function UploadButton({ arendeID }) {
     // Step 1: Ask backend for a presigned URL
     const res = await fetch(`${API_URL}/api/upload-url`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+        "Authorization": `Bearer ${await getToken()}`
+       },
       body: JSON.stringify({ arendeID:"1", fileType: file.type })
     });
     if (!res.ok) {
