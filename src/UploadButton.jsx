@@ -76,8 +76,7 @@ function UploadButton({ arendeID }) {
       method: "PUT",
       body: file,
       headers: {
-        "Content-Type": file.type,
-        "Authorization": `Bearer ${await getToken()}`
+        "Content-Type": file.type
       }
     });
 
