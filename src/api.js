@@ -277,14 +277,14 @@ export async function uploadPhoto(file, arendeID) {
     console.error("Failed to get upload URL")
   }
 
-  const { uploadUrl, key } = await res.json();
   await fetch(uploadUrl, {
-    method: "PUT",
-    body: file,
-    headers: {
-      "Content-Type": file.type
-    }
-  });
+  method: "PUT",
+  body: file,
+  headers: {
+    "Content-Type": file.type
+  },
+  credentials: "omit"
+});
   
   return key;
 }
