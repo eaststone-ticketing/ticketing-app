@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { addBild } from './api.js'
 
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
@@ -44,7 +45,6 @@ function isTokenExpired(token) {
 function UploadButton({ arendeID }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
-  const token = getToken()
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -83,6 +83,7 @@ function UploadButton({ arendeID }) {
     if (uploadRes.ok) {
       setStatus("Upload successful!");
       console.log("Stored key:", key); // Save key in your DB if needed
+      await addBild({arendeID: arendeID, key: key})
     } else {
       setStatus("Upload failed");
     }

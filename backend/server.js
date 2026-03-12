@@ -190,6 +190,12 @@ await db.exec(`
   ` 
 );
 
+await db.exec(`CREATE TABLE IF NOT EXISTS bilder (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    arendeID INTEGER,
+    key TEXT,
+)`)
+
 app.post("/api/upload-url", authenticateToken, async (req, res) => {
   const { arendeID, fileType } = req.body;
 
@@ -210,6 +216,23 @@ app.post("/api/upload-url", authenticateToken, async (req, res) => {
     key
   });
 });
+
+app.post("/bilder", authenticateToken, async (req, res) => {
+  const {arendeID, key} = req.body;
+  
+  const result = await db.run(`
+    INSERT INTO bilder (arendeID, key)
+    VALUES( ?, ?)
+    `, [arendeID, key])
+  
+  const newBild = {
+    id: result.lastID,
+    arendeID,
+    key
+  };
+  
+  res.json(newBild)
+})
 
 app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
     const { namn, kontaktperson, email, telefonnummer, address, ort, postnummer, kyrkogard_grupp, regler } = req.body;
@@ -412,6 +435,12 @@ app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     }))
     res.json(kyrkogardar);
 })
+
+app.get("/bilder", authenticateToken, async (req, res) => {
+  const bilder = await db.all("SELECT * FROM bilder")
+  res.json(bilder);
+})
+
 app.get("/arenden", authenticateToken, async (req, res) => {
     const arenden = await db.all("SELECT * FROM arenden")
     res.json(arenden);

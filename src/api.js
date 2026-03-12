@@ -516,7 +516,45 @@ export async function removeSten(id) {
     return res.json();
 }
 
+export async function getBilder() {
+    const res = await fetch (`${API_URL}/bilder`, {
+        headers: {"Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                  credentials: 'include'
+                 });
 
+    if (!res.ok) {
+        console.log(`Error: ${res.status} - ${res.statusText}`);
+        throw new Error(`Failed to fetch stenar: ${res.status} ${res.statusText}`);
+    }
+    const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+    return res.json();
+}
+
+export async function addBild(bild) {
+  try {
+    const res = await fetch(`${API_URL}/bilder`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+                  "Authorization": `Bearer ${await getToken()}`},
+                credentials: 'include',
+      body: JSON.stringify(bild),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to add bild: ${res.statusText} This is the object ${JSON.stringify(bild)}`);
+    }
+
+    const newBild = await res.json();
+    return newBild;
+  } catch (error) {
+    console.error("Error adding bild:", error);
+    throw error;  
+  }
+}
 
 export async function updateGodkannande(id,data) {
     const res = await fetch(`${API_URL}/godkannanden/${id}`, {
