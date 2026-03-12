@@ -259,12 +259,15 @@ export async function addKommentarer(kommentar) {
   }
 }
 
-export async function uploadPhoto(file, caseId) {
+export async function uploadPhoto(file, arendeID) {
+  const token = await getToken();
   const res = await fetch("/api/upload-url", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: {"Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({
-      caseId,
+      arendeID,
       fileType: file.type
     })
   });

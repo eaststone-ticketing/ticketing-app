@@ -17,7 +17,7 @@ function UploadButton({ caseId }) {
     const res = await fetch("/api/upload-url", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ caseId, fileType: file.type })
+      body: JSON.stringify({ arendeID:"1", fileType: file.type })
     });
     const { uploadUrl, key } = await res.json();
 

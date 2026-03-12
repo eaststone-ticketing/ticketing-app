@@ -190,16 +190,18 @@ await db.exec(`
   ` 
 );
 
-app.post("/api/upload-url", async (req, res) => {
+app.post("/api/upload-url", authenticateToken, async (req, res) => {
   const { arendeID, fileType } = req.body;
 
-  const key = `arenden/${arendeID}/${Date.now()}.jpg`;
+  const ext = fileType.split("/")[1];
+  const key = `arenden/${arendeID}/${Date.now()}.${ext}`;
 
   const command = new PutObjectCommand({
     Bucket: R2_BUCKET,
     Key: key,
     ContentType: fileType
   });
+
 
   const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 60 });
 
