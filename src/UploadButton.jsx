@@ -34,6 +34,13 @@ async function getToken() {
     return token;
 }
 
+function isTokenExpired(token) {
+    if (!token) return true;
+    const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT payload
+    const now = Date.now() / 1000; // current time in seconds
+    return payload.exp < now + 30; // consider it expired if less than 30s left
+}
+
 function UploadButton({ arendeID }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
