@@ -12,6 +12,7 @@ import './ArendeDetailViewMain.css'
 import { FaRegEdit } from "react-icons/fa";
 import {Infobox} from "./Infoboxes/Infobox.jsx"
 import StenView from './StenView/StenView'
+import  ArendeImageView from './ArendeImageView/ArendeImageView.jsx'
 
 export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, activeArendeKyrkogard, setActiveArendeKyrkogard, setArenden}) {
 
@@ -27,9 +28,6 @@ const [currentKommentar, setCurrentKommentar] = useState(null);
 const [designEdit, setDesignEdit] = useState(false);
 const [activeGodkannanden, setActiveGodkannanden] = useState([]);
 const [arendeDetailState, setArendeDetailState] = useState("oversikt");
-const [avlidenEdit, setAvlidenEdit] = useState(false);
-const [bestallareEdit, setBestallareEdit] = useState(false);
-const [kyrkogardEdit, setKyrkogardEdit] = useState(false);
 
   const statusColor = {
     "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
@@ -157,6 +155,7 @@ return (<div>
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
+        <button onClick = {() => setArendeDetailState("bilder")}>Bilder</button>
         <button onClick = {() => setArendeDetailState("bestallningar")}>Tillbehör</button>
         </div>
         {arendeDetailState === "oversikt" && <div>
@@ -335,6 +334,9 @@ return (<div>
           </div>}
         {arendeDetailState === "historik" && <div className = "historik-container">
           <HistorikPage arende = {activeArende}/>
+          </div>}
+        {arendeDetailState === "bilder" && <div className = "bilder-container"> 
+          <ArendeImageView />
           </div>}
         {arendeDetailState === "bestallningar" && <ArendeComponentPage arende = {activeArende}/>}
         </div>

@@ -61,7 +61,7 @@ function UploadButton({ arendeID }) {
       headers: { "Content-Type": "application/json",
         "Authorization": `Bearer ${await getToken()}`
        },
-      body: JSON.stringify({ arendeID:"1", fileType: file.type })
+      body: JSON.stringify({ arendeID: arendeID, fileType: file.type })
     });
     if (!res.ok) {
     setStatus("Failed to get upload URL");

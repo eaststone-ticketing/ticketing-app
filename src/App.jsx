@@ -650,7 +650,6 @@ return <div className = "oversikt-view">
   <Greeting/>
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
-  {user.userName === "felix" && <UploadButton />}
   
   </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
