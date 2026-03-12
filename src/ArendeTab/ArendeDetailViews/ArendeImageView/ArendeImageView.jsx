@@ -30,7 +30,9 @@ export default function ArendeImageView({ activeArende }) {
             src={`${R2_URL}/${bild.key}`}
             style={{ width: "200px", margin: "10px" }}
           />
+          <p>{bild.key}</p>
         </div>
+        
       ))}
     </div>
   );
