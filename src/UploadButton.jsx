@@ -59,7 +59,7 @@ function UploadButton({ arendeID }) {
     const res = await fetch(`${API_URL}/api/upload-url`, {
       method: "POST",
       headers: { "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${await getToken()}`
        },
       body: JSON.stringify({ arendeID:"1", fileType: file.type })
     });
@@ -77,8 +77,8 @@ function UploadButton({ arendeID }) {
       body: file,
       headers: {
         "Content-Type": file.type,
-        "Authorization": `Bearer ${token}`
-       },
+        "Authorization": `Bearer ${await getToken()}`
+      }
     });
 
     if (uploadRes.ok) {
