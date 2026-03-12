@@ -20,7 +20,6 @@ export default function ArendeImageView({ activeArende }) {
     (bild) => bild.arendeID === activeArende.id
   );
 
-  
   return (
     <div>
       <UploadButton arendeID={activeArende.id} />
