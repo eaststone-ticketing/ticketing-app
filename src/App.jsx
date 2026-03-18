@@ -662,7 +662,7 @@ return <div className = "oversikt-view">
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
   <h3>Händelselogg</h3>
   {traces ? <div className = "handelselogg">
-    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => <div> <strong>#{trace.arendeID ?? ""} {arenden.find((arende) => arende.id === trace.arendeID).avlidenNamn ?? ""}</strong>: {trace.body} </div>)}
+    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => <div> <strong>#{trace.arendeID ?? ""} {arenden.find((arende) => arende.id === trace.arendeID)?.avlidenNamn}</strong>: {trace.body} </div>)}
   <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
   </div> : <p>Inga händelser kunde hittas</p>}
   
