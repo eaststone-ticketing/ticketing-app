@@ -1,0 +1,16 @@
+.galleri{
+    display:flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.galleri p{
+    padding:0;
+    color:darkgrey;
+    margin:0;
+}
+
+.galleri button{
+    height: 4vh;
+    vertical-align: middle;
+}

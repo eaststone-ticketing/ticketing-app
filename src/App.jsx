@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword } from "./api.js";
+import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword, getTraces } from "./api.js";
 import { TbGrave2 } from "react-icons/tb";
 import { GoDotFill } from "react-icons/go";
 import { BsTelephone } from "react-icons/bs";
@@ -604,6 +604,8 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   const now = new Date();
   const [oversiktViewState, setOversiktViewState] = useState(null);
   const [kommentarer, setKommentarer] = useState(null);
+  const [traces, setTraces] = useState([]);
+  const [traceAmount, setTraceAmount] = useState(50)
   const [showDetail, setShowDetail] = useState(null);
   const [newPassword, setNewPassword] = useState("");
   const [passwordChecker, setPasswordChecker] = useState("");
@@ -619,9 +621,17 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
     ;
     setKommentarer(sorted);
   };
-
   fetchKommentarer();
 }, [user.userName]);
+
+
+useEffect(() => {
+  const fetchTraces = async () => {
+    const allTraces = await getTraces();
+    setTraces(allTraces);
+  };
+  fetchTraces();
+}, []);
 
   function Greeting(){
     const hour = now.getHours();
@@ -650,6 +660,12 @@ return <div className = "oversikt-view">
   <Greeting/>
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
+  <h3>Händelselogg</h3>
+  <div className = "handelselogg">
+    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => <div> <strong>#{trace.arendeID} {arenden.find((arende) => arende.id === trace.arendeID).avlidenNamn}</strong>: {trace.body} </div>)}
+  <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
+  </div>
+  
   
   </div>
   <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>

@@ -42,6 +42,10 @@ function appendNameAndDate(innehall){
 }
 
 async function addNewKommentar(innehall, id) {
+
+  if (!innehall){
+    return
+  }
   
   const newInnehall = appendNameAndDate(innehall);
   const numberID = Number(id)
@@ -117,7 +121,9 @@ const onSubmit = async (data) => {
     const newArende = await addArende({ datum, ...data, status: 'Nytt'})
 
     laggTillTrace("har skapat ärendet", newArende)
+    if (data.kommentar) {
     addNewKommentar(data.kommentar, newArende.id)
+    }
     setArenden([...arenden, newArende]);
         
     const kundNamn = data.bestallare;
