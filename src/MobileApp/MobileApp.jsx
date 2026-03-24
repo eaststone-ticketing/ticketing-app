@@ -1,5 +1,6 @@
 import {getArenden} from '../api.js'
 import {useEffect, useState} from 'react'
+import MobileDetailView from './MobileDetailView.jsx'
 import { BsTelephone } from "react-icons/bs";
 import { HiOutlineMail } from "react-icons/hi";
 import { IoPersonOutline } from "react-icons/io5";
@@ -50,7 +51,7 @@ function sortResults(result, mode) {
 
     
 
-    const [arende, setActiveArende] = useState(null);
+    const [activeArende, setActiveArende] = useState(null);
     const [searchedArende, setSearchedArende] = useState("");
     const [arenden, setArenden] = useState([])
     const [arendeLimit, setArendeLimit] = useState(50)
@@ -67,6 +68,12 @@ function sortResults(result, mode) {
       }, []);
 
     return <div>
+
+    {activeArende && <div>
+        <MobileDetailView arende = {activeArende} setActiveArende = {setActiveArende} />
+    </div>}
+    
+    {!activeArende && <div>
         <div className = "filter-panel">
         <div>
             <input value = {searchedArende} onChange = {(e) => setSearchedArende(e.target.value)}></input>
@@ -97,5 +104,6 @@ function sortResults(result, mode) {
         )}
         </div>
         <button onClick = {() => setArendeLimit(arendeLimit+50)}>Ladda fler</button>
+        </div>}
         </div>
 }

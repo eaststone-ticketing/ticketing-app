@@ -67,3 +67,43 @@
     font-size: 12px;
     margin: 1vh;
 }
+
+.mobile-detail-view{
+    display:flex;
+    align-content:flex-start;
+    width: 90vw;
+    margin: 0;
+    padding: 0;
+    flex-direction:column;
+}
+
+.mobile-detail-view button{
+    max-width: 25vw;
+    font-size: 14px;
+}
+
+.mobile-info-box{
+    text-align:left;
+    line-height:1;
+    padding: 5vw;
+    background-color: aliceblue;
+    margin-top: 2vh;
+    font-size: 12px;
+}
+
+.comment-field-mobile{
+    text-align: left;
+    font-size: 12px;
+    max-width: 90vw;
+    overflow:wrap;
+    
+}
+
+.comment-field-mobile pre {
+  white-space: pre-wrap;  
+  word-break: break-word; 
+  padding: 5vw;
+  background-color: aliceblue;
+  margin-top: 2vh;
+  font-size: 12px;
+}
