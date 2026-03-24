@@ -2,8 +2,13 @@ import {getKommentarer} from '../api.js'
 import {useState} from 'react'
 import MobileBildView from './MobileBildView.jsx'
 
-const kommentarer = await getKommentarer();
+let kommentarer = []
 
+try {
+    kommentarer = await getKommentarer();
+} catch(err){
+    console.error(err)
+}
 
 export default function MobileDetailView({arende, setActiveArende}){
     const relevantKommentarer = kommentarer.filter((kommentar) => kommentar.arendeID === arende.id)
