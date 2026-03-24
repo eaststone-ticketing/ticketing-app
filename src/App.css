@@ -866,6 +866,11 @@
 }
 
 .handelselogg{
-  max-height: 70vh;
+  max-height: 50vh;
   overflow-y:auto
+}
+
+.trace-arende:hover{
+  text-decoration: underline;
+  cursor:pointer
 }

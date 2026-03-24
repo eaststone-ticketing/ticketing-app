@@ -22,14 +22,18 @@ export default function ArendeImageView({ activeArende }) {
     (bild) => bild.arendeID === activeArende.id
   );
 
+  const [imageWidth, setImageWidth] = useState(200)
+
   return (
     <div>  
       {arendeBilder.length > 0 && <div>
         <h3>Galleri</h3>
         <div className = "galleri">
           <img
+            className = "ArendeImageView-image"
+            onClick = {() => setImageWidth(imageWidth === 200 ? 500 : 200)}
             src={`${R2_URL_PUB}/${arendeBilder[bildIndex].key}`}
-            style={{ width: "200px", margin: "10px" }}
+            style={{ width: `${imageWidth}px`, margin: "10px" }}
           />
           <p>Bild {bildIndex + 1}/{arendeBilder.length}</p>
           <div> 

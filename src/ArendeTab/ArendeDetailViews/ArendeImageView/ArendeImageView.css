@@ -14,3 +14,7 @@
     height: 4vh;
     vertical-align: middle;
 }
+
+.ArendeImageView-image:hover{
+    cursor:pointer;
+}

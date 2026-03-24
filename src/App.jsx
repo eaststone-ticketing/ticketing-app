@@ -24,6 +24,7 @@ import handleStatusChange from './handleStatusChange.jsx'
 import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
 import UploadButton from './UploadButton.jsx'
+import linkToArende from './Helpers/linkToArende.js'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -70,7 +71,6 @@ function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setK
   useEffect(() => {
   async function loadArenden() {
     const data = await getArenden(); 
-    console.log("Loaded ärenden:", data);
     setArenden(data); 
   }
   loadArenden(); 
@@ -662,7 +662,7 @@ return <div className = "oversikt-view">
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
   <h3>Händelselogg</h3>
   {traces ? <div className = "handelselogg">
-    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => <div> <strong>#{trace.arendeID ?? ""} {arenden.find((arende) => arende.id === trace.arendeID)?.avlidenNamn}</strong>: {trace.body} </div>)}
+    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn}</strong>: {trace.body} </div>})}
   <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
   </div> : <p>Inga händelser kunde hittas</p>}
   
@@ -713,7 +713,6 @@ function App(user) {
   useEffect(() => {
   async function loadKyrkogardar() {
     const data = await getKyrkogardar(); 
-    console.log("Loaded kyrkogårdar:", data);
     setKyrkogardar(data); 
   }
   loadKyrkogardar(); 
@@ -722,7 +721,6 @@ function App(user) {
   useEffect(() => {
   async function loadArenden() {
     const data = await getArenden(); 
-    console.log("Loaded ärenden:", data);
     setArenden(data); 
   }
   loadArenden(); 
@@ -731,7 +729,6 @@ function App(user) {
   useEffect(() => {
   async function loadKunder() {
     const data = await getKunder(); 
-    console.log("Loaded kunder:", data);
     setKunder(data); 
   }
   loadKunder(); 
@@ -740,7 +737,6 @@ function App(user) {
     useEffect(() => {
   async function loadGodkannanden() {
     const data = await getGodkannanden(); 
-    console.log("Loaded godkannanden:", data);
     setGodkannanden(data); 
   }
   loadGodkannanden(); 
