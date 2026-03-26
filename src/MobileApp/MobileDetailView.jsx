@@ -1,5 +1,5 @@
 import {getKommentarer} from '../api.js'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import MobileBildView from './MobileBildView.jsx'
 
 
