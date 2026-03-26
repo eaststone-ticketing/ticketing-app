@@ -25,6 +25,7 @@ import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
 import {ArendeDetailViewMain} from './ArendeTab/ArendeDetailViews/ArendeDetailViewMain.jsx'
 import UploadButton from './UploadButton.jsx'
 import linkToArende from './Helpers/linkToArende.js'
+import EventLogTimeline from './OversiktTab/EventLogTimeline.jsx'
 
 
 function ArendeTab({arenden, godkannanden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
@@ -610,6 +611,7 @@ function OversiktTab({setActiveTab, setActiveArende, arenden}) {
   const [newPassword, setNewPassword] = useState("");
   const [passwordChecker, setPasswordChecker] = useState("");
   const [activeNotificationTab, setActiveNotificationTab] = useState("dina");
+  const [eventLogMode, setEventLogMode] = useState("handelse");
 
   useEffect(() => {
   const fetchKommentarer = async () => {
@@ -660,11 +662,15 @@ return <div className = "oversikt-view">
   <Greeting/>
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
-  <h3>Händelselogg</h3>
-  {traces ? <div className = "handelselogg">
+  <div className = "event-log-options">
+  <h3 onClick = {() => setEventLogMode("handelse")}>Händelselogg</h3>
+  <h3 onClick = {() => setEventLogMode("tidslinje")}>Tidslinje</h3>
+  </div>
+  {eventLogMode === "handelse" && (traces ? <div className = "handelselogg">
     { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn}</strong>: {trace.body} </div>})}
   <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
-  </div> : <p>Inga händelser kunde hittas</p>}
+  </div> : <p>Inga händelser kunde hittas</p>)}
+  {eventLogMode === "tidslinje" && <EventLogTimeline />}
   
   
   </div>

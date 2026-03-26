@@ -874,3 +874,13 @@
   text-decoration: underline;
   cursor:pointer
 }
+
+.event-log-options{
+  display:flex;
+  flex-direction:row;
+  gap: 1vw;
+}
+
+.event-log-options h3:hover{
+  cursor:pointer;
+}
