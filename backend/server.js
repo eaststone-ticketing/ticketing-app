@@ -401,7 +401,7 @@ app.post("/traces", authenticateToken, async(req, res) => {
 const {arendeID, body, time} = req.body;
 const result = await db.run(`
   INSERT INTO traces(arendeID, body, time)
-  VALUES(?,?)
+  VALUES(?,?,?)
   `, [arendeID, body, time])
   const newTrace = {
     id: result.lastID,
@@ -719,7 +719,7 @@ app.put("/traces/:id", authenticateToken, async (req, res) => {
       `UPDATE traces
       SET arendeID = ?, body = ?, time = ?
       WHERE id = ?`,
-      [arendeID, body, id, time]
+      [arendeID, body, time, id]
     );
     res.json({message: `Trace with ID ${id} updated successfully`})
   } catch (err) {
