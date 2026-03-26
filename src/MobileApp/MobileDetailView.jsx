@@ -2,15 +2,19 @@ import {getKommentarer} from '../api.js'
 import {useState} from 'react'
 import MobileBildView from './MobileBildView.jsx'
 
-let kommentarer = []
 
-try {
-    kommentarer = await getKommentarer();
-} catch(err){
-    console.error(err)
-}
 
 export default function MobileDetailView({arende, setActiveArende}){
+
+    useEffect(() => {
+          async function loadKommentarer() {
+            const data = await getKommentarer(); 
+            setKommentarer(data); 
+          }
+          loadKommentarer(); 
+          }, []);
+        
+    const  [kommentarer, setKommentarer] = useState([])
     const relevantKommentarer = kommentarer.filter((kommentar) => kommentar.arendeID === arende.id)
     const [view, setView] = useState('oversikt')
     return <div>
