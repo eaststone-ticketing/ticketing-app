@@ -177,7 +177,8 @@ await db.exec(`
   CREATE TABLE IF NOT EXISTS traces (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   arendeID INTEGER,
-  body TEXT
+  body TEXT,
+  time TEXT
   )
   `)
 
@@ -397,15 +398,16 @@ app.post("/komponenter", authenticateToken, async(req, res) => {
 })
 
 app.post("/traces", authenticateToken, async(req, res) => {
-const {arendeID, body} = req.body;
+const {arendeID, body, time} = req.body;
 const result = await db.run(`
-  INSERT INTO traces(arendeID, body)
+  INSERT INTO traces(arendeID, body, time)
   VALUES(?,?)
-  `, [arendeID, body])
+  `, [arendeID, body, time])
   const newTrace = {
     id: result.lastID,
     arendeID,
-    body
+    body,
+    time
   };
 
   res.json(newTrace)
@@ -710,14 +712,14 @@ app.put("/komponenter/:id", authenticateToken, async (req, res) => {
 
 app.put("/traces/:id", authenticateToken, async (req, res) => {
   const {id} = req.params;
-  const {arendeID, body} = req.body;
+  const {arendeID, body, time} = req.body;
 
   try {
     await db.run(
       `UPDATE traces
-      SET arendeID = ?, body = ?
+      SET arendeID = ?, body = ?, time = ?
       WHERE id = ?`,
-      [arendeID, body, id]
+      [arendeID, body, id, time]
     );
     res.json({message: `Trace with ID ${id} updated successfully`})
   } catch (err) {
@@ -981,8 +983,8 @@ app.post("/refresh-token", async (req, res) => {
 app.get("/alter-table", authenticateToken, async (req,res) => {
 
   const alterTableSQL = `
-    ALTER TABLE arenden
-    ADD COLUMN nuvarandeText TEXT;
+    ALTER TABLE traces
+    ADD COLUMN time TEXT;
       `;
 
   db.run(alterTableSQL, (err) => {
@@ -990,7 +992,7 @@ app.get("/alter-table", authenticateToken, async (req,res) => {
           console.error('Error altering table:', err.message);
           return res.status(500).json({ error: "Failed to alter table" });
       } else {
-          console.log('Column nuvarandeText added successfully.');
+          console.log('Column time added successfully.');
           res.status(200).json({ message: "Column seen added successfully." });
       }
     });
