@@ -667,7 +667,7 @@ return <div className = "oversikt-view">
   <h3 onClick = {() => setEventLogMode("tidslinje")}>Tidslinje</h3>
   </div>
   {eventLogMode === "handelse" && (traces ? <div className = "handelselogg">
-    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn}</strong>: {trace.body} </div>})}
+    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn} {trace.id} </strong>: {trace.body} </div>})}
   <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
   </div> : <p>Inga händelser kunde hittas</p>)}
   {eventLogMode === "tidslinje" && <EventLogTimeline />}

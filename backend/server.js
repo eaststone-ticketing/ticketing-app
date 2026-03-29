@@ -413,22 +413,6 @@ const result = await db.run(`
   res.json(newTrace)
 })
 
-app.post("/tracesALT", authenticateToken, async(req, res) => {
-const {id, arendeID, body, time} = req.body;
-const result = await db.run(`
-  INSERT INTO traces(id, arendeID, body, time)
-  VALUES(?,?,?,?)
-  `, [id, arendeID, body, time])
-  const newTrace = {
-    id,
-    arendeID,
-    body,
-    time
-  };
-
-  res.json(newTrace)
-})
-
 app.post("/stenar", authenticateToken, async(req, res) => {
   const {namn, info} = req.body;
   const result = await db.run (`
