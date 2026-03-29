@@ -7,5 +7,5 @@ export default async function laggTillTrace(meddelande, arende) {
     const username = user.userName.charAt(0).toUpperCase() + user.userName.slice(1)
     const traceMessage = `${timestamp}, ${username} ${meddelande}`
 
-    await addTraces({arendeID: arende.id, body: traceMessage, time: `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`})
+    await addTraces({arendeID: arende.id, body: traceMessage, time: timestamp})
 }
