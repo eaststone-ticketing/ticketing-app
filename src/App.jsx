@@ -664,7 +664,6 @@ return <div className = "oversikt-view">
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
   <div className = "event-log-options">
   <h3 onClick = {() => setEventLogMode("handelse")}>Händelselogg</h3>
-  <h3 onClick = {() => setEventLogMode("tidslinje")}>Tidslinje</h3>
   </div>
   {eventLogMode === "handelse" && (traces ? <div className = "handelselogg">
     { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn} {trace.id} </strong>: {trace.body} </div>})}
