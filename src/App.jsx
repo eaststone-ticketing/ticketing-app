@@ -666,7 +666,7 @@ return <div className = "oversikt-view">
   <h3 onClick = {() => setEventLogMode("handelse")}>Händelselogg</h3>
   </div>
   {eventLogMode === "handelse" && (traces ? <div className = "handelselogg">
-    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn} {trace.id} </strong>: {trace.body} </div>})}
+    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn} </strong>: {trace.body} </div>})}
   <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
   </div> : <p>Inga händelser kunde hittas</p>)}
   {eventLogMode === "tidslinje" && <EventLogTimeline />}
@@ -686,7 +686,7 @@ return <div className = "oversikt-view">
     (k.seen === 2 && activeNotificationTab === "arkiverade") ).map(k => <div className = "feed-card">
       <div className = {`feed-item-container ${k.seen === 0 ? "new" : ""}`} onClick = {async () => {setShowDetail(showDetail === k.id ? null: k.id); await seKommentar(k)}}>
       <div className = "feed-item-preview">
-      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID}</strong></p>
+      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID} {k.avlidenNamn}</strong></p>
       {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
       {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed"></IoMdArrowDropdown>}
       <p className = "arkivera-kommentar" onClick = {(e) =>{e.stopPropagation(); arkiveraKommentar(k)}}>{k.seen === 2 ? "Ta ur arkiv" : "Arkivera"}</p>
