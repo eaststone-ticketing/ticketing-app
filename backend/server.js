@@ -998,6 +998,37 @@ app.get("/alter-table", authenticateToken, async (req,res) => {
     });
 })
 
+app.get("/backup/database", authenticateToken, async (req, res) => {
+  try {
+    const dbPath = "/data/database.db"; // adjust if your volume uses a different path
+
+    if (!fs.existsSync(dbPath)) {
+      return res.status(404).json({ error: "Database not found" });
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `backup-${timestamp}.db`;
+
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`
+    );
+
+    const stream = fs.createReadStream(dbPath);
+    stream.pipe(res);
+
+    stream.on("error", (err) => {
+      console.error("Backup stream error:", err);
+      res.status(500).end();
+    });
+
+  } catch (err) {
+    console.error("Backup error:", err);
+    res.status(500).json({ error: "Failed to create backup" });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 try {

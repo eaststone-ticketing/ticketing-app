@@ -660,6 +660,28 @@ return <div className = "oversikt-view">
   <div className = "sideways">
   <div className = "greeting">
   <Greeting/>
+  {user.userName === "felix" && <button
+  onClick={async () => {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/backup/database`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${await getToken()}`
+      },
+      credentials: "include"
+    });
+
+    const blob = await res.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "database-backup.db";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }}
+>
+  Ladda ner backup
+</button>}
 
   <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
   <div className = "event-log-options">
@@ -686,7 +708,7 @@ return <div className = "oversikt-view">
     (k.seen === 2 && activeNotificationTab === "arkiverade") ).map(k => <div className = "feed-card">
       <div className = {`feed-item-container ${k.seen === 0 ? "new" : ""}`} onClick = {async () => {setShowDetail(showDetail === k.id ? null: k.id); await seKommentar(k)}}>
       <div className = "feed-item-preview">
-      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID} {k.avlidenNamn}</strong></p>
+      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID} {arenden.find((a) => k.arendeID === a.id).avlidenNamn}</strong></p>
       {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
       {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed"></IoMdArrowDropdown>}
       <p className = "arkivera-kommentar" onClick = {(e) =>{e.stopPropagation(); arkiveraKommentar(k)}}>{k.seen === 2 ? "Ta ur arkiv" : "Arkivera"}</p>
