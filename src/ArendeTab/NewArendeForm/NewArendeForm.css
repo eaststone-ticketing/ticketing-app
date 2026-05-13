@@ -97,3 +97,14 @@
   flex-direction: row;
   gap: 1vw;
 }
+
+.add-new-graveyard {
+  font-size: 12px;
+  line-height:0.2em;
+  margin:1vh;
+}
+
+.add-new-graveyard:hover {
+  text-decoration: underline;
+  cursor:pointer;
+}

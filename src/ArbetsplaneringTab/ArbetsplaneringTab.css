@@ -1,0 +1,169 @@
+.arbetsplanering-layout{
+    display:flex;
+    flex-direction:row;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ticket-assign-panel{
+    display:flex;
+    flex-direction: column;
+    flex: 0 0 24%;
+    height: 80vh;
+    overflow: hidden;
+    background: linear-gradient(-45deg, rgb(243, 243, 245), rgb(243, 253, 245));
+    border-radius: 12px;
+    padding: 0.8rem;
+    box-sizing: border-box;
+}
+
+.ticket-assign-panel h3{
+    margin: 0 0 0.6rem 0;
+}
+
+.arbetsplanering-search{
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgb(223, 233, 225);
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    margin-bottom: 0.6rem;
+}
+
+.arbetsplanering-filter-row{
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.6rem;
+}
+
+.arbetsplanering-filter-select{
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgb(223, 233, 225);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+    background-color: white;
+}
+
+.arbetsplanering-results-scroll{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.user-columns-container{
+    display:flex;
+    flex-direction:row;
+    gap: 1px;
+    flex: 1 1 0;
+    width: 0;
+    padding-bottom: 0;
+    box-sizing: border-box;
+}
+
+.user-column{
+    display:flex;
+    flex-direction:column;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 80vh;
+    overflow: hidden;
+    padding: 0.35rem;
+    background-color: rgb(238, 248, 240);
+    border-radius: 0;
+    border: 1px solid rgb(223, 233, 225);
+    box-sizing: border-box;
+}
+
+.user-column-header{
+    margin: 0 0 0.35rem 0;
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+.user-column-drop-area{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid rgb(223, 233, 225);
+    padding: 0.35rem;
+    box-sizing: border-box;
+}
+
+.arbetsplanering-arende-card{
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 0.35rem;
+    border: 1px solid rgb(200, 210, 202);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    cursor: grab;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.arbetsplanering-card-streak{
+    height: 4px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.arbetsplanering-card-streak.status{
+    background: linear-gradient(to left, var(--status-color-start), var(--status-color-end));
+}
+
+.arbetsplanering-card-streak.type{
+    background: linear-gradient(to left, var(--arende-type-color-start), var(--arende-type-color-end));
+}
+
+.arbetsplanering-card-content{
+    padding: 0.45rem 0.5rem;
+}
+
+.arbetsplanering-arende-card:active{
+    cursor: grabbing;
+}
+
+.arbetsplanering-arende-title{
+    margin: 0 0 0.15rem 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.arbetsplanering-arende-status{
+    margin: 0;
+    font-size: 0.78rem;
+    color: rgb(80, 80, 80);
+}
+
+.arbetsplanering-assigned-by{
+    margin: 0.22rem 0 0 0;
+    font-size: 0.74rem;
+    color: rgb(70, 70, 70);
+}
+
+.arbetsplanering-complete-button{
+    margin-top: 0.3rem;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid rgb(180, 210, 185);
+    border-radius: 6px;
+    background-color: rgb(225, 245, 228);
+    cursor: pointer;
+    font-size: 0.72rem;
+}
+
+.arbetsplanering-complete-button:hover{
+    filter: brightness(0.98);
+}
+
+.drop-hint{
+    margin: 0.3rem 0 0.5rem 0;
+    font-size: 0.85rem;
+    color: rgb(80, 80, 80);
+}

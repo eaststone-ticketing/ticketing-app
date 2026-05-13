@@ -18,3 +18,21 @@
 .ArendeImageView-image:hover{
     cursor:pointer;
 }
+
+.ArendeImageView-pdf{
+    width: 560px;
+    height: 520px;
+    border: 1px solid rgb(223, 233, 225);
+    border-radius: 8px;
+    background: white;
+}
+
+.ArendeImageView-file-card{
+    width: 560px;
+    min-height: 110px;
+    border: 1px solid rgb(223, 233, 225);
+    border-radius: 8px;
+    background: white;
+    padding: 0.8rem;
+    box-sizing: border-box;
+}

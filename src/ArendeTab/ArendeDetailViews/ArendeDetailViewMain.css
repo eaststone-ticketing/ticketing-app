@@ -61,10 +61,13 @@
   background-repeat: no-repeat, no-repeat;
  padding: 5px;
  border-radius: 5px;
- width: 50vw;
+ width: 100%;
  height: 10vh;
  max-height: 100px;
  align-content: center;
+ box-sizing: border-box;
+ margin-top: -1vh;
+ margin-bottom: 1vh;
 }
 
 .arende-detail-main-header-and-edit-button {
@@ -90,19 +93,79 @@
   max-width: 30vw;
 }
 
+.arende-detail-oversikt-layout{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    align-items: stretch;
+    column-gap: 14px;
+    margin-top: 2vh;
+    width: 100%;
+    height: 58vh;
+    max-height: 58vh;
+}
+
 .arende-detail-oversikt-content-grid{
     display:grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    height: 60vh;
-    margin-top: 5vh;
+    grid-template-columns: repeat(3, minmax(145px, 1fr));
+    column-gap: 1vw;
+    row-gap: 0;
+    align-content: start;
+    min-width: 0;
+}
+
+.arende-detail-oversikt-comments {
+  width: 270px;
+  min-width: 270px;
+  background-color: rgb(248,255,250);
+  border-radius: 5px;
+  padding: 10px;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.arende-detail-oversikt-comments h3 {
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.arende-detail-oversikt-comments-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.arende-detail-oversikt-comments-scroll .kommentar-card {
+  background-color: rgb(248,255,250);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.arende-detail-oversikt-comments-scroll p,
+.arende-detail-oversikt-comments-scroll .pre {
+  margin: 0;
+}
+
+.arende-detail-oversikt-comment-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
+  font-size: 14px;
 }
 
 .arende-detail-checkboxes-container {
   display:flex;
   flex-direction:column;
-  min-width: 225px;
-  width: 15vw;
+  min-width: 0;
+  width: 100%;
   margin: 0;
+  margin-top: 6px;
 }
 
 .arende-detail-infobox-header-and-edit-button{
@@ -121,11 +184,25 @@
 }
 
 .arende-detail-checkboxes {
-  display:flex;
-  flex-direction:row;
-  justify-content: space-between;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 8px;
   padding: 2px;
-  margin: 2px;
+  margin: 2px 0;
+}
+
+.arende-detail-checkboxes label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.arende-detail-checkboxes input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  justify-self: end;
+  margin: 0;
+  appearance: auto;
 }
 
 .godkannande-info{

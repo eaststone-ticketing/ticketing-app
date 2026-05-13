@@ -7,7 +7,9 @@ export default function ArendeCardFilterPanel({
   setFilter,
   setSorting,
   sorting,
-  findTicketAmount
+  findTicketAmount,
+  arendeVisibilityFilter,
+  setArendeVisibilityFilter
 }) {
 
   const filters = [
@@ -21,6 +23,20 @@ export default function ArendeCardFilterPanel({
 
   return (
     <div className="arende-card-filter-panel">
+    <div className = "arende-visibility-tabs">
+      <button
+        className = {`arende-visibility-tab ${arendeVisibilityFilter === "alla" ? "active" : ""}`}
+        onClick = {() => setArendeVisibilityFilter("alla")}
+      >
+        Alla ärenden
+      </button>
+      <button
+        className = {`arende-visibility-tab ${arendeVisibilityFilter === "mina" ? "active" : ""}`}
+        onClick = {() => setArendeVisibilityFilter("mina")}
+      >
+        Mina ärenden
+      </button>
+    </div>
     <div className = "filter">
       {filters.map(({ statuses, label, key }) => (
         <button className = "filter-button"
@@ -31,10 +47,12 @@ export default function ArendeCardFilterPanel({
         </button>
       ))}
     </div>
+    <div className = "sort-row">
       <span className = "sortera-efter" >Sortera efter: </span>
       <button className = {sorting === "Nyaste" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Nyaste")}>Nyaste</button>
       <button className = {sorting === "Äldsta" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Äldsta")}>Äldsta</button>
       <button className = {sorting === "Status" ? "arende-card-filter-panel-selected-button" : "arende-card-filter-panel-transparent-button"} onClick ={() => setSorting("Status")}>Status</button>
+    </div>
     </div>
   );
 }

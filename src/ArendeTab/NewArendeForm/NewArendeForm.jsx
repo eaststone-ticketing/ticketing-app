@@ -1,12 +1,12 @@
 import './NewArendeForm.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
-import { addArende, addKund, addKommentarer } from '../../api.js'
+import { addArende, addKund, addKommentarer, addKyrkogard } from '../../api.js'
 import laggTillTrace from '../../laggTillTrace.jsx'
 
 /*
 The new arende form is a form that creates a new arende (job, task or errand) and is designed to correspond to an earlier pdf-form
-used by the client. The fields and layout are the same to ease the transition for users.
+used by the client. The fields and layout are kept the same to ease the transition for users.
 
 Possible improvements could be making the form multi-step since there are many inputs,
 though this would violate one of the original design principles of this project to provide a smooth transition for users.
@@ -14,6 +14,24 @@ Further form validation might also be a good idea,
 especially as new features for automatically generating design templates are implemented. These require standardized data.
 
 */
+
+function isTokenExpired(token) {
+    if (!token) return true;
+    const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT payload
+    const now = Date.now() / 1000; // current time in seconds
+    return payload.exp < now;
+}
+
+function checkToken() {
+  const user = localStorage.getItem('user'); 
+  let token = user ? JSON.parse(user).token : null; 
+
+  if(!token) return false;
+
+  if(isTokenExpired(token)) return false;
+
+  return true;
+}
 
 function findTaggedUsers(comment) {
   const regex = /@([^\s@]+)/g;
@@ -28,7 +46,7 @@ function findTaggedUsers(comment) {
 }
 
 function appendNameAndDate(innehall){
-  const user = JSON.parse(localStorage.getItem('user') )
+  const user = JSON.parse(localStorage.getItem('user') || {} )
     const time = new Date();
     const timestamp = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}, ${time.getHours()}:${time.getMinutes() > 9 ? time.getMinutes(): `0${time.getMinutes()}`}`
   if(user){
@@ -68,6 +86,7 @@ const entryDefaults = {
   "dodsDatum" : "ÅÅÅÅ eller ÅÅÅÅ-MM-DD"
 }
 
+const [createNewGraveyard, setCreateNewGraveyard] = useState(false)
 
 const inputField = (label, namn, type, required = false, options = []) => {
     return <div>
@@ -122,7 +141,7 @@ const onSubmit = async (data) => {
 
     laggTillTrace("har skapat ärendet", newArende)
     if (data.kommentar) {
-    addNewKommentar(data.kommentar, newArende.id)
+    await addNewKommentar(data.kommentar, newArende.id)
     }
     setArenden([...arenden, newArende]);
         
@@ -132,6 +151,10 @@ const onSubmit = async (data) => {
     if (!kunder.some(k => k.namn === kundNamn && k.tel === kundTel)) {
       const newKund = await addKund({bestallare: data.bestallare, email: data.email, telefonnummer: data.tel, adress: data.adress})
       setKunder([...kunder, newKund])
+    }
+
+    if (createNewGraveyard && !kyrkogardar.some(k => k.namn === data.kyrkogard)){
+      await addKyrkogard({namn: data.kyrkogard, kontaktperson: "", email: "", telefonnummer: "", address: "", ort: "", postnummer: "", kyrkogard_grupp: "", regler: ""})
     }
 
     reset();
@@ -180,6 +203,14 @@ const onSubmit = async (data) => {
     {label: "Plats för fler namn", type: "text", name: "platsForFlerNamn"},
     {label: "Minnesord", type: "text", name: "minnesord"}
   ]
+
+  useEffect(() => {
+      if (!checkToken()) {
+        setSkapaArende(false);
+          window.alert("Din token har gått ut, logga ut och in igen för att skapa ett ärende");
+          
+      }
+  }, []);
 
   return <form onSubmit={handleSubmit(onSubmit)} className="form">
     <div className = "new-stone-form-top">
@@ -253,6 +284,7 @@ const onSubmit = async (data) => {
       <div className = "begravningsplats-entries">
         <h4>Begravningsplats</h4>
         <label>Begravningsplats</label>
+        {!createNewGraveyard && <div> <p className = "add-new-graveyard" onClick = {() => setCreateNewGraveyard(true)}>+Lägg till ny</p>
         <select
           className = "select"
           name="kyrkogard"
@@ -263,7 +295,12 @@ const onSubmit = async (data) => {
               {k.namn}
             </option>
           ))}
-        </select>
+        </select></div>}
+        {createNewGraveyard && <div> 
+          <p className = "add-new-graveyard" onClick = {() => setCreateNewGraveyard(false)}>Använd existerande</p>
+            <label>Ny kyrkogård</label>
+            <input {...register('kyrkogard', {required: "Välj kyrkogård"})}></input>
+          </div>}
         <div className = "form-entry">
           {inputField("Kvarter", "kvarter", "text", false)}
         </div>

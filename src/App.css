@@ -229,10 +229,11 @@
   border-radius: 8px;
   margin: 2px;
   padding: 10px;
-  width: 60vw;
-  max-width:60vw;
+  width: 100%;
+  max-width: 100%;
   gap: 10px;
   justify-content: space-between;
+  box-sizing: border-box;
   background-image:
     linear-gradient(to left, var(--status-color-start), var(--status-color-end)),
     linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 16%, rgb(243,253,245) 16%, rgb(243,253,245) 100% ),
@@ -368,6 +369,26 @@
   border-radius: 20px;
 }
 
+.input-field-searchbar-arende select{
+  width: 20vw;
+  height: 24px;
+  border: solid rgb(223, 233, 225);
+  border-radius: 20px;
+  font-family: inherit;
+  background: white;
+}
+
+.input-field-searchbar-arende .skapare-dropdown{
+  margin-top: 0;
+  margin-bottom: 0.9rem;
+  background: rgb(243, 243, 245);
+}
+
+.input-field-searchbar-arende.skapare-field{
+  padding-top: 0.2vw;
+  padding-bottom: 1.2vw;
+}
+
 .input-field-searchbar-arende label{
   padding-bottom:2px;
 }
@@ -405,6 +426,7 @@
   color: black;
   border: none;
   top: -3px;
+  right: 6px;
   padding: 2px 5px;
   font-size: 12px;
 }
@@ -502,10 +524,17 @@
 }
 
 .arende-card-filter-panel-create-button{
-  padding:1vw;
+  padding: 0.8rem 1rem;
   margin-bottom: 0.3vh;
+  margin-top: 1rem;
   background-color: rgb(233, 243, 235);
   border:1px solid rgb(100,100,200);
+  width: fit-content;
+  min-width: 0;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .send-button{
@@ -732,12 +761,15 @@
   overflow-y: auto;
   height: 75vh;
   border-radius: 15px;
+  width: 60vw;
+  min-width: 60vw;
 }
 
 .dense-h4 {
   line-height: 1;
   padding: 0;
-  margin:0; 
+  margin:0;
+  white-space: nowrap;
 }
 
 .kyrkogard-main{
@@ -833,15 +865,34 @@
 .arende-typ-checkboxes-and-header{
   display:flex;
   flex-direction:row;
-  gap: 6px;
-  justify-content:space-between;
-  width: 21vw;
+  gap: 12px;
+  align-items: center;
+  justify-content:flex-start;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .arende-typ-checkboxes{
   display:flex;
   flex-direction:row;
-  gap:6px;
+  gap: 1.2em;
+  align-items: center;
+  margin-left: 6vw;
+}
+
+.arende-typ-checkboxes > div{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap: 0.3em;
+}
+
+.arende-typ-checkboxes label,
+.arende-typ-checkboxes input{
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .new-notification-dot {

@@ -1,56 +1,97 @@
 .arende-card-filter-panel{
   background:linear-gradient(to bottom, rgb(243, 243, 245) 0%, rgb(243, 243, 245) 95%, rgb(200, 200, 200) 95%,  rgb(255,255,255) 100%);
-  padding: 10px;
+  padding: 0 8px 6px 8px;
   border-radius: 15px 15px 0 0;
   margin-left: 2px;
   margin-bottom: 5px;
   gap: 2px;
-  height: 9vh;
+  height: 11vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .arende-card-filter-panel button{
-  padding: 1vh 1vw;
+  padding: 0.45vh 0.65vw;
+}
+
+.arende-visibility-tabs{
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+
+.arende-visibility-tab{
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  padding: 0.45vh 0.7vw;
+  margin-right: 2px;
+}
+
+.arende-visibility-tab.active{
+  font-weight: 800;
 }
 
 .sortera-efter{
   background-color: rgba(233, 243, 235, 0);
-  height: 16px;
+  height: auto;
   border-radius: 3px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  margin-top: 0.8vh;
+  margin-top: 0;
+  line-height: 1;
   border: 0px solid rgb(223, 223, 225)
 }
 
 .filter{
   display:flex;
   flex-direction:row;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 6px;
+  align-items: center;
 }
 
 .filter-button{
-  font-size: 16px;
+  font-size: 14px;
   padding:0;
   margin:0;
   line-height: 1;
-  background-color: rgb(233, 243, 235);}
+  background-color: rgb(233, 243, 235);
+  padding: 0.3vh 0.55vw;
+}
+
+.sort-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin-top: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
 
 .arende-card-filter-panel-transparent-button{
   background-color: rgba(233, 243, 235, 0);
-  height: 30px;
+  height: 22px;
   border-radius: 3px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  margin-top: 0.8vh;
+  margin-top: 0;
   margin-right: 0.4vw;
 }
 
 .arende-card-filter-panel-selected-button{
   background-color: rgba(243, 253, 245, 100);
-  height: 30px;
+  height: 22px;
   border-radius: 3px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  margin-top: 0.8vh;
+  margin-top: 0;
   margin-right: 0.4vw
 }

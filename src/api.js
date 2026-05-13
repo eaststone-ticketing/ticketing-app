@@ -411,6 +411,24 @@ export async function removeKomponenter(id) {
     return res.json();
 }
 
+export async function getUsers() {
+  const res = await fetch (`${API_URL}/users`, {
+    headers: {"Content-Type": "application/json",
+              "Authorization": `Bearer ${await getToken()}`},
+              credentials: 'include'
+    });
+  
+  if (!res.ok) {
+    console.log(`Error: ${res.status} - ${res.statusText}`);
+    throw new Error(`Failed to fetch traces: ${res.status} ${res.statusText}`);
+  }
+  const newToken = res.headers.get("Authorization");
+    if (newToken && newToken.startsWith("Bearer ")) {
+        localStorage.setItem('user', JSON.stringify({ token: newToken.split(" ")[1] }));
+    }
+
+  return res.json();
+}
 
 export async function getTraces() {
     const res = await fetch (`${API_URL}/traces`, {

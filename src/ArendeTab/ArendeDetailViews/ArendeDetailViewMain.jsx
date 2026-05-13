@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 
-import { getKommentarer, getGodkannanden, addKommentarer, updateGodkannande, getKyrkogardar } from '../../api.js'
+import { getKommentarer, getGodkannanden, addKommentarer, updateGodkannande, getKyrkogardar, getBilder, updateArende } from '../../api.js'
 
 import DownloadPdfButton from '../../PdfDownloadButton.jsx'
 import handleStatusChange from '../../handleStatusChange.jsx'
@@ -28,6 +28,7 @@ const [currentKommentar, setCurrentKommentar] = useState(null);
 const [designEdit, setDesignEdit] = useState(false);
 const [activeGodkannanden, setActiveGodkannanden] = useState([]);
 const [arendeDetailState, setArendeDetailState] = useState("oversikt");
+const [arendeBilderCount, setArendeBilderCount] = useState(0);
 
   const statusColor = {
     "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
@@ -81,6 +82,18 @@ useEffect(() => {
   fetchGodkannanden();
 }, [activeArende]);
 
+useEffect(() => {
+  const fetchBilder = async () => {
+    const allBilder = await getBilder();
+    const filtered = allBilder.filter(
+      b => b.arendeID === activeArende.id
+    );
+    setArendeBilderCount(filtered.length);
+  };
+
+  fetchBilder();
+}, [activeArende]);
+
 
 async function addNewKommentar(innehall, id, e) {
   
@@ -121,6 +134,16 @@ function appendNameAndDate(innehall){
   }
 }
 
+async function handleSignerad(arende, setArendenFn) {
+  const newValue = arende.signerad === 1 ? 0 : 1;
+  const updatedArende = { ...arende, signerad: newValue };
+  setActiveArende(prev => ({ ...prev, signerad: newValue }));
+  setArendenFn(prev =>
+    prev.map(a => a.id === arende.id ? updatedArende : a)
+  );
+  await updateArende(arende.id, updatedArende);
+}
+
 async function changeGodkannandeDetails(id, godkannare, data) {
   let godkannanden = [];
   try {
@@ -155,7 +178,7 @@ return (<div>
         <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
-        <button onClick = {() => setArendeDetailState("bilder")}>Bilder</button>
+        <button onClick = {() => setArendeDetailState("bilder")}>Bilder ({arendeBilderCount})</button>
         <button onClick = {() => setArendeDetailState("bestallningar")}>Tillbehör</button>
         </div>
         {arendeDetailState === "oversikt" && <div>
@@ -172,6 +195,7 @@ return (<div>
         <h3>{activeArende.arendeTyp}</h3>
         </div>
 
+        <div className = "arende-detail-oversikt-layout">
         <div className = "arende-detail-oversikt-content-grid">
 
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"} 
@@ -198,12 +222,36 @@ return (<div>
                   ["Status", "status", "text"],
                   ["Datum skapad", "datum", "text"],
                   ["Ursprung", "ursprung", "text"]
-                  ]} />
+                  ]}>
+          {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <div className = "arende-detail-checkboxes-container">
+            <div className = "arende-detail-checkboxes">
+              <label>Godkänd av kund</label>
+              <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kund, väntar svar av kyrkogård"}  onChange = {()=> handleStatusChange("kund", activeArende, setArenden, setActiveGodkannanden, setActiveArende)}></input>
+            </div>
+            <div className = "arende-detail-checkboxes">
+              <label>Godkänd av kyrkogård</label>
+              <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård", activeArende, setArenden,  setActiveGodkannanden, setActiveArende)}></input>
+            </div>
+            {activeArende.arendeTyp === "Ny sten" && <div className = "arende-detail-checkboxes">
+              <label>Signerad</label>
+              <input type = "checkbox" name = "signerad" checked = {activeArende.signerad === 1 || activeArende.status === "Väntar svar av kyrkogård" || activeArende.status === "Godkänd av kund, väntar svar av kyrkogård" || activeArende.status === "Väntar svar av kund och kyrkogård" || activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Godkänd av kyrkogård, väntar svar av kund" || activeArende.status === "Redo" || activeArende.status === "Stängt"} onChange = {() => handleSignerad(activeArende, setArenden)} />
+            </div>}
+          </div>}
+        </Infobox>
                 <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Pris"} 
         fields = {[["Total", "pris", "text"]
                   ]} />
-                <div className = "arende-detail-checkboxes-container">
-          {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <GodkannandeDisplayOversikt activeArende = {activeArende} activeGodkannanden = {activeGodkannanden} setArenden = {setArenden} setActiveArende = {setActiveArende} setActiveGodkannanden = {setActiveGodkannanden}/>}
+        </div>
+        <div className = "arende-detail-oversikt-comments">
+          <h3>Kommentarer</h3>
+          <div className = "arende-detail-oversikt-comments-scroll">
+            {kommentarer.length === 0 && <p>Inga kommentarer ännu.</p>}
+            {kommentarer.map(k => (
+              <div className = "kommentar-card" key = {k.id}>
+                <div className = "arende-detail-oversikt-comment-text">{k.innehall}</div>
+              </div>
+            ))}
+          </div>
         </div>
         </div>
         </div>
