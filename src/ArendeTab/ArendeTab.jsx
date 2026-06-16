@@ -57,7 +57,9 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
     "Ommålning": ["rgba(255, 211, 211, 1)", "rgba(255, 211, 211, 1)"],
     "Rengöring": ["rgba(255, 248, 211, 1)", "rgba(255, 248, 211, 1)"],
     "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"],
-    "Övrigt" : ["rgba(200, 200, 200, 1)", "rgba(200, 200, 200, 1)"]
+    "Övrigt" : ["rgba(200, 200, 200, 1)", "rgba(200, 200, 200, 1)"],
+    "Högalid" : ["rgba(253, 177, 177, 1)", "rgba(253, 177,177 ,1)"],
+    "Lilla Dalen": ["rgba(211, 255, 229, 1)", "rgba(211, 255, 229, 1)"]
   }
 
   useEffect(() => {

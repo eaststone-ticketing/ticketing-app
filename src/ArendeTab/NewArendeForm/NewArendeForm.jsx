@@ -223,6 +223,8 @@ const onSubmit = async (data) => {
         <option>Rengöring</option>
         <option>Inspektering</option>
         <option>Ommålning</option>
+        <option>Högalid</option>
+        <option>Lilla Dalen</option>
         <option>Övrigt</option>
       </select>
 
