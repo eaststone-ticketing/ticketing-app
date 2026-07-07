@@ -808,7 +808,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       "Strandkyrkogården",
       "Järva begravningsplats"
     ];
-    if (arende.arendeTyp === "Ny sten" && !kyrkogardar_stockholm.includes(arende.kyrkogard)) {
+    if (arende.arendeTyp === "Ny sten" && !kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.kyrkogard !== "AAA") {
       formName = "form.pdf"
       console.log(arende.kyrkogard);
     } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny sten"){
