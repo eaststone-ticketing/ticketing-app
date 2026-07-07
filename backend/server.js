@@ -812,12 +812,9 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       formName = "form.pdf"
       console.log(arende.kyrkogard);
     } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny sten"){
-      formName = "form_sthlm.pdf" 
+      formName = "form_sthlm_new1.pdf"  
       console.log(arende.kyrkogard);
-    } else if (arende.kyrkogard === "AAA"){
-      formName = "form_sthlm_new.pdf"
-      console.log(arende.kyrkogard)
-    }
+    } 
     else
       {
       formName = "form_ovrigt.pdf"
@@ -865,7 +862,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
     form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
     form.getTextField("Adress").setText(arende.adress || "");
-    if (formName !== "form_sthlm_new.pdf"){
     form.getTextField("Postadress").setText(arende.ort || "");
     form.getTextField("Post Nr").setText(arende.postnummer || "");
     form.getTextField("Material").setText(arende.material || "");
@@ -881,25 +877,23 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Minnesord").setText(arende.minnesord || "");
     form.getTextField("Framsida").setText(arende.framsida || "");
     form.getTextField("Kanter").setText(arende.kanter || "");
-    }
     form.getTextField("Telefon").setText(arende.tel || "");
     form.getTextField("Epost").setText(arende.email || "");
     form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
     form.getTextField("Kvarter").setText(arende.kvarter || "");
     form.getTextField("Platsnummer").setText(arende.gravnummer || "");
-    if (formName !== "form_sthlm.pdf" && formName !== "form_sthlm_new.pdf"){
+    if (formName !== "form_sthlm.pdf" && formName !== "form_sthlm_new1.pdf"){
     form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
     form.getTextField("Text3").setText(commentString || "");
     }
-    if (formName === "form_sthlm.pdf"){
+    if (formName === "form_sthlm_new1.pdf"){
       form.getTextField("Ovrigt").setText(commentString || "");
     }
     form.getTextField("Datum").setText(arende.datum || "");
     form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
-    if (formName !== "form_sthlm_new.pdf"){
-    // Handle checkboxes
+
     if (arende.sockel) form.getCheckBox("Check Box16").check();
     if (arende.staende) form.getCheckBox("Check Box18").check();
     if (!arende.staende) form.getCheckBox("Check Box19").check();
@@ -907,8 +901,8 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
     if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
-    }
-    if (formName === "form_sthlm_new.pdf"){
+    
+    if (formName === "form_sthlm_new1.pdf"){
       form.getTextField("Postnummer och postadress").setText(`${arende.postnummer} ${arende.ort}`);
     }
     }
