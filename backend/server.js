@@ -814,7 +814,11 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny sten"){
       formName = "form_sthlm.pdf" 
       console.log(arende.kyrkogard);
-    } else
+    } else if (arende.kyrkogard === "AAA"){
+      formName = "form_sthlm_new.pdf"
+      console.log(arende.kyrkogard)
+    }
+    else
       {
       formName = "form_ovrigt.pdf"
       console.log(arende.kyrkogard);
@@ -857,19 +861,18 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
 
     if (arende.arendeTyp === "Ny sten"){
-    // Fill in the form fields (you can uncomment your form filling logic here)
+    // Fill in the form fields
     form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
-    form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
-    form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
     form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
     form.getTextField("Adress").setText(arende.adress || "");
+    if (formName !== "form_sthlm_new.pdf"){
     form.getTextField("Postadress").setText(arende.ort || "");
     form.getTextField("Post Nr").setText(arende.postnummer || "");
-    form.getTextField("Telefon").setText(arende.tel || "");
-    form.getTextField("Epost").setText(arende.email || "");
-    form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
-    form.getTextField("Kvarter").setText(arende.kvarter || "");
-    form.getTextField("Platsnummer").setText(arende.gravnummer || "");
+    form.getTextField("Material").setText(arende.material || "");
+    form.getTextField("Totalpris").setText(arende.pris || " ");
+    form.getTextField("Tillbehor").setText(arende.tillbehor || "");
+    form.getTextField("Fodelsedatum").setText(arende.fodelseDatum || "");
+    form.getTextField("Dodsdatum").setText(arende.dodsDatum || "");
     form.getTextField("Model").setText(arende.modell || "");
     form.getTextField("Typsnitt").setText(arende.typsnitt || "");
     form.getTextField("Farg_Teckensnitt").setText(arende.farg || "");
@@ -878,7 +881,13 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Minnesord").setText(arende.minnesord || "");
     form.getTextField("Framsida").setText(arende.framsida || "");
     form.getTextField("Kanter").setText(arende.kanter || "");
-    if (formName !== "form_sthlm.pdf"){
+    }
+    form.getTextField("Telefon").setText(arende.tel || "");
+    form.getTextField("Epost").setText(arende.email || "");
+    form.getTextField("Kyrkogard").setText(arende.kyrkogard || "");
+    form.getTextField("Kvarter").setText(arende.kvarter || "");
+    form.getTextField("Platsnummer").setText(arende.gravnummer || "");
+    if (formName !== "form_sthlm.pdf" && formName !== "form_sthlm_new.pdf"){
     form.getTextField("Beskriva socklen").setText(arende.sockelBearbetning || "");
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
     form.getTextField("Text3").setText(commentString || "");
@@ -886,12 +895,10 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (formName === "form_sthlm.pdf"){
       form.getTextField("Ovrigt").setText(commentString || "");
     }
-    form.getTextField("Material").setText(arende.material || "");
-    form.getTextField("Totalpris").setText(arende.pris || " ");
-    form.getTextField("Tillbehor").setText(arende.tillbehor || "");
     form.getTextField("Datum").setText(arende.datum || "");
     form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
+    if (formName !== "form_sthlm_new.pdf"){
     // Handle checkboxes
     if (arende.sockel) form.getCheckBox("Check Box16").check();
     if (arende.staende) form.getCheckBox("Check Box18").check();
@@ -900,6 +907,10 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
     if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
     if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
+    }
+    if (formName === "form_sthlm_new.pdf"){
+      form.getTextField("Postnummer och postadress").setText(`${arende.postnummer} ${arende.ort}`);
+    }
     }
 
     else {

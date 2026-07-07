@@ -321,7 +321,7 @@ useEffect(() => {
 
     return <h3>Det är mitt i natten, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
     }
- 
+
 return <div className = "oversikt-view">
   {!oversiktViewState && <div>
   <div className = "sideways">
