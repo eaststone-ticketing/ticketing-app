@@ -887,7 +887,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     form.getTextField("Kvarter_Platsnummer").setText(arende.beteckning || "");
     form.getTextField("Text3").setText(commentString || "");
     }
-    if (formName === "form_sthlm_new1.pdf"){
+    if (formName === "form_sthlm.pdf"){
       form.getTextField("Ovrigt").setText(commentString || "");
     }
     form.getTextField("Datum").setText(arende.datum || "");
