@@ -20,8 +20,18 @@
 }
 
 .arende-detail-bestallare-infobox{
-    background-color: rgb(248,255,250);
+    background-color: var(--surface);
     margin: 0 0 1vh 0;
     padding: 10px 10px;
     border-radius:5px;
+}
+
+.infobox-kyrkogard-link{
+    color: rgb(30, 90, 180);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.infobox-kyrkogard-link:hover{
+    font-weight: 700;
 }

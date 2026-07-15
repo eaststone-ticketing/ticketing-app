@@ -1,20 +1,17 @@
 .arende-card-filter-panel{
-  background:linear-gradient(to bottom, rgb(243, 243, 245) 0%, rgb(243, 243, 245) 95%, rgb(200, 200, 200) 95%,  rgb(255,255,255) 100%);
+  background: linear-gradient(to bottom, var(--element) 0%, var(--element) 95%, var(--element-darker) 95%, var(--bg) 100%);
   padding: 0 8px 6px 8px;
   border-radius: 15px 15px 0 0;
   margin-left: 2px;
   margin-bottom: 5px;
   gap: 2px;
-  height: 11vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
-.arende-card-filter-panel button{
-  padding: 0.45vh 0.65vw;
-}
-
+/* Category 1: visibility tabs (Alla/Mina ärenden) — tab-shaped */
 .arende-visibility-tabs{
   display: flex;
   flex-direction: row;
@@ -29,26 +26,23 @@
   line-height: 1;
   background-color: transparent;
   border: none;
+  border-bottom: 2px solid transparent;
   border-radius: 8px 8px 0 0;
-  padding: 0.45vh 0.7vw;
+  padding: 5px 10px;
   margin-right: 2px;
+}
+
+.arende-visibility-tab:hover{
+  background-color: var(--element-dark);
+  border-color: transparent;
 }
 
 .arende-visibility-tab.active{
   font-weight: 800;
+  border-bottom: 2px solid var(--element-darkest);
 }
 
-.sortera-efter{
-  background-color: rgba(233, 243, 235, 0);
-  height: auto;
-  border-radius: 3px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 0;
-  line-height: 1;
-  border: 0px solid rgb(223, 223, 225)
-}
-
+/* Category 2: status filter chips — small pills */
 .filter{
   display:flex;
   flex-direction:row;
@@ -58,12 +52,28 @@
 }
 
 .filter-button{
-  font-size: 14px;
-  padding:0;
+  font-size: 13px;
   margin:0;
   line-height: 1;
-  background-color: rgb(233, 243, 235);
-  padding: 0.3vh 0.55vw;
+  background-color: var(--element-dark);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 3px 9px;
+}
+
+.filter-button:hover{
+  background-color: var(--element-darker);
+}
+
+/* Category 3: sort toggles — flat text buttons */
+.sortera-efter{
+  background-color: transparent;
+  height: auto;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 0;
+  line-height: 1;
 }
 
 .sort-row{
@@ -77,21 +87,31 @@
 }
 
 .arende-card-filter-panel-transparent-button{
-  background-color: rgba(233, 243, 235, 0);
+  background-color: transparent;
+  border: none;
   height: 22px;
   border-radius: 3px;
   font-size: 12px;
   font-weight: 600;
+  padding: 2px 6px;
   margin-top: 0;
   margin-right: 0.4vw;
 }
 
+.arende-card-filter-panel-transparent-button:hover{
+  background-color: var(--element-dark);
+  border: none;
+}
+
 .arende-card-filter-panel-selected-button{
-  background-color: rgba(243, 253, 245, 100);
+  background-color: var(--surface);
+  border: none;
   height: 22px;
   border-radius: 3px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-decoration: underline;
+  padding: 2px 6px;
   margin-top: 0;
-  margin-right: 0.4vw
+  margin-right: 0.4vw;
 }

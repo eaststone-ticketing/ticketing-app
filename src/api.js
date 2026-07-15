@@ -713,6 +713,33 @@ export async function updateSten(id, data) {
   return res.json();
 }
 
+export async function downloadBackup() {
+    const res = await fetch(`${API_URL}/backup/database`, {
+        headers: {"Authorization": `Bearer ${await getToken()}`},
+        credentials: 'include'
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        console.error("Backup download failed:", text);
+        throw new Error(`Failed to download backup: ${res.status} ${res.statusText}`);
+    }
+
+    const blob = await res.blob();
+    const disposition = res.headers.get("Content-Disposition") ?? "";
+    const filenameMatch = disposition.match(/filename="?([^";]+)"?/);
+    const filename = filenameMatch?.[1] ?? `backup-${new Date().toISOString().split("T")[0]}.db`;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
 export async function updatePassword(user, passwordIn, passwordCheckerIn){
 
   const password = passwordIn.trim()

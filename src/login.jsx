@@ -52,22 +52,24 @@ function Login({ onLogin }) {
 
   return (
 
-    <div>
+    <div className = "login-page">
       <div className = "background"></div>
       <form onSubmit={handleLogin} className = "login-box">
 
         <img src={logo} alt="Logo"/>
-        <div>
-          <label>Användare: </label>
+        <div className = "login-field">
+          <label htmlFor = "username">Användare</label>
           <input
+            id = "username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
-        <div>
-          <label>Lösenord: </label>
+        <div className = "login-field">
+          <label htmlFor = "password">Lösenord</label>
           <input
+            id = "password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

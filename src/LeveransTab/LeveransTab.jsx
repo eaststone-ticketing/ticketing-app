@@ -49,7 +49,7 @@ export default function LeveransTab({setActiveTab, setActiveArende}) {
         {leverantorView !== null && <LeverantorView setLeverantorView = {setLeverantorView} leverantor = {leverantorView} />}
         {leveransView !== null && <LeveransView setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setLeveransView = {setLeveransView} leverans = {leveransView} />}
         { (!leveransView && !leverantorView) && <div className = "leverans-header">
-        <button><strong>+ Lägg till leverans</strong> </button>
+        <button className = "create-button">+ Lägg till leverans</button>
             <div className = "leverans-body">
                 <LeveranserSearchMenu setLeverantor = {setLeverantor} setLeverantorId = {setLeverantorId}/>
                 <div className = "leverans-results-container">

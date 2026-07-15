@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 
-import { getKommentarer, getGodkannanden, addKommentarer, updateGodkannande, getKyrkogardar, getBilder, updateArende } from '../../api.js'
+import { getKommentarer, getGodkannanden, addKommentarer, removeKommentarer, updateGodkannande, getKyrkogardar, getBilder, updateArende } from '../../api.js'
 
 import DownloadPdfButton from '../../PdfDownloadButton.jsx'
 import handleStatusChange from '../../handleStatusChange.jsx'
@@ -9,12 +9,13 @@ import HistorikPage from './HistorikView/HistorikPage.jsx'
 import ArendeComponentPage from './ArendeComponentPage/ArendeComponentPage.jsx'
 import {GodkannandeDisplayOversikt} from './OversiktPage/GodkannandeDisplayOversikt.jsx'
 import './ArendeDetailViewMain.css'
+import { statusColor } from '../../Helpers/ticketColors.js'
 import { FaRegEdit } from "react-icons/fa";
 import {Infobox} from "./Infoboxes/Infobox.jsx"
 import StenView from './StenView/StenView'
 import  ArendeImageView from './ArendeImageView/ArendeImageView.jsx'
 
-export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, activeArendeKyrkogard, setActiveArendeKyrkogard, setArenden}) {
+export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, activeArendeKyrkogard, setActiveArendeKyrkogard, setArenden, setKyrkogardToOpen}) {
 
 const [activeKyrkogard, setActiveKyrkogard] = useState("");
 const [kyrkogardar, setKyrkogardar] = useState([])
@@ -29,21 +30,6 @@ const [designEdit, setDesignEdit] = useState(false);
 const [activeGodkannanden, setActiveGodkannanden] = useState([]);
 const [arendeDetailState, setArendeDetailState] = useState("oversikt");
 const [arendeBilderCount, setArendeBilderCount] = useState(0);
-
-  const statusColor = {
-    "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
-    "Väntar svar av kund":["rgb(200,155,255)", "rgb(255, 225, 115)"],
-    "Väntar svar av kyrkogård":["rgb(200,155,255)", "rgb(243, 100, 255)"],
-    "Väntar svar av kund och kyrkogård":["rgb(200,155,255)", "rgb(123, 245, 200)"],
-    "Godkänd av kund" : ["rgb(240, 245, 145)", "rgb(255, 225, 115)"],
-    "Godkänd av kund, väntar svar av kyrkogård" : ["rgb(240, 245, 145)","rgb(243, 100, 255)"],
-    "Godkänd av kyrkogård" : ["rgb(243, 145, 228)", "rgb(243, 100, 255) "],
-    "Godkänd av kyrkogård, väntar svar av kund" : ["rgb(243, 145, 228)", "rgb(255, 225, 115)"],
-    "Redo" : ["rgb(153, 245, 153)",  "rgb(123, 245, 200)"],
-    "Stängt" : ["rgb(196, 196, 196)", "rgb(199, 199, 199)"],
-    "LEGACY" : ["rgb(213, 223, 215)",  "rgb(223, 233, 225)"],
-    "raderad" : ["rgb(200,155,255)", "rgb(200,198,255)"]
-  }
 
 useEffect(() => {
 
@@ -100,12 +86,40 @@ async function addNewKommentar(innehall, id, e) {
   const newInnehall = appendNameAndDate(innehall);
   e.preventDefault();
   const numberID = Number(id)
-  console.log(numberID)
   const tags = JSON.stringify(findTaggedUsers(innehall))
   const kommentar = {arendeID: numberID, innehall: newInnehall, tagged_users: tags, seen: 0}
-  await addKommentarer(kommentar)
-  setKommentarer(prevKommentarer => [...prevKommentarer, kommentar]);
+  const savedKommentar = await addKommentarer(kommentar)
+  setKommentarer(prevKommentarer => [...prevKommentarer, savedKommentar?.id ? savedKommentar : kommentar]);
   setCurrentKommentar("");
+}
+
+// A comment's author is embedded as the second-to-last line of its content
+// (name followed by timestamp), appended by appendNameAndDate.
+function isOwnKommentar(kommentar) {
+  const user = JSON.parse(localStorage.getItem('user'))
+  if (!user?.userName) return false;
+  const lines = (kommentar.innehall ?? "").trim().split("\n").map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) return false;
+  const authorLine = lines[lines.length - 2];
+  return authorLine.toLowerCase() === user.userName.toLowerCase();
+}
+
+async function deleteKommentar(kommentar) {
+  if (!window.confirm("Är du säker på att du vill radera kommentaren?")) return;
+  try {
+    await removeKommentarer(kommentar.id);
+    setKommentarer(prev => prev.filter(k => k.id !== kommentar.id));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function openKyrkogard() {
+  const kyrkogardToOpen = kyrkogardar.find(k => k.namn === activeArende.kyrkogard);
+  if (!kyrkogardToOpen) return;
+  setKyrkogardToOpen(kyrkogardToOpen);
+  setActiveArende(null);
+  setActiveTab('Kyrkogårdar');
 }
 
 function findTaggedUsers(comment) {
@@ -171,15 +185,15 @@ return (<div>
         <div className = "arende-detail-container">
         <div className = "buttons-arende-detail">
         <button onClick = {() => {setActiveTab('Ärenden'); setActiveArende(null); setCreateKommentar(false)}}>← Tillbaka till sökfält</button>
-        <button onClick = {() => setArendeDetailState("oversikt")}> Översikt</button>
-        <button onClick = {() => setArendeDetailState("design")}>Design</button>
-        <button onClick = {() => setArendeDetailState("sten")}>Sten</button>
-        <button disabled = {activeArende.arendeTyp !== "Nyinskription" && activeArende.arendeTyp !== "Ny sten"} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
-        <button onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
-        <button onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
-        <button onClick = {() => setArendeDetailState("historik")}>Historik</button>
-        <button onClick = {() => setArendeDetailState("bilder")}>Bilder ({arendeBilderCount})</button>
-        <button onClick = {() => setArendeDetailState("bestallningar")}>Tillbehör</button>
+        <button className = {arendeDetailState === "oversikt" ? "active" : ""} onClick = {() => setArendeDetailState("oversikt")}>Översikt</button>
+        <button className = {arendeDetailState === "design" ? "active" : ""} onClick = {() => setArendeDetailState("design")}>Design</button>
+        <button className = {arendeDetailState === "sten" ? "active" : ""} onClick = {() => setArendeDetailState("sten")}>Sten</button>
+        <button disabled = {activeArende.arendeTyp !== "Nyinskription" && activeArende.arendeTyp !== "Ny sten"} className = {arendeDetailState === "godkannanden" ? "active" : ""} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
+        <button className = {arendeDetailState === "fakturor" ? "active" : ""} onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
+        <button className = {arendeDetailState === "kommentarer" ? "active" : ""} onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
+        <button className = {arendeDetailState === "historik" ? "active" : ""} onClick = {() => setArendeDetailState("historik")}>Historik</button>
+        <button className = {arendeDetailState === "bilder" ? "active" : ""} onClick = {() => setArendeDetailState("bilder")}>Bilder ({arendeBilderCount})</button>
+        <button className = {arendeDetailState === "bestallningar" ? "active" : ""} onClick = {() => setArendeDetailState("bestallningar")}>Tillbehör</button>
         </div>
         {arendeDetailState === "oversikt" && <div>
         <div className = "arende-detail-main">
@@ -198,14 +212,18 @@ return (<div>
         <div className = "arende-detail-oversikt-layout">
         <div className = "arende-detail-oversikt-content-grid">
 
-        <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"} 
+        <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Avliden"}
+        onKyrkogardClick = {openKyrkogard}
         fields = { [["", "avlidenNamn", "text"],
                     ["Födelsedatum", "fodelseDatum", "text"], 
                     ["Dödsdatum", "dodsDatum", "text"],
                     ["Ärendetyp", "arendeTyp", "typ"],
                     ["Kyrkogård", "kyrkogard", "kyrkogard"],
-                  ["Kvarter", "kvarter", "text"],
-                  ["Gravnummer", "gravnummer", "text"]]}/>
+                    ["Kvarter", "kvarter", "text"],
+                    ["Gravnummer", "gravnummer", "text"],
+                    ...(!["Högalid", "Lilla Dalen", "Ny sten"].includes(activeArende.arendeTyp)
+                      ? [["Nuvarande text", "nuvarandeText", "text"]]
+                      : [])]}/>
       
         <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Beställare"} 
         fields = { [["", "bestallare", "text"], 
@@ -249,6 +267,7 @@ return (<div>
             {kommentarer.map(k => (
               <div className = "kommentar-card" key = {k.id}>
                 <div className = "arende-detail-oversikt-comment-text">{k.innehall}</div>
+                {isOwnKommentar(k) && <button className = "delete-kommentar-button" onClick = {() => deleteKommentar(k)}>Radera</button>}
               </div>
             ))}
           </div>
@@ -371,8 +390,9 @@ return (<div>
           </div>
           </div>}
         {arendeDetailState === "kommentarer" && <div className = "kommentar-container">
-          {kommentarer.map(k => <div className = "kommentar-card">
-            <p><pre className = "pre">{k.innehall}</pre></p>
+          {kommentarer.map(k => <div className = "kommentar-card" key = {k.id}>
+            <pre className = "pre">{k.innehall}</pre>
+            {isOwnKommentar(k) && <button className = "delete-kommentar-button" onClick = {() => deleteKommentar(k)}>Radera</button>}
           </div>)}
         <button onClick = {() => setCreateKommentar(!createKommentar)}>+ Lägg till ny kommentar</button>
         {createKommentar && <form>

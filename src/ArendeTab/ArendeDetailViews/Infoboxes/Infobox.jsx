@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { InfoboxForm } from './InfoboxForm.jsx'
 import './Infobox.css'
 
-    export function Infobox({activeArende, setActiveArende, header, fields, editAllowed = true, children}){
+    export function Infobox({activeArende, setActiveArende, header, fields, editAllowed = true, onKyrkogardClick, children}){
         
         const [edit, setEdit] = useState(false);
 
@@ -15,10 +15,12 @@ import './Infobox.css'
             </div>
             {edit && <InfoboxForm activeArende = {activeArende} setActiveArende = {setActiveArende} setEdit = {setEdit} fields = {fields}/>}
             {!edit && <>
-                {fields.map(([label, key, _]) =>
-                    <div className = "arende-detail">
+                {fields.map(([label, key, type]) =>
+                    <div className = "arende-detail" key = {key}>
                         {label && <span className = "infobox-label">{label}</span>}
-                        <span className = {label ? "infobox-content" : "infobox-content-header"}>{activeArende?.[key] ?? " "}</span>
+                        {type === "kyrkogard" && onKyrkogardClick && activeArende?.[key]
+                            ? <span className = "infobox-content infobox-kyrkogard-link" onClick = {onKyrkogardClick}>{activeArende[key]}</span>
+                            : <span className = {label ? "infobox-content" : "infobox-content-header"}>{activeArende?.[key] ?? " "}</span>}
                     </div>
                 )}
                 {children}

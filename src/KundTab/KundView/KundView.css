@@ -14,7 +14,7 @@
     gap:6px;
     margin-left: 0.5vw;
     background-image:
-      linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+      linear-gradient(to left, var(--element-dark), var(--element));
     padding: 10px;
     width: 67vw;
     min-height:445px;
@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px 0px;
-  background: linear-gradient(to bottom, rgb(238,248,240), rgb(228,238,230));
+  background: linear-gradient(to bottom, var(--bg), var(--element));
   padding: 10px;
   height: 79.3vh;
   border-radius: 15px;
@@ -38,7 +38,7 @@
   width: auto;
   height: 30px;
   padding: 0px 10px;
-  background-color: rgb(243, 255, 245);
+  background-color: var(--surface);
 }
 
 .kund-info-grid {

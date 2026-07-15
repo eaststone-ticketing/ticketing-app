@@ -1,16 +1,131 @@
 :root {
+  /* System-wide color scheme. All components should use these variables. */
+  /* Page background and raised content areas. */
+  --bg: rgb(234, 246, 234);
+  --surface: rgb(248, 253, 248);
+  --element: rgb(221, 235, 221);
+  --element-dark: rgb(196, 224, 196);
+  --element-darker: rgb(169, 202, 169);
+  --element-darkest: rgb(122, 163, 122);
+  --danger: rgb(230, 0, 0);
+  --text: #213547;
+  --highlight: rgb(228, 229, 238);
+
+  /* Ticket status gradient colors (start = left, end = right). */
+  --status-nytt-start: rgb(200, 155, 255);
+  --status-nytt-end: rgb(200, 198, 255);
+  --status-vantar-svar-av-kund-start: rgb(200, 155, 255);
+  --status-vantar-svar-av-kund-end: rgb(255, 225, 115);
+  --status-vantar-svar-av-kyrkogard-start: rgb(200, 155, 255);
+  --status-vantar-svar-av-kyrkogard-end: rgb(243, 100, 255);
+  --status-vantar-svar-av-kund-och-kyrkogard-start: rgb(200, 155, 255);
+  --status-vantar-svar-av-kund-och-kyrkogard-end: rgb(123, 245, 200);
+  --status-godkand-av-kund-start: rgb(240, 245, 145);
+  --status-godkand-av-kund-end: rgb(255, 225, 115);
+  --status-godkand-av-kund-vantar-svar-av-kyrkogard-start: rgb(240, 245, 145);
+  --status-godkand-av-kund-vantar-svar-av-kyrkogard-end: rgb(243, 100, 255);
+  --status-godkand-av-kyrkogard-start: rgb(243, 145, 228);
+  --status-godkand-av-kyrkogard-end: rgb(243, 100, 255);
+  --status-godkand-av-kyrkogard-vantar-svar-av-kund-start: rgb(243, 145, 228);
+  --status-godkand-av-kyrkogard-vantar-svar-av-kund-end: rgb(255, 225, 115);
+  --status-redo-start: rgb(153, 245, 153);
+  --status-redo-end: rgb(123, 245, 200);
+  --status-stangt-start: rgb(196, 196, 196);
+  --status-stangt-end: rgb(199, 199, 199);
+  --status-legacy-start: rgb(213, 223, 215);
+  --status-legacy-end: rgb(223, 233, 225);
+  --status-raderad-start: rgb(200, 155, 255);
+  --status-raderad-end: rgb(200, 198, 255);
+
+  /* Ticket type stripe colors. */
+  --type-ny-sten-start: rgb(211, 229, 255);
+  --type-ny-sten-end: rgb(211, 229, 255);
+  --type-stabilisering-start: rgb(245, 211, 179);
+  --type-stabilisering-end: rgb(245, 211, 179);
+  --type-nyinskription-start: rgb(255, 211, 242);
+  --type-nyinskription-end: rgb(255, 211, 242);
+  --type-ommålning-start: rgb(255, 211, 211);
+  --type-ommålning-end: rgb(255, 211, 211);
+  --type-rengöring-start: rgb(255, 248, 211);
+  --type-rengöring-end: rgb(255, 248, 211);
+  --type-inspektering-start: rgb(252, 255, 211);
+  --type-inspektering-end: rgb(252, 255, 211);
+  --type-ovrigt-start: rgb(200, 200, 200);
+  --type-ovrigt-end: rgb(200, 200, 200);
+  --type-hogalid-start: rgb(253, 177, 177);
+  --type-hogalid-end: rgb(253, 177, 177);
+  --type-lilla-dalen-start: rgb(211, 255, 229);
+  --type-lilla-dalen-end: rgb(211, 255, 229);
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: var(--text);
+  background-color: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="dark"] {
+  --bg: rgb(20, 20, 20);
+  --surface: rgb(30, 30, 30);
+  --element: rgb(33, 33, 33);
+  --element-dark: rgb(46, 46, 46);
+  --element-darker: rgb(66, 66, 66);
+  --element-darkest: rgb(101, 101, 101);
+  --text: rgb(228, 238, 228);
+  --highlight: rgb(58, 59, 101);
+
+  --status-nytt-start: rgb(140, 100, 180);
+  --status-nytt-end: rgb(120, 115, 170);
+  --status-vantar-svar-av-kund-start: rgb(140, 100, 180);
+  --status-vantar-svar-av-kund-end: rgb(180, 150, 60);
+  --status-vantar-svar-av-kyrkogard-start: rgb(140, 100, 180);
+  --status-vantar-svar-av-kyrkogard-end: rgb(170, 60, 180);
+  --status-vantar-svar-av-kund-och-kyrkogard-start: rgb(140, 100, 180);
+  --status-vantar-svar-av-kund-och-kyrkogard-end: rgb(70, 170, 130);
+  --status-godkand-av-kund-start: rgb(160, 165, 80);
+  --status-godkand-av-kund-end: rgb(180, 155, 60);
+  --status-godkand-av-kund-vantar-svar-av-kyrkogard-start: rgb(160, 165, 80);
+  --status-godkand-av-kund-vantar-svar-av-kyrkogard-end: rgb(170, 60, 180);
+  --status-godkand-av-kyrkogard-start: rgb(170, 90, 160);
+  --status-godkand-av-kyrkogard-end: rgb(170, 60, 175);
+  --status-godkand-av-kyrkogard-vantar-svar-av-kund-start: rgb(170, 90, 160);
+  --status-godkand-av-kyrkogard-vantar-svar-av-kund-end: rgb(180, 155, 60);
+  --status-redo-start: rgb(80, 165, 90);
+  --status-redo-end: rgb(65, 160, 120);
+  --status-stangt-start: rgb(90, 95, 90);
+  --status-stangt-end: rgb(95, 100, 95);
+  --status-legacy-start: rgb(46, 59, 46);
+  --status-legacy-end: rgb(66, 84, 66);
+  --status-raderad-start: rgb(140, 100, 180);
+  --status-raderad-end: rgb(120, 115, 170);
+
+  --type-ny-sten-start: rgb(55, 75, 100);
+  --type-ny-sten-end: rgb(55, 75, 100);
+  --type-stabilisering-start: rgb(100, 80, 55);
+  --type-stabilisering-end: rgb(100, 80, 55);
+  --type-nyinskription-start: rgb(110, 75, 95);
+  --type-nyinskription-end: rgb(110, 75, 95);
+  --type-ommålning-start: rgb(110, 70, 70);
+  --type-ommålning-end: rgb(110, 70, 70);
+  --type-rengöring-start: rgb(110, 100, 60);
+  --type-rengöring-end: rgb(110, 100, 60);
+  --type-inspektering-start: rgb(90, 100, 55);
+  --type-inspektering-end: rgb(90, 100, 55);
+  --type-ovrigt-start: rgb(80, 85, 80);
+  --type-ovrigt-end: rgb(80, 85, 80);
+  --type-hogalid-start: rgb(115, 70, 70);
+  --type-hogalid-end: rgb(115, 70, 70);
+  --type-lilla-dalen-start: rgb(55, 100, 80);
+  --type-lilla-dalen-end: rgb(55, 100, 80);
+
+  color-scheme: dark;
 }
 
 a {
@@ -22,12 +137,23 @@ a:hover {
   color: #535bf2;
 }
 
+html,
 body {
   margin: 0;
-  display: flex;
-  place-items: top;
-  min-width: 320px;
+  padding: 0;
+  width: 100%;
   min-height: 100vh;
+  background-color: var(--bg);
+}
+
+body {
+  min-width: 320px;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -35,34 +161,41 @@ h1 {
   line-height: 1.1;
 }
 
+/* Standard button used throughout the system.
+   Exceptions (tabs, menus, create buttons, delete buttons, card buttons)
+   override this with their own classes. */
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  border: 1px solid var(--element-darker);
+  padding: 5px 12px;
+  font-size: 14px;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--text);
+  background-color: var(--element);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 button:hover {
-  border-color: #646cff;
+  background-color: var(--element-dark);
+  border-color: var(--element-darkest);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px auto -webkit-focus-ring-color;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Attention-grabbing create button (Skapa nytt ärende, Lägg till leverans,
+   Lägg till kyrkogård etc.) */
+button.create-button {
+  border: 2px solid var(--element-darkest);
+  font-weight: 700;
+  background-color: var(--element);
+}
+button.create-button:hover {
+  background-color: var(--element-dark);
 }

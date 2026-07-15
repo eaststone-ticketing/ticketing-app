@@ -1,42 +1,61 @@
 import {getUsers} from '../api.js'
 import {useState, useEffect} from 'react'
 import './ArbetsplaneringTab.css'
+import { statusColor, typeColor, ticketColorStyle } from '../Helpers/ticketColors.js'
+
+/* Defined at module level so re-renders of the tab don't remount the cards.
+   The dragged id travels in the drag event's dataTransfer instead of React
+   state — updating state during dragstart re-renders mid-drag and makes the
+   browser cancel the drag (the "have to drag twice" bug). */
+function ArendeCard({ arende, assignedBy, showCompletedButton, onComplete }) {
+    return (
+        <div
+            className = "arbetsplanering-arende-card"
+            draggable
+            onDragStart={(event) => {
+                event.dataTransfer.setData("text/plain", String(arende.id))
+                event.dataTransfer.effectAllowed = "move"
+            }}
+            style={ticketColorStyle(arende.status, arende.arendeTyp)}
+        >
+            <div className = "arbetsplanering-card-streak status" />
+            <div className = "arbetsplanering-card-streak type" />
+            <div className = "arbetsplanering-card-content">
+                <p className = "arbetsplanering-arende-title">#{arende.id} {arende.avlidenNamn}</p>
+                <p className = "arbetsplanering-arende-status">{arende.status}</p>
+                <p className = "arbetsplanering-arende-status">{arende.arendeTyp ?? "Okänd typ"}</p>
+                {assignedBy && <p className = "arbetsplanering-assigned-by">Tilldelad av: {assignedBy}</p>}
+                {showCompletedButton && (
+                    <button
+                        className = "arbetsplanering-complete-button"
+                        onClick = {(event) => {
+                            event.stopPropagation()
+                            onComplete(arende.id)
+                        }}
+                    >
+                        Completed
+                    </button>
+                )}
+            </div>
+        </div>
+    )
+}
+
+function readDraggedArendeId(event) {
+    const raw = event.dataTransfer.getData("text/plain")
+    const id = Number(raw)
+    return Number.isNaN(id) ? null : id
+}
 
 export default function ArbetsplaneringTab({ arenden = [] }){
 
     const [users, setUsers] = useState([])
     const [assignmentByArendeId, setAssignmentByArendeId] = useState({})
-    const [draggedArendeId, setDraggedArendeId] = useState(null)
     const [typeFilter, setTypeFilter] = useState("")
     const [statusFilter, setStatusFilter] = useState("")
     const [avlidenSearch, setAvlidenSearch] = useState("")
     const [completedArendeIds, setCompletedArendeIds] = useState(new Set())
     const loggedInUserName = JSON.parse(localStorage.getItem("user"))?.userName ?? ""
-
-    const statusColor = {
-        "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
-        "Väntar svar av kund":["rgb(200,155,255)", "rgb(255, 225, 115)"],
-        "Väntar svar av kyrkogård":["rgb(200,155,255)", "rgb(243, 100, 255)"],
-        "Väntar svar av kund och kyrkogård":["rgb(200,155,255)", "rgb(123, 245, 200)"],
-        "Godkänd av kund" : ["rgb(240, 245, 145)", "rgb(255, 225, 115)"],
-        "Godkänd av kund, väntar svar av kyrkogård" : ["rgb(240, 245, 145)","rgb(243, 100, 255)"],
-        "Godkänd av kyrkogård" : ["rgb(243, 145, 228)", "rgb(243, 100, 255) "],
-        "Godkänd av kyrkogård, väntar svar av kund" : ["rgb(243, 145, 228)", "rgb(255, 225, 115)"],
-        "Redo" : ["rgb(153, 245, 153)",  "rgb(123, 245, 200)"],
-        "Stängt" : ["rgb(196, 196, 196)", "rgb(199, 199, 199)"],
-        "LEGACY" : ["rgb(213, 223, 215)",  "rgb(223, 233, 225)"],
-        "raderad" : ["rgb(200,155,255)", "rgb(200,198,255)"]
-    }
-
-    const typeColor = {
-        "Ny sten": ["rgba(211, 229, 255, 1)", "rgba(211, 229, 255, 1)"],
-        "Stabilisering": ["rgba(245, 211, 179, 1)", "rgba(245, 211, 179, 1)"],
-        "Nyinskription": ["rgba(255, 211, 242, 1)", "rgba(255, 211, 242, 1)"],
-        "Ommålning": ["rgba(255, 211, 211, 1)", "rgba(255, 211, 211, 1)"],
-        "Rengöring": ["rgba(255, 248, 211, 1)", "rgba(255, 248, 211, 1)"],
-        "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"],
-        "Övrigt" : ["rgba(200, 200, 200, 1)", "rgba(200, 200, 200, 1)"]
-    }
 
     useEffect(() => {
         async function loadUsers(){
@@ -69,38 +88,36 @@ export default function ArbetsplaneringTab({ arenden = [] }){
     const allArendeTyper = Object.keys(typeColor)
     const allStatuses = Object.keys(statusColor).filter((status) => status !== "Stängt" && status !== "LEGACY" && status !== "raderad")
 
-    function handleDragStart(arendeId) {
-        setDraggedArendeId(arendeId)
-    }
-
-    function handleDropOnUser(userId) {
-        if (!draggedArendeId) {
+    function handleDropOnUser(event, userId) {
+        event.preventDefault()
+        const arendeId = readDraggedArendeId(event)
+        if (!arendeId) {
             return
         }
 
         setAssignmentByArendeId((prev) => {
             return {
                 ...prev,
-                [draggedArendeId]: {
+                [arendeId]: {
                     userId,
                     assignedBy: loggedInUserName || "Okänd användare"
                 }
             }
         })
-        setDraggedArendeId(null)
     }
 
-    function handleDropOnUnassignedPanel() {
-        if (!draggedArendeId) {
+    function handleDropOnUnassignedPanel(event) {
+        event.preventDefault()
+        const arendeId = readDraggedArendeId(event)
+        if (!arendeId) {
             return
         }
 
         setAssignmentByArendeId((prev) => {
             const next = { ...prev }
-            delete next[draggedArendeId]
+            delete next[arendeId]
             return next
         })
-        setDraggedArendeId(null)
     }
 
     function handleComplete(arendeId) {
@@ -110,43 +127,6 @@ export default function ArbetsplaneringTab({ arenden = [] }){
             return next
         })
         setCompletedArendeIds((prev) => new Set(prev).add(arendeId))
-    }
-
-    function ArendeCard({ arende, assignedBy, showCompletedButton }) {
-        return (
-            <div
-                className = "arbetsplanering-arende-card"
-                draggable
-                onDragStart={() => handleDragStart(arende.id)}
-                onDragEnd={() => setDraggedArendeId(null)}
-                style={{
-                    "--status-color-start": statusColor[arende.status]?.[0] || "transparent",
-                    "--status-color-end": statusColor[arende.status]?.[1] || "transparent",
-                    "--arende-type-color-start": typeColor[arende.arendeTyp]?.[0] || "transparent",
-                    "--arende-type-color-end": typeColor[arende.arendeTyp]?.[1] || "transparent"
-                }}
-            >
-                <div className = "arbetsplanering-card-streak status" />
-                <div className = "arbetsplanering-card-streak type" />
-                <div className = "arbetsplanering-card-content">
-                    <p className = "arbetsplanering-arende-title">#{arende.id} {arende.avlidenNamn}</p>
-                    <p className = "arbetsplanering-arende-status">{arende.status}</p>
-                    <p className = "arbetsplanering-arende-status">{arende.arendeTyp ?? "Okänd typ"}</p>
-                    {assignedBy && <p className = "arbetsplanering-assigned-by">Tilldelad av: {assignedBy}</p>}
-                    {showCompletedButton && (
-                        <button
-                            className = "arbetsplanering-complete-button"
-                            onClick = {(event) => {
-                                event.stopPropagation()
-                                handleComplete(arende.id)
-                            }}
-                        >
-                            Completed
-                        </button>
-                    )}
-                </div>
-            </div>
-        )
     }
 
     return <div className = "arbetsplanering-layout">
@@ -191,7 +171,7 @@ export default function ArbetsplaneringTab({ arenden = [] }){
             </div>
             <div className = "arbetsplanering-results-scroll">
                 {unassignedActiveArenden.length === 0 && <p className = "drop-hint">Inga oplacerade aktiva ärenden.</p>}
-                {unassignedActiveArenden.map((arende) => <ArendeCard key = {arende.id} arende = {arende} />)}
+                {unassignedActiveArenden.map((arende) => <ArendeCard key = {arende.id} arende = {arende} onComplete = {handleComplete} />)}
             </div>
         </div>
         <div className = "user-columns-container">
@@ -205,7 +185,7 @@ export default function ArbetsplaneringTab({ arenden = [] }){
                 key = {userId}
                 className = "user-column"
                 onDragOver={(event) => event.preventDefault()}
-                onDrop={() => handleDropOnUser(userId)}
+                onDrop={(event) => handleDropOnUser(event, userId)}
             >
             <p className = "user-column-header">{user.username.charAt(0).toUpperCase() + user.username.slice(1)}</p>
             <div className = "user-column-drop-area">
@@ -215,6 +195,7 @@ export default function ArbetsplaneringTab({ arenden = [] }){
                     arende = {arende}
                     assignedBy = {assignmentByArendeId[arende.id]?.assignedBy}
                     showCompletedButton = {user.username?.toLowerCase() === loggedInUserName.toLowerCase()}
+                    onComplete = {handleComplete}
                 />)}
             </div>
         </div>})}

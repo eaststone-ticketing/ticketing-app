@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
-import { getKyrkogardar, addKyrkogard, removeKyrkogard, updateKyrkogard, getArenden, addArende, removeArende, updateArende, getKunder, addKund, removeKunder, updateKund, getGodkannanden, addGodkannande, removeGodkannande, updateGodkannande, getKommentarer, addKommentarer, removeKommentarer, updateKommentar, updatePassword, getTraces } from "./api.js";
-import { GoDotFill } from "react-icons/go";
+import { getKyrkogardar, addKyrkogard, removeKyrkogard, getArenden, getKunder, removeKunder, getGodkannanden } from "./api.js";
 import { BsTelephone } from "react-icons/bs";
-import { MdEmail, MdOutlineEmail } from "react-icons/md";
-import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
+import { MdOutlineEmail } from "react-icons/md";
 import './App.css'
-import MainApp from './MainApp.jsx'
 import ArendeTab from './ArendeTab/ArendeTab.jsx'
 import SlaIhopMenu from './SlaIhopMenu'
 import EmailTab from './EmailTab.jsx'
@@ -13,9 +10,7 @@ import LeveransTab from './LeveransTab/LeveransTab.jsx'
 import SkapaKyrkogardsgrupp from './KyrkogardTab/SkapaKyrkogardsgrupp.jsx'
 import KundView from './KundTab/KundView/KundView.jsx'
 import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
-import {Stenpedia} from './OversiktTab/Stenpedia/Stenpedia.jsx'
-import linkToArende from './Helpers/linkToArende.js'
-import EventLogTimeline from './OversiktTab/EventLogTimeline.jsx'
+import OversiktTab from './OversiktTab/OversiktTab.jsx'
 import ArbetsplaneringTab from './ArbetsplaneringTab/ArbetsplaneringTab.jsx'
 
 function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
@@ -146,7 +141,7 @@ function KyrkogardForm({kyrkogardar, setKyrkogardar, formData, setFormData}) {
   </form>
   }
 
-function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
+function KyrkogardTab({kyrkogardar, setKyrkogardar, arenden, setActiveTab, setActiveArende, kyrkogardToOpen, setKyrkogardToOpen}) {
 
   const [formVisible, setFormVisible] = useState(false);
   const [activeKyrkogard, setActiveKyrkogard] = useState(null);
@@ -155,6 +150,14 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   const [searchNamn, setSearchNamn] = useState("");
   const [searchGrupp, setSearchGrupp] = useState("");
   const [loadMax, setLoadMax] = useState(50);
+
+  useEffect(() => {
+    if (kyrkogardToOpen) {
+      setActiveKyrkogard(kyrkogardToOpen);
+      setKyrkogardTabState(kyrkogardToOpen.id);
+      setKyrkogardToOpen(null);
+    }
+  }, [kyrkogardToOpen, setKyrkogardToOpen]);
 
   async function handleDelete(id) {
   try {
@@ -176,9 +179,9 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
     })
 
   return <div className = "kyrkogard-tab">
-    {kyrkogardTabState === null && <div>
+    {kyrkogardTabState === null && <div className = "kyrkogard-list-section">
     <div className = "kyrkogard-tab-buttons">
-    <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button">+ Lägg till kyrkogård</button>
+    <button onClick = {() => setFormVisible(!formVisible)} className = "add-kyrkogard-button create-button">+ Lägg till kyrkogård</button>
     <button onClick = {() => setKyrkogardTabState("skapagrupp")} className = "add-kyrkogard-button">Skapa kyrkogårdsgruppering</button>
     <button onClick = {() => setKyrkogardTabState("slaihop")} className = "add-kyrkogard-button">Slå ihop flera kyrkogårdar</button>
     </div>
@@ -216,160 +219,10 @@ function KyrkogardTab({kyrkogardar, setKyrkogardar}) {
   </div>
     </div>
 }
-{kyrkogardTabState === "slaihop" && <SlaIhopMenu kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
+{kyrkogardTabState === "slaihop" && <SlaIhopMenu kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} setKyrkogardTabState = {setKyrkogardTabState} />}
 {kyrkogardTabState === "skapagrupp" && <SkapaKyrkogardsgrupp setKyrkogardTabState = {setKyrkogardTabState} kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar}/>}
-{(activeKyrkogard !== null) && <KyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar}/>}
+{(activeKyrkogard !== null) && <KyrkogardView setKyrkogardTabState = {setKyrkogardTabState} activeKyrkogard = {activeKyrkogard} setRedigering = {setRedigering} setKyrkogardar = {setKyrkogardar} redigering = {redigering} setActiveKyrkogard = {setActiveKyrkogard} kyrkogardar = {kyrkogardar} arenden = {arenden} setActiveTab = {setActiveTab} setActiveArende = {setActiveArende}/>}
 </div>
-}
-
-function OversiktTab({setActiveTab, setActiveArende, arenden}) {
-
-  async function seKommentar(kommentar){
-    if(kommentar.seen === 2){
-      return
-    }
-    const newKommentar =  {...kommentar, seen: Number(1)}
-    try{
-
-    console.log(newKommentar)
-    await updateKommentar(kommentar.id, newKommentar)
-    } catch (err){
-      console.log(err)
-    }
-    setKommentarer(prev =>
-    prev.map(k =>
-      k.id === kommentar.id ? newKommentar : k
-      )
-    )
-  }
-
-  async function arkiveraKommentar(kommentar){
-
-    let number
-
-    if (kommentar.seen === 2){
-      number = Number(1)
-    }
-    else{
-      number = Number(2)
-    }
-    
-    const newKommentar =  {...kommentar, seen: number}
-    try{
-
-    console.log(newKommentar)
-    await updateKommentar(kommentar.id, newKommentar)
-    } catch (err){
-      console.log(err)
-    }
-    setKommentarer(prev =>
-    prev.map(k =>
-      k.id === kommentar.id ? newKommentar : k
-      )
-    )
-  }
-
-  const user = JSON.parse(localStorage.getItem('user'))
-  const now = new Date();
-  const [oversiktViewState, setOversiktViewState] = useState(null);
-  const [kommentarer, setKommentarer] = useState(null);
-  const [traces, setTraces] = useState([]);
-  const [traceAmount, setTraceAmount] = useState(50)
-  const [showDetail, setShowDetail] = useState(null);
-  const [newPassword, setNewPassword] = useState("");
-  const [passwordChecker, setPasswordChecker] = useState("");
-  const [activeNotificationTab, setActiveNotificationTab] = useState("dina");
-  const [eventLogMode, setEventLogMode] = useState("handelse");
-
-  useEffect(() => {
-  const fetchKommentarer = async () => {
-    const allKommentarer = await getKommentarer();
-    const filtered = allKommentarer.filter(
-      k => k.tagged_users.includes(user.userName)
-    )
-    const sorted = filtered.sort((a, b) => b.id - a.id);
-    ;
-    setKommentarer(sorted);
-  };
-  fetchKommentarer();
-}, [user.userName]);
-
-
-useEffect(() => {
-  const fetchTraces = async () => {
-    const allTraces = await getTraces();
-    setTraces(allTraces);
-  };
-  fetchTraces();
-}, []);
-
-  function Greeting(){
-    const hour = now.getHours();
-    
-    if(hour > 4 && hour < 10){
-      return <h3>God morgon, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
-    }
-    if(hour >= 10 && hour < 12){
-      return <h3>God förmiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
-    }
-    if(hour >= 12 && hour < 18){
-      return <h3>God eftermiddag, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
-    }
-    if(hour >= 18 && hour <= 22){
-      return <h3>God kväll, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
-    }
-
-    return <h3>Det är mitt i natten, {user.userName.charAt(0).toUpperCase() + user.userName.slice(1)}!</h3>
-    }
-
-return <div className = "oversikt-view">
-  {!oversiktViewState && <div>
-  <div className = "sideways">
-  <div className = "sideways">
-  <div className = "greeting">
-  <Greeting/>
-
-  <button onClick = {async () => {setOversiktViewState("Stenpedia")}}>Stenpedia</button>
-  <div className = "event-log-options">
-  <h3 onClick = {() => setEventLogMode("handelse")}>Händelselogg</h3>
-  <h3 onClick = {() => setEventLogMode("tidslinje")}>Tidslinje</h3>
-  </div>
-  {eventLogMode === "handelse" && (traces ? <div className = "handelselogg">
-    { traces.sort((a,b) => b.id - a.id).slice(0,traceAmount).map((trace) => {const arende = arenden.find((arende) => arende.id === trace.arendeID); return <div> <strong onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)} className = "trace-arende">#{trace.arendeID ?? ""} {arende?.avlidenNamn} </strong>: {trace.body} </div>})}
-  <button onClick = {() => setTraceAmount(traceAmount + 50)}>Ladda fler</button>
-  </div> : <p>Inga händelser kunde hittas</p>)}
-  {eventLogMode === "tidslinje" && <EventLogTimeline />}
-  
-  
-  </div>
-  <button onClick = {() =>{localStorage.removeItem('user'); <MainApp />; location.reload();}} className = "logout-button">Logga ut</button>
-  </div>
-  <div>
-    <div className = "feed-container">
-      <div className = "notification-feed-tabs">
-        <h4 className = {`notification-tab ${activeNotificationTab === "dina" ? "active" : ""}`} onClick = {() => setActiveNotificationTab("dina")}>Dina notifikationer</h4>
-        <h4 className = {`notification-tab ${activeNotificationTab === "arkiverade" ? "active" : ""}`} onClick = {() => setActiveNotificationTab("arkiverade")}>Arkiverade notifikationer</h4>
-      </div>
-    {(kommentarer ?? []).filter(k => arenden.find(a => k.arendeID === a.id) && 
-    (k.seen !== 2 && activeNotificationTab === "dina") || 
-    (k.seen === 2 && activeNotificationTab === "arkiverade") ).map(k => <div className = "feed-card">
-      <div className = {`feed-item-container ${k.seen === 0 ? "new" : ""}`} onClick = {async () => {setShowDetail(showDetail === k.id ? null: k.id); await seKommentar(k)}}>
-      <div className = "feed-item-preview">
-      <p className = "ny-notifikation">{k.seen === 0 ? <div className = "dot-wrapper"><GoDotFill className = "new-notification-dot" /></div> : ""}</p><p>Du har taggats i ärende </p><p className = "feed-card-arende-id" onClick = {(e) => { e.stopPropagation(); setActiveTab('Ärenden'), setActiveArende(arenden.find(a => k.arendeID === a.id))}}><strong>#{k.arendeID} {arenden.find((a) => k.arendeID === a.id).avlidenNamn}</strong></p>
-      {showDetail !== k.id && <IoMdArrowDropright className = "icon-feed"></IoMdArrowDropright>}
-      {showDetail === k.id && <IoMdArrowDropdown className = "icon-feed"></IoMdArrowDropdown>}
-      <p className = "arkivera-kommentar" onClick = {(e) =>{e.stopPropagation(); arkiveraKommentar(k)}}>{k.seen === 2 ? "Ta ur arkiv" : "Arkivera"}</p>
-      </div>
-      {showDetail === k.id && <p><pre className = "pre">{k.innehall}</pre></p>}
-      </div>
-    </div>)}
-    </div>
-  </div>
-  </div>
-  </div>}
-  {oversiktViewState === "Stenpedia" && <Stenpedia setOversiktViewState = {setOversiktViewState}/>}
-</div>
-
 }
 
 function App(user) {
@@ -383,6 +236,8 @@ function App(user) {
   const [kunder, setKunder] = useState([])
   const [godkannanden, setGodkannanden] = useState([])
   const [activeArende, setActiveArende] = useState(null)
+  const [kyrkogardToOpen, setKyrkogardToOpen] = useState(null)
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark")
 
   useEffect(() => {
   async function loadKyrkogardar() {
@@ -416,30 +271,45 @@ function App(user) {
   loadGodkannanden(); 
   }, []);
 
+  useEffect(() => {
+    const nextTheme = darkMode ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("theme", nextTheme);
+  }, [darkMode]);
+
 
   return (
     <>
-      <div>
+      <div className = "app-shell">
         <div className = "tab-bar">
-          {tabs.map((tab) => (
-            <button
-            key = {tab}
-            onClick = {() => {setActiveTab(tab); setActiveArende(null)}}
-            className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-            >
-              {tab}
-            </button>)
-          )}
+          <button
+            className = {`theme-toggle theme-toggle-icon ${darkMode ? "theme-icon-sun" : "theme-icon-moon"}`}
+            aria-label = {darkMode ? "Byt till ljust läge" : "Byt till mörkt läge"}
+            title = {darkMode ? "Ljust läge" : "Mörkt läge"}
+            onClick = {() => setDarkMode(!darkMode)}
+          >
+            {darkMode ? "☀" : "☾"}
+          </button>
+          <div className = "tab-buttons">
+            {tabs.map((tab) => (
+              <button
+              key = {tab}
+              onClick = {() => {setActiveTab(tab); setActiveArende(null)}}
+              className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+              >
+                {tab}
+              </button>)
+            )}
+          </div>
         </div>
         <div className="tab-content">
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
-          {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
+          {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Kunder' && <KundTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} arenden = {arenden} kunder = {kunder} setKunder = {setKunder}/>}
           {activeTab === 'Leveranser' && <LeveransTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
           {activeTab === 'Arbetsplanering' && <ArbetsplaneringTab arenden = {arenden} />}
-          {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} />}
+          {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} arenden = {arenden} setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} kyrkogardToOpen = {kyrkogardToOpen} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
-          {activeTab === 'AdminView' && <AdminView/>}
         </div>
       </div>
     </>

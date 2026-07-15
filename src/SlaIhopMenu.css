@@ -1,17 +1,90 @@
+.sla-ihop-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+}
+
+.sla-ihop-back-button {
+    width: fit-content;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.SlaIhopMenu {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Both columns side by side, each with its own scroll */
+.sla-ihop-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: linear-gradient(-45deg, var(--element), var(--bg));
+    border-radius: 15px;
+    padding: 12px;
+    width: 420px;
+    box-sizing: border-box;
+}
+
+.sla-ihop-column form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.sla-ihop-column form input {
+    width: 250px;
+    height: 20px;
+    border: solid var(--element-dark);
+    border-radius: 20px;
+}
+
+.sla-ihop-column h4 {
+    margin: 4px 0;
+    flex-shrink: 0;
+}
+
+.sla-ihop-search-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.sla-ihop-merge-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: var(--surface);
+    border-radius: 10px;
+    padding: 6px 10px;
+    margin-top: 4px;
+}
+
+.sla-ihop-confirm-button {
+    margin-top: 10px;
+    flex-shrink: 0;
+}
+
 .kyrkogard-and-assign-button{
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
     gap: 6px;
     align-items: center;
 }
 
-.kyrkogard-and-assign-button button {
-    padding: 0px;
-
+.kyrkogard-and-assign-button p {
+    margin: 3px 0;
 }
 
-.SlaIhopMenu {
-    display:flex;
-    flex-direction:row;
-    gap: 6px;
+.kyrkogard-and-assign-button button {
+    padding: 0px 8px;
+    font-size: 12px;
 }

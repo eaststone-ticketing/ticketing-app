@@ -1,13 +1,15 @@
 import './KyrkogardView.css'
 import {useState} from 'react'
-import {updateKyrkogard, getKyrkogardar, getArenden } from '../../api.js'
+import {updateKyrkogard, getKyrkogardar } from '../../api.js'
 import {addRule} from './rulehandling.js'
 import RegelEntry from './RegelEntry.jsx'
+import linkToArende from '../../Helpers/linkToArende.js'
 
-export default function KyrkogardView({setKyrkogardTabState, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard}) {
+export default function KyrkogardView({setKyrkogardTabState, setRedigering, setKyrkogardar, redigering, setActiveKyrkogard, activeKyrkogard, arenden = [], setActiveTab, setActiveArende}) {
 
   const [addRuleEnabled, setAddRuleEnabled] = useState(false)
   const [currentNewRule, setCurrentNewRule] = useState("")
+  const [activeDetailTab, setActiveDetailTab] = useState("info")
   const [formData, setFormData] = useState({
     namn: activeKyrkogard.namn,
     kontaktperson: activeKyrkogard.kontaktperson,
@@ -17,6 +19,8 @@ export default function KyrkogardView({setKyrkogardTabState, setRedigering, setK
     ort: activeKyrkogard.ort,
     postnummer: activeKyrkogard.postnummer
 });
+
+  const koppladeArenden = arenden.filter((a) => a.kyrkogard === activeKyrkogard.namn && a.status !== "raderad")
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })}
@@ -37,15 +41,24 @@ export default function KyrkogardView({setKyrkogardTabState, setRedigering, setK
     }
   }
       
-  return <div>
-        <div className = "sideways">
+  return <div className = "kyrkogard-view-root">
+        <div className = "sideways kyrkogard-view-layout">
         <div className = "button-panel-kyrkogard">
         <button onClick = {() => {setKyrkogardTabState(null); setActiveKyrkogard(null); setRedigering(false)}}>← Tillbaka</button>
         <button onClick = {() => {setRedigering(!redigering);}}>Redigera kyrkogård</button>
         </div>
         <div className = "kyrkogard-view-info-panel">
-        <div>
+        <div className = "kyrkogard-view-main">
+        <div className = "kyrkogard-view-header">
         <h2>{activeKyrkogard.namn}</h2>
+        <div className = "kyrkogard-detail-tabs">
+          <button className = {`kyrkogard-detail-tab ${activeDetailTab === "info" ? "active" : ""}`} onClick = {() => setActiveDetailTab("info")}>Info</button>
+          <button className = {`kyrkogard-detail-tab ${activeDetailTab === "arenden" ? "active" : ""}`} onClick = {() => setActiveDetailTab("arenden")}>Ärenden ({koppladeArenden.length})</button>
+        </div>
+        </div>
+
+        {activeDetailTab === "info" && <div className = "kyrkogard-view-info-content">
+        <div>
         {redigering && <form className = "kyrkogard-info-box padded-form" onSubmit = {(e) => {handleUpdate(e, activeKyrkogard.id)}}>
           <label >Namn</label>
           <input type = "text" name = "namn" value = {formData.namn || ""}  onChange = {handleChange}></input>
@@ -86,7 +99,7 @@ export default function KyrkogardView({setKyrkogardTabState, setRedigering, setK
             <h2>Regler</h2>
             <div className = "rule-box">
                 {activeKyrkogard.regler.map((r, index) => 
-                    <div> 
+                    <div key = {index}> 
                         <RegelEntry regel = {r} index = {index} kyrkogard = {activeKyrkogard} setActiveKyrkogard = {setActiveKyrkogard} setKyrkogardar = {setKyrkogardar}/>
                     </div>
                 )}
@@ -97,6 +110,18 @@ export default function KyrkogardView({setKyrkogardTabState, setRedigering, setK
                 <button onClick = {() => setAddRuleEnabled(false)}>Avbryt</button>
                 <button onClick = {async () => {setAddRuleEnabled(false); await addRule(activeKyrkogard, currentNewRule, setActiveKyrkogard, setKyrkogardar)}}>Bekräfta</button>
                 </div>}
+        </div>
+        </div>}
+
+        {activeDetailTab === "arenden" && <div className = "kyrkogard-arenden-list">
+          {koppladeArenden.length === 0 && <p>Inga ärenden är kopplade till denna kyrkogård.</p>}
+          {koppladeArenden.map((arende) => (
+            <div key = {arende.id} className = "kyrkogard-arende-card" onClick = {() => linkToArende(setActiveTab, setActiveArende, arende)}>
+              <h4>#{arende.id} {arende.avlidenNamn}</h4>
+              <p>{arende.arendeTyp} — {arende.status}</p>
+            </div>
+          ))}
+        </div>}
         </div>
         </div>
         </div>

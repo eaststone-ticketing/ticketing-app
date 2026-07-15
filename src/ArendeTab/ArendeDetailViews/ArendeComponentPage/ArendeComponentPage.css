@@ -1,7 +1,7 @@
 .main-arende-component {
     margin-left: 20px;
     background-image:
-        linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+        linear-gradient(to left, var(--element-dark), var(--element));
     padding: 10px;
     width: 840px;
     min-height:445px;
@@ -13,8 +13,8 @@
     margin-right: 50px;
     margin-top: 15px;
     max-height:30px;
-    background: rgb(243, 243, 245);
-    border: 3px solid rgb(223, 233, 225);
+    background: var(--element);
+    border: 3px solid var(--element-dark);
     border-radius: 15px;
     font-family: inherit;
     margin-bottom: 10px;
@@ -29,7 +29,7 @@
     margin-bottom: 14px;
 
     background-image:
-    linear-gradient(to left, rgb(233,243,235), rgb(243,253,245));
+    linear-gradient(to left, var(--element), var(--bg));
 
     border-radius:15px;
 
@@ -39,7 +39,7 @@
 .skapa-komponent{
     margin-left: 20px;
     background-image:
-        linear-gradient(to left, rgb(223,233,225), rgb(233,243,235));
+        linear-gradient(to left, var(--element-dark), var(--element));
     padding: 10px;
     width: 840px;
     height:445px;

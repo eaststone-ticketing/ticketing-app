@@ -12,10 +12,41 @@ import laggTillTrace from '../laggTillTrace.jsx'
 import handleStatusChange from '../handleStatusChange.jsx'
 import {ArendeDetailViewMain} from './ArendeDetailViews/ArendeDetailViewMain.jsx'
 import { BsTelephone } from "react-icons/bs";
+import { ticketColorStyle } from '../Helpers/ticketColors.js'
 
 import '../App.css'
 
-export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab}) {
+// Every free-text attribute of an ärende that can be searched in "Avancerad sökning".
+const AVANCERAD_SOKNING_FIELDS = [
+  ["Adress", "adress"],
+  ["Ort", "ort"],
+  ["Postnummer", "postnummer"],
+  ["Gravrättsinnehavare", "gravrattsinnehavare"],
+  ["Kvarter", "kvarter"],
+  ["Gravnummer", "gravnummer"],
+  ["Modell", "modell"],
+  ["Material", "material"],
+  ["Symboler", "symboler"],
+  ["Beteckning", "beteckning"],
+  ["Framsida", "framsida"],
+  ["Kanter", "kanter"],
+  ["Sockelbearbetning", "sockelBearbetning"],
+  ["Typsnitt", "typsnitt"],
+  ["Försänkt/Förhöjd", "forsankt"],
+  ["Färg", "farg"],
+  ["Dekor", "dekor"],
+  ["Plats för fler namn", "platsForFlerNamn"],
+  ["Minnesord", "minnesord"],
+  ["Pris", "pris"],
+  ["Tillbehör", "tillbehor"],
+  ["Nuvarande text", "nuvarandeText"],
+  ["Status", "status"],
+  ["Datum skapad", "datum"],
+  ["Födelsedatum", "fodelseDatum"],
+  ["Dödsdatum", "dodsDatum"]
+];
+
+export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab, setKyrkogardToOpen}) {
 
   const [avlidenNamn, setAvlidenNamn] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +54,8 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
   const [kyrkogard, setKyrkogard] = useState("");
   const [sorting, setSorting] = useState("default");
   const [bestallare, setBestallare] = useState("");
+  const [avanceradSokning, setAvanceradSokning] = useState(false);
+  const [avanceradSokningValues, setAvanceradSokningValues] = useState({});
   const [activeArendeKyrkogard, setActiveArendeKyrkogard] = useState(false);
   const [arendeSliceLimit, setArendeSliceLimit] = useState(50)
   const [showMore, setShowMore] = useState(null);
@@ -34,33 +67,6 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
   const [skapareByArendeId, setSkapareByArendeId] = useState({});
   const skapareOptions = ["Ali", "Felix", "Ian", "Ieva", "Lotten", "Martin"];
   const loggedInUserName = JSON.parse(localStorage.getItem("user"))?.userName ?? "";
-
-  const statusColor = {
-    "Nytt": ["rgb(200,155,255)", "rgb(200,198,255)"],
-    "Väntar svar av kund":["rgb(200,155,255)", "rgb(255, 225, 115)"],
-    "Väntar svar av kyrkogård":["rgb(200,155,255)", "rgb(243, 100, 255)"],
-    "Väntar svar av kund och kyrkogård":["rgb(200,155,255)", "rgb(123, 245, 200)"],
-    "Godkänd av kund" : ["rgb(240, 245, 145)", "rgb(255, 225, 115)"],
-    "Godkänd av kund, väntar svar av kyrkogård" : ["rgb(240, 245, 145)","rgb(243, 100, 255)"],
-    "Godkänd av kyrkogård" : ["rgb(243, 145, 228)", "rgb(243, 100, 255) "],
-    "Godkänd av kyrkogård, väntar svar av kund" : ["rgb(243, 145, 228)", "rgb(255, 225, 115)"],
-    "Redo" : ["rgb(153, 245, 153)",  "rgb(123, 245, 200)"],
-    "Stängt" : ["rgb(196, 196, 196)", "rgb(199, 199, 199)"],
-    "LEGACY" : ["rgb(213, 223, 215)",  "rgb(223, 233, 225)"],
-    "raderad" : ["rgb(200,155,255)", "rgb(200,198,255)"]
-  }
-
-  const typeColor = {
-    "Ny sten": ["rgba(211, 229, 255, 1)", "rgba(211, 229, 255, 1)"],
-    "Stabilisering": ["rgba(245, 211, 179, 1)", "rgba(245, 211, 179, 1)"],
-    "Nyinskription": ["rgba(255, 211, 242, 1)", "rgba(255, 211, 242, 1)"],
-    "Ommålning": ["rgba(255, 211, 211, 1)", "rgba(255, 211, 211, 1)"],
-    "Rengöring": ["rgba(255, 248, 211, 1)", "rgba(255, 248, 211, 1)"],
-    "Inspektering": ["rgba(252, 255, 211, 1)", "rgba(252, 255, 211, 1)"],
-    "Övrigt" : ["rgba(200, 200, 200, 1)", "rgba(200, 200, 200, 1)"],
-    "Högalid" : ["rgba(253, 177, 177, 1)", "rgba(253, 177,177 ,1)"],
-    "Lilla Dalen": ["rgba(211, 255, 229, 1)", "rgba(211, 255, 229, 1)"]
-  }
 
   useEffect(() => {
   async function loadArenden() {
@@ -168,6 +174,9 @@ async function updateArendeStatus(newStatus, arende){
     const matchMinaArenden = arendeVisibilityFilter === "mina"
       ? (arende.assignedTo ?? "").toLowerCase() === loggedInUserName.toLowerCase()
       : true;
+    const matchAvancerad = !avanceradSokning || Object.entries(avanceradSokningValues).every(([key, value]) =>
+      !value || String(arende[key] ?? "").toLowerCase().includes(value.toLowerCase())
+    );
 
     return (
       matchName &&
@@ -176,7 +185,8 @@ async function updateArendeStatus(newStatus, arende){
       matchKyrkogard &&
       matchBestallare &&
       matchSkapare &&
-      matchMinaArenden
+      matchMinaArenden &&
+      matchAvancerad
     );
   });
 
@@ -217,14 +227,13 @@ async function updateArendeStatus(newStatus, arende){
   const resultSorted = sortResults(result, sorting)
   const [skapaArende, setSkapaArende] = useState(false);
   return (
-    <div>
+    <div className = "arende-tab-root">
       {activeArende === null && (
         <>
-          <div>
           <div className = "arende-tab-contents-further">
-          <div>
+          <div className = "arende-search-column">
           {!skapaArende && <div className = "arende-card-filter-panel">
-            <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button"><strong>+ Skapa nytt ärende</strong></button>
+            <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button create-button">+ Skapa nytt ärende</button>
           </div>}
           {!skapaArende && <form className="searchbar-arende">
             <div className = "header-and-dropdown">
@@ -322,20 +331,35 @@ async function updateArendeStatus(newStatus, arende){
                 ))}
               </select>
             </div>
+            <button
+              type = "button"
+              className = "avancerad-sokning-toggle"
+              onClick = {() => setAvanceradSokning(!avanceradSokning)}
+            >
+              {avanceradSokning ? "Dölj avancerad sökning" : "Avancerad sökning"}
+            </button>
+            {avanceradSokning && <div className = "avancerad-sokning-grid">
+              {AVANCERAD_SOKNING_FIELDS.map(([label, key]) => (
+                <div key = {key} className = "avancerad-sokning-entry">
+                  <label>{label}</label>
+                  <input
+                    type = "text"
+                    value = {avanceradSokningValues[key] ?? ""}
+                    onChange = {(e) => setAvanceradSokningValues({...avanceradSokningValues, [key]: e.target.value})}
+                  />
+                </div>
+              ))}
+            </div>}
           </form>}
           {!skapaArende && <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>}
           </div>
-          {!skapaArende && <div>
+          {!skapaArende && <div className = "arende-results-column">
           <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
           || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,arendeSliceLimit).map((arende) => (
             <div key={arende.id} className= "arende-card-ny"
-              style={{
-              '--status-color-start': statusColor[arende.status]?.[0] || 'transparent',
-              '--status-color-end': statusColor[arende.status]?.[1] || 'transparent',
-              '--arendeType-color-start': typeColor[arende.arendeTyp]?.[0] || 'transparent',
-              '--arende-type-color-end': typeColor[arende.arendeTyp]?.[1] || 'transparent'}}>
+              style={ticketColorStyle(arende.status, arende.arendeTyp)}>
               <div>
               <div className = "arende-card-header-and-button">
               <h3 className = "truncate" onClick={() => {setActiveArende(arende); setActiveArendeKyrkogard(findKyrkogard(arende.id, kyrkogardar)); setShowMore(null); setTypeToSearch("");}}>{arende.avlidenNamn}: {arende.status}</h3>
@@ -390,14 +414,13 @@ async function updateArendeStatus(newStatus, arende){
           <button className = "load-more-button" onClick = {() => setArendeSliceLimit(arendeSliceLimit+50)}>↓ Ladda fler ärenden ↓</button>
           </div>  
           </div>}
-          </div>
-          <div className = "new-stone-form-arenden">
-          {skapaArende && <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>}
-          </div>
+          {skapaArende && <div className = "new-stone-form-arenden">
+          <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>
+          </div>}
           </div>
         </>
       )}
-      {activeArende !== null && <ArendeDetailViewMain activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} activeArendeKyrkogard = {activeArendeKyrkogard} setActiveArendeKyrkogard = {setActiveArendeKyrkogard} setArenden = {setArenden}/>}
+      {activeArende !== null && <ArendeDetailViewMain activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} activeArendeKyrkogard = {activeArendeKyrkogard} setActiveArendeKyrkogard = {setActiveArendeKyrkogard} setArenden = {setArenden} kyrkogardar = {kyrkogardar} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
     </div>
   );
 }

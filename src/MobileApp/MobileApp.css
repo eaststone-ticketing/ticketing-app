@@ -8,8 +8,8 @@
   justify-content: space-between;
   background-image:
     linear-gradient(to left, var(--status-color-start), var(--status-color-end)),
-    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 45%, rgb(243,253,245) 45%, rgb(243,253,245) 100% ),
-    linear-gradient(to bottom, rgb(243,253,245) 60px, rgb(233,243,235));
+    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 45%, var(--surface) 45%, var(--surface) 100% ),
+    linear-gradient(to bottom, var(--surface) 60px, var(--element));
 
   background-size: 100% 35px, 100% 60px, 100% 100%;
   background-position: top, top;
