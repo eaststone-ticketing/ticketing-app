@@ -904,6 +904,8 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     
     if (formName === "form_sthlm_new1.pdf"){
       form.getTextField("Postnummer och postadress").setText(`${arende.postnummer} ${arende.ort}`);
+      form.getTextField("Gravanordningens beskaffenhet").setText(`${arende.staende === 1 ? "Stående" : "Liggande"}`);
+      form.getTextField("Kanter_och_baksida").setText(`Sidor: ${arende.kanter} Baksida: ${arende.framsida}`);
     }
     }
 
