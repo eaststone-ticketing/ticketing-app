@@ -906,7 +906,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       form.getTextField("Postnummer och postadress").setText(`${arende.postnummer} ${arende.ort}`);
       form.getTextField("Gravanordningens beskaffenhet").setText(`${arende.staende === 1 ? "Stående" : ""}`);
       form.getTextField("Kanter_och_baksida").setText(`Sidor: ${arende.kanter} Baksida: ${arende.framsida}`);
-      form.getTextField("Typsnitt m.m").setText(`${arende.farg ?? ""} ${arende.typsnitt ?? ""} ${arende.forsankt == "Förhöjd/Försänkt" || !arende.forsankt ? "" : arende.forsankt}`)
+      form.getTextField("Typsnitt m.m").setText(`${arende.farg ?? ""} ${arende.typsnitt ?? ""} ${!arende.forsankt ? "" : arende.forsankt == "Förhöjd/Försänkt" ?  "Försänkt"  : arende.forsankt}`)
     }
     }
 
