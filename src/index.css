@@ -11,6 +11,17 @@
   --text: #213547;
   --highlight: rgb(228, 229, 238);
 
+  /* Seasonal top bar theme backgrounds (see seasonalTopBarThemes.js). */
+  --top-bar-theme-pride: linear-gradient(
+    to bottom,
+    #e40303 0% 16.67%,
+    #ff8c00 16.67% 33.33%,
+    #ffed00 33.33% 50%,
+    #008026 50% 66.67%,
+    #24408e 66.67% 83.33%,
+    #732982 83.33% 100%
+  );
+
   /* Ticket status gradient colors (start = left, end = right). */
   --status-nytt-start: rgb(200, 155, 255);
   --status-nytt-end: rgb(200, 198, 255);

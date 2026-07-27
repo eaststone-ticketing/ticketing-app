@@ -7,6 +7,7 @@ import EventLogTimeline from './EventLogTimeline.jsx'
 import Tidslinje from './Tidslinje.jsx'
 import SaknadInformation from './SaknadInformation.jsx'
 import linkToArende from '../Helpers/linkToArende.js'
+import { logout } from '../Helpers/auth.js'
 import './OversiktTab.css'
 
 function Greeting({ userName }) {
@@ -107,7 +108,7 @@ export default function OversiktTab({ setActiveTab, setActiveArende, arenden }) 
       </button>}
       <button
         className="oversikt-logout-button"
-        onClick={() => { localStorage.removeItem('user'); location.reload(); }}
+        onClick={() => logout()}
       >
         Logga ut
       </button>

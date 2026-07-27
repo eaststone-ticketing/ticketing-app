@@ -17,7 +17,9 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
                     arende.arendeTyp === "Rengöring" || 
                     arende.arendeTyp === "Ommålning" || 
                     arende.arendeTyp === "Inspektering" ||
-                    arende.arendeTyp === "Övrigt"){
+                    arende.arendeTyp === "Övrigt" ||
+                    arende.arendeTyp === "Högalid" ||
+                    arende.arendeTyp === "Lilla Dalen"){
             return <div>
                 <button className = "send-button" onClick = {() => updateArendeStatus("Stängt", arende)}>Arbete utfört</button>
             </div>

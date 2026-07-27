@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { addArende, addKund, addKommentarer, addKyrkogard } from '../../api.js'
 import laggTillTrace from '../../laggTillTrace.jsx'
+import { getToken } from '../../Helpers/auth.js'
 
 /*
 The new arende form is a form that creates a new arende (job, task or errand) and is designed to correspond to an earlier pdf-form
@@ -14,24 +15,6 @@ Further form validation might also be a good idea,
 especially as new features for automatically generating design templates are implemented. These require standardized data.
 
 */
-
-function isTokenExpired(token) {
-    if (!token) return true;
-    const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT payload
-    const now = Date.now() / 1000; // current time in seconds
-    return payload.exp < now;
-}
-
-function checkToken() {
-  const user = localStorage.getItem('user'); 
-  let token = user ? JSON.parse(user).token : null; 
-
-  if(!token) return false;
-
-  if(isTokenExpired(token)) return false;
-
-  return true;
-}
 
 function findTaggedUsers(comment) {
   const regex = /@([^\s@]+)/g;
@@ -205,11 +188,13 @@ const onSubmit = async (data) => {
   ]
 
   useEffect(() => {
-      if (!checkToken()) {
+    async function checkSession() {
+      const token = await getToken();
+      if (!token) {
         setSkapaArende(false);
-          window.alert("Din token har gått ut, logga ut och in igen för att skapa ett ärende");
-          
       }
+    }
+    checkSession();
   }, []);
 
   return <form onSubmit={handleSubmit(onSubmit)} className="form">

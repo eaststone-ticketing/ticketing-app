@@ -26,10 +26,13 @@ export const typeColor = {
 };
 
 export function ticketColorStyle(status, arendeTyp) {
+  const typeStart = typeColor[arendeTyp]?.[0] || "transparent"
+  const typeEnd = typeColor[arendeTyp]?.[1] || "transparent"
   return {
     "--status-color-start": statusColor[status]?.[0] || "transparent",
     "--status-color-end": statusColor[status]?.[1] || "transparent",
-    "--arendeType-color-start": typeColor[arendeTyp]?.[0] || "transparent",
-    "--arende-type-color-end": typeColor[arendeTyp]?.[1] || "transparent",
+    "--arendeType-color-start": typeStart,
+    "--arende-type-color-start": typeStart,
+    "--arende-type-color-end": typeEnd,
   };
 }

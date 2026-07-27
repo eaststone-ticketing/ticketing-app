@@ -12,6 +12,7 @@ import KundView from './KundTab/KundView/KundView.jsx'
 import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import OversiktTab from './OversiktTab/OversiktTab.jsx'
 import ArbetsplaneringTab from './ArbetsplaneringTab/ArbetsplaneringTab.jsx'
+import { useSeasonalTopBarTheme } from './Helpers/useSeasonalTopBarTheme.js'
 
 function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
   
@@ -238,6 +239,7 @@ function App(user) {
   const [activeArende, setActiveArende] = useState(null)
   const [kyrkogardToOpen, setKyrkogardToOpen] = useState(null)
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark")
+  const { availableThemes, enabledById, toggleTheme } = useSeasonalTopBarTheme()
 
   useEffect(() => {
   async function loadKyrkogardar() {
@@ -282,14 +284,27 @@ function App(user) {
     <>
       <div className = "app-shell">
         <div className = "tab-bar">
-          <button
-            className = {`theme-toggle theme-toggle-icon ${darkMode ? "theme-icon-sun" : "theme-icon-moon"}`}
-            aria-label = {darkMode ? "Byt till ljust läge" : "Byt till mörkt läge"}
-            title = {darkMode ? "Ljust läge" : "Mörkt läge"}
-            onClick = {() => setDarkMode(!darkMode)}
-          >
-            {darkMode ? "☀" : "☾"}
-          </button>
+          <div className = "tab-bar-toggles">
+            <button
+              className = {`theme-toggle theme-toggle-icon ${darkMode ? "theme-icon-sun" : "theme-icon-moon"}`}
+              aria-label = {darkMode ? "Byt till ljust läge" : "Byt till mörkt läge"}
+              title = {darkMode ? "Ljust läge" : "Mörkt läge"}
+              onClick = {() => setDarkMode(!darkMode)}
+            >
+              {darkMode ? "☀" : "☾"}
+            </button>
+            {availableThemes.map((theme) => (
+            <button
+              key={theme.id}
+              className={`theme-toggle theme-toggle-icon seasonal-top-bar-toggle ${enabledById[theme.id] ? "seasonal-top-bar-toggle-active" : ""}`}
+              aria-label={enabledById[theme.id] ? theme.disableLabel : theme.enableLabel}
+              title={theme.title}
+              onClick={() => toggleTheme(theme.id)}
+            >
+              {theme.icon}
+            </button>
+            ))}
+          </div>
           <div className = "tab-buttons">
             {tabs.map((tab) => (
               <button

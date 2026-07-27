@@ -37,15 +37,22 @@
   justify-content: center;
 }
 
+.tab-bar-toggles {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .theme-toggle {
   margin-right: 0;
 }
 
 .theme-toggle-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
   width: 34px;
   height: 34px;
   min-width: 34px;
@@ -59,6 +66,40 @@
   border: none;
   background: transparent;
   color: inherit;
+}
+
+.seasonal-top-bar-toggle {
+  font-size: 18px;
+}
+
+.seasonal-top-bar-toggle-active {
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+:root[data-top-bar-theme] .tab-button {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-top-bar-theme] .tab-button:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+:root[data-top-bar-theme] .tab-button.active {
+  background-color: rgba(255, 255, 255, 0.32);
+  color: #fff;
+}
+
+:root[data-top-bar-theme] .theme-icon-sun,
+:root[data-top-bar-theme] .theme-icon-moon {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-top-bar-theme="pride"] .tab-bar {
+  background: var(--top-bar-theme-pride);
+  border-bottom-color: rgba(0, 0, 0, 0.25);
 }
 
 .theme-icon-sun {

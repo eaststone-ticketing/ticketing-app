@@ -121,7 +121,7 @@
 }
 
 .arbetsplanering-card-streak.type{
-    background: linear-gradient(to left, var(--arende-type-color-start), var(--arende-type-color-end));
+    background: linear-gradient(to left, var(--arendeType-color-start), var(--arende-type-color-end));
 }
 
 .arbetsplanering-card-content{

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './login.css'
 import logo from './assets/images/eaststone.png'
+import { getToken, logout, scheduleSessionExpiryCheck } from './Helpers/auth.js'
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
 function Login({ onLogin }) {
@@ -9,11 +10,27 @@ function Login({ onLogin }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser) {
-      const { userId, userName } = JSON.parse(loggedInUser);
+    async function restoreSession() {
+      const loggedInUser = localStorage.getItem('user');
+      if (!loggedInUser) {
+        return;
+      }
+
+      const { userId, userName, token } = JSON.parse(loggedInUser);
+      if (!token) {
+        logout();
+        return;
+      }
+
+      const validToken = await getToken();
+      if (!validToken) {
+        return;
+      }
+
       onLogin(userId, userName);
     }
+
+    restoreSession();
   }, [onLogin]);
 
   const handleLogin = async (e) => {
@@ -40,7 +57,7 @@ function Login({ onLogin }) {
       const userData = { userId: data.userId, userName: data.userName, token: data.token };
       localStorage.setItem('user', JSON.stringify(userData));
 
-      // Call onLogin function with user data
+      scheduleSessionExpiryCheck(data.token);
       onLogin(data.userId, data.username);
     } catch (err){
         console.error(err);

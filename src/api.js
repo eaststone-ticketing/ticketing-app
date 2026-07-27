@@ -1,43 +1,6 @@
+import { getToken } from "./Helpers/auth.js";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
-
-async function getToken() {
-
-  const user = localStorage.getItem('user'); 
-  let token = user ? JSON.parse(user).token : null; 
-
-  if(!token) return null;
-  
-  if (isTokenExpired(token)){
-        try {
-            const res = await fetch(`${API_URL}/refresh-token`, {
-                method: 'POST',
-                credentials: 'include', // send HTTP-only cookie
-            });
-
-            if (!res.ok) {
-                console.error('Refresh token failed');
-                return null;
-            }
-
-            const data = await res.json();
-            // Save the new token in localStorage
-            localStorage.setItem('user', JSON.stringify({ ...JSON.parse(user), token: data.accessToken }));
-            token = data.accessToken;
-        } catch (err) {
-            console.error('Error refreshing token:', err);
-            return null;
-        }
-  }
-  
-    return token;
-}
-
-function isTokenExpired(token) {
-    if (!token) return true;
-    const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT payload
-    const now = Date.now() / 1000; // current time in seconds
-    return payload.exp < now + 30; // consider it expired if less than 30s left
-}
 
 export async function getKyrkogardar() {
     const res = await fetch (`${API_URL}/kyrkogardar`, {

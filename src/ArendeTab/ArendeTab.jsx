@@ -263,6 +263,12 @@ async function updateArendeStatus(newStatus, arende){
               <option>
                 Övrigt
               </option>
+              <option>
+                Högalid
+              </option>
+              <option>
+                Lilla Dalen
+              </option>
             </select>
             <select onChange = {(e) => setUrsprungToSearch(e.target.value)}>
               <option value = "">Välj ursprung</option>
