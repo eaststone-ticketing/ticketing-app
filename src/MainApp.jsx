@@ -21,7 +21,7 @@ function MainApp() {
         <Login onLogin={handleLogin} />
       ) : (
         isMobile ?
-        <MobileApp user = {user} /> :
+        <App user = {user} /> :
         <App user = {user} />
         
       )}
