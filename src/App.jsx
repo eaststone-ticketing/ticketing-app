@@ -12,6 +12,7 @@ import KundView from './KundTab/KundView/KundView.jsx'
 import KyrkogardView from './KyrkogardTab/KyrkogardView/KyrkogardView.jsx'
 import OversiktTab from './OversiktTab/OversiktTab.jsx'
 import ArbetsplaneringTab from './ArbetsplaneringTab/ArbetsplaneringTab.jsx'
+import FaktureringTab from './FaktureringTab/FaktureringTab.jsx'
 import { useSeasonalTopBarTheme } from './Helpers/useSeasonalTopBarTheme.js'
 
 function KundTab({setActiveArende, setActiveTab, arenden, kunder, setKunder}) {
@@ -231,7 +232,7 @@ function App(user) {
   const isAdmin = (JSON.parse(localStorage.getItem('user')) === "admin" ? true:false)
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 'AdminView' : 'Översikt')
-  const tabs = ['Översikt', 'Ärenden', 'Arbetsplanering', 'Leveranser', 'Kyrkogårdar']
+  const tabs = ['Översikt', 'Ärenden', 'Fakturering', 'Leveranser', 'Kyrkogårdar']
   const [arenden, setArenden] = useState([])
   const [kyrkogardar, setKyrkogardar] = useState([])
   const [kunder, setKunder] = useState([])
@@ -322,7 +323,7 @@ function App(user) {
           {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} godkannanden = {godkannanden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} user = {user} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Kunder' && <KundTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} arenden = {arenden} kunder = {kunder} setKunder = {setKunder}/>}
           {activeTab === 'Leveranser' && <LeveransTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
-          {activeTab === 'Arbetsplanering' && <ArbetsplaneringTab arenden = {arenden} />}
+          {activeTab === 'Fakturering' && <FaktureringTab arenden = {arenden} />}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} arenden = {arenden} setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} kyrkogardToOpen = {kyrkogardToOpen} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
         </div>

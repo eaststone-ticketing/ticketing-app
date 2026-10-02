@@ -65,6 +65,7 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
   const [skapareToSearch, setSkapareToSearch] = useState("");
   const [arendeVisibilityFilter, setArendeVisibilityFilter] = useState("alla");
   const [skapareByArendeId, setSkapareByArendeId] = useState({});
+  const [includeLegacy, setIncludeLegacy] = useState(false)
   const skapareOptions = ["Ali", "Felix", "Ian", "Ieva", "Lotten", "Martin"];
   const loggedInUserName = JSON.parse(localStorage.getItem("user"))?.userName ?? "";
 
@@ -357,13 +358,13 @@ async function updateArendeStatus(newStatus, arende){
               ))}
             </div>}
           </form>}
-          {!skapaArende && <button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button>}
+          {!skapaArende && <div><button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button> <button onClick = {() => setIncludeLegacy(!includeLegacy)}>{!includeLegacy ? "Inkludera LEGACY" : "Ignorera LEGACY"}</button></div>}
           </div>
           {!skapaArende && <div className = "arende-results-column">
-          <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter}/>
+          <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter} includeLegacy = {includeLegacy}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).slice(0,arendeSliceLimit).map((arende) => (
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).filter(k => k.status !== "LEGACY" || includeLegacy).slice(0,arendeSliceLimit).map((arende) => (
             <div key={arende.id} className= "arende-card-ny"
               style={ticketColorStyle(arende.status, arende.arendeTyp)}>
               <div>
