@@ -111,7 +111,8 @@ await db.exec( `
     gravrattsinnehavare TEXT,
     ursprung TEXT,
     nuvarandeText TEXT,
-    signerad INTEGER
+    signerad INTEGER,
+    fakturerad INTEGER
   );
 `);
 
@@ -262,11 +263,11 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
 
 
 app.post("/arenden", authenticateToken, async (req, res) => {
-    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad}  = req.body;
+    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad}  = req.body;
     const result = await db.run (`
-        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad]);
+        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad]);
     
     const newArende = {
         id: result.lastID,
@@ -307,7 +308,8 @@ app.post("/arenden", authenticateToken, async (req, res) => {
         gravrattsinnehavare,
         ursprung, 
         nuvarandeText,
-        signerad
+        signerad,
+        fakturerad
     };
 
     res.json(newArende);
@@ -991,23 +993,19 @@ app.post("/refresh-token", async (req, res) => {
     });
 });
 
-app.get("/alter-table", async (req,res) => {
-
-  const alterTableSQL = `
-    ALTER TABLE arenden
-    ADD COLUMN deadline TEXT;
-      `;
-
-  db.run(alterTableSQL, (err) => {
-      if (err) {
-          console.error('Error altering table:', err.message);
-          return res.status(500).json({ error: "Failed to alter table" });
-      } else {
-          console.log('Column signerad added successfully.');
-          res.status(200).json({ message: "Column signerad added successfully." });
-      }
-    });
-})
+app.get("/alter-table", async (req, res) => {
+  try {
+    await db.exec(`
+      ALTER TABLE arenden
+      ADD COLUMN fakturerad INTEGER;
+    `);
+    console.log("Column fakturerad added successfully.");
+    res.status(200).json({ message: "Column fakturerad added successfully." });
+  } catch (err) {
+    console.error("Error altering table:", err.message);
+    res.status(500).json({ error: "Failed to alter table", details: err.message });
+  }
+});
 
 app.get("/backup/database", authenticateToken, async (req, res) => {
   try {
