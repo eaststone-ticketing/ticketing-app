@@ -14,8 +14,10 @@ import { FaRegEdit } from "react-icons/fa";
 import {Infobox} from "./Infoboxes/Infobox.jsx"
 import StenView from './StenView/StenView'
 import  ArendeImageView from './ArendeImageView/ArendeImageView.jsx'
+import getTypes from '../../Helpers/getTypes.js'
+import hasType from '../../Helpers/hasType.js'
 
-export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, activeArendeKyrkogard, setActiveArendeKyrkogard, setArenden, setKyrkogardToOpen}) {
+export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, setArenden, setKyrkogardToOpen}) {
 
 const [activeKyrkogard, setActiveKyrkogard] = useState("");
 const [kyrkogardar, setKyrkogardar] = useState([])
@@ -30,6 +32,12 @@ const [designEdit, setDesignEdit] = useState(false);
 const [activeGodkannanden, setActiveGodkannanden] = useState([]);
 const [arendeDetailState, setArendeDetailState] = useState("oversikt");
 const [arendeBilderCount, setArendeBilderCount] = useState(0);
+
+const arendeTypes = getTypes(activeArende.arendeTyp);
+const hasNySten = arendeTypes.some(type => type === "Ny sten");
+const hasNyinskription = arendeTypes.some(type => type === "Nyinskription");
+const hasHogalid = arendeTypes.some(type => type === "Högalid");
+const hasLillaDalen = arendeTypes.some(type => type === "Lilla Dalen");
 
 useEffect(() => {
 
@@ -158,6 +166,16 @@ async function handleSignerad(arende, setArendenFn) {
   await updateArende(arende.id, updatedArende);
 }
 
+async function handleFakturerad(arende, setArendenFn) {
+  const newValue = arende.fakturerad === 1 ? 0 : 1;
+  const updatedArende = { ...arende, fakturerad: newValue };
+  setActiveArende(prev => ({ ...prev, fakturerad: newValue }));
+  setArendenFn(prev =>
+    prev.map(a => a.id === arende.id ? updatedArende : a)
+  );
+  await updateArende(arende.id, updatedArende);
+}
+
 async function changeGodkannandeDetails(id, godkannare, data) {
   let godkannanden = [];
   try {
@@ -188,7 +206,7 @@ return (<div>
         <button className = {arendeDetailState === "oversikt" ? "active" : ""} onClick = {() => setArendeDetailState("oversikt")}>Översikt</button>
         <button className = {arendeDetailState === "design" ? "active" : ""} onClick = {() => setArendeDetailState("design")}>Design</button>
         <button className = {arendeDetailState === "sten" ? "active" : ""} onClick = {() => setArendeDetailState("sten")}>Sten</button>
-        <button disabled = {activeArende.arendeTyp !== "Nyinskription" && activeArende.arendeTyp !== "Ny sten"} className = {arendeDetailState === "godkannanden" ? "active" : ""} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
+        <button disabled = {!(hasNySten || hasNyinskription)} className = {arendeDetailState === "godkannanden" ? "active" : ""} onClick = {() => setArendeDetailState("godkannanden")}>Godkännanden</button>
         <button className = {arendeDetailState === "fakturor" ? "active" : ""} onClick = {() => setArendeDetailState("fakturor")}>Fakturor</button>
         <button className = {arendeDetailState === "kommentarer" ? "active" : ""} onClick = {() => setArendeDetailState("kommentarer")}>Kommentarer ({kommentarer?.filter(k => k.arendeID === activeArende.id).length})</button>
         <button className = {arendeDetailState === "historik" ? "active" : ""} onClick = {() => setArendeDetailState("historik")}>Historik</button>
@@ -221,7 +239,7 @@ return (<div>
                     ["Kyrkogård", "kyrkogard", "kyrkogard"],
                     ["Kvarter", "kvarter", "text"],
                     ["Gravnummer", "gravnummer", "text"],
-                    ...(!["Högalid", "Lilla Dalen", "Ny sten"].includes(activeArende.arendeTyp)
+                    ...(!(hasHogalid || hasLillaDalen || hasNySten || hasNyinskription)
                       ? [["Nuvarande text", "nuvarandeText", "text"]]
                       : [])]}/>
       
@@ -241,7 +259,8 @@ return (<div>
                   ["Datum skapad", "datum", "text"],
                   ["Ursprung", "ursprung", "text"]
                   ]}>
-          {(activeArende.arendeTyp === "Ny sten" || activeArende.arendeTyp === "Nyinskription") && <div className = "arende-detail-checkboxes-container">
+          <div className = "arende-detail-checkboxes-container">
+            {(hasNySten || hasNyinskription) && <>
             <div className = "arende-detail-checkboxes">
               <label>Godkänd av kund</label>
               <input type = "checkbox" name = "godkandKund" checked = {activeArende.status === "Godkänd av kund" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kund, väntar svar av kyrkogård"}  onChange = {()=> handleStatusChange("kund", activeArende, setArenden, setActiveGodkannanden, setActiveArende)}></input>
@@ -250,11 +269,16 @@ return (<div>
               <label>Godkänd av kyrkogård</label>
               <input type = "checkbox" name = "godkandKyrkogard" checked = {activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Redo" || activeArende.status == "LEGACY" || activeArende.status == "Stängt" || activeArende.status == "Godkänd av kyrkogård, väntar svar av kund"} onChange = { () => handleStatusChange("kyrkogård", activeArende, setArenden,  setActiveGodkannanden, setActiveArende)}></input>
             </div>
-            {activeArende.arendeTyp === "Ny sten" && <div className = "arende-detail-checkboxes">
+            {hasNySten && <div className = "arende-detail-checkboxes">
               <label>Signerad</label>
               <input type = "checkbox" name = "signerad" checked = {activeArende.signerad === 1 || activeArende.status === "Väntar svar av kyrkogård" || activeArende.status === "Godkänd av kund, väntar svar av kyrkogård" || activeArende.status === "Väntar svar av kund och kyrkogård" || activeArende.status === "Godkänd av kyrkogård" || activeArende.status === "Godkänd av kyrkogård, väntar svar av kund" || activeArende.status === "Redo" || activeArende.status === "Stängt"} onChange = {() => handleSignerad(activeArende, setArenden)} />
             </div>}
-          </div>}
+            </>}
+            <div className = "arende-detail-checkboxes">
+              <label>Fakturerad</label>
+              <input type = "checkbox" name = "fakturerad" checked = {activeArende.fakturerad === 1} onChange = {() => handleFakturerad(activeArende, setArenden)} />
+            </div>
+          </div>
         </Infobox>
                 <Infobox activeArende = {activeArende} setActiveArende = {setActiveArende} header = {"Pris"} 
         fields = {[["Total", "pris", "text"]
@@ -273,51 +297,6 @@ return (<div>
           </div>
         </div>
         </div>
-        </div>
-        
-        <div className = "further-detail-field">
-        {activeArendeBestallare && <div>
-          <div className = "header-and-close-button">
-          <h2>Beställare: {activeArende.bestallare}</h2>
-          <button onClick = {() => setActiveArendeBestallare(false)}>X</button>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Email:</strong> {activeArende.email}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Telefon:</strong> {activeArende.tel}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Adress:</strong> {activeArende.adress},{activeArende.postnummer} {activeArende.ort}</p>
-          </div>
-
-        </div>}
-        {activeArendeKyrkogard && <div>
-          
-          <div className = "header-and-close-button">
-          <h2>Kyrkogård: {activeArende.kyrkogard}</h2>
-          <button onClick = {() => setActiveArendeKyrkogard(false)}>X</button>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Kontaktperson:</strong> {activeKyrkogard.kontaktperson}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Telefon:</strong> {activeKyrkogard.telefonnummer}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Email:</strong> {activeKyrkogard.email}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Adress:</strong> {activeKyrkogard.address}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Postnummer:</strong> {activeKyrkogard.postnummer}</p>
-          </div>
-          <div className = "arende-detail">
-          <p><strong>Ort:</strong> {activeKyrkogard.ort}</p>
-          </div>
-          
-        </div>}
         </div>
         </div>
         </div>}

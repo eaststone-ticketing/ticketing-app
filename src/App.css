@@ -300,6 +300,20 @@
   cursor: pointer;
 }
 
+.arende-typ-tag{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  padding: 0.5vh 0.5vw;
+  border-radius: 10px;
+}
+
 .arende-card-ny {
   display: flex;
   border-radius: 8px;
@@ -312,7 +326,7 @@
   box-sizing: border-box;
   background-image:
     linear-gradient(to left, var(--status-color-start), var(--status-color-end)),
-    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 16%, var(--surface) 16%, var(--surface) 100% ),
+    linear-gradient(to right, var(--surface) 0%, var(--surface) 100% ),
     linear-gradient(to bottom, var(--surface) 60px, var(--element));
 
   background-size: 100% 35px, 100% 60px, 100% 100%;
@@ -398,12 +412,38 @@
   padding-left: 15px;
 }
 
+.sok-arende-filter-toggles{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 0 15px 4px 15px;
+}
+
+.sok-arende-filter-toggle{
+  font-size: 13px;
+  line-height: 1;
+  background-color: var(--element-dark);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 4px 10px;
+}
+
+.sok-arende-filter-toggle:hover{
+  background-color: var(--element-darker);
+}
+
+.sok-arende-filter-toggle.active{
+  font-weight: 700;
+  background-color: var(--surface);
+  border-color: var(--element-darkest);
+}
+
 .input-field-searchbar-arende{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 30vw;
-  padding: 1vw;
+  padding: 0.7vw 1vw;
 }
 
 .input-field-searchbar-arende input{
@@ -923,8 +963,162 @@
   display:flex;
   flex-direction:row;
   gap: 1.2em;
+  align-items: left;
+  margin-top: 1vh;
+}
+
+.arende-typ-tag-delete-button{
+  background-color: transparent;
+  border: none;
+  border-radius: 25px;
+  padding: 0.3vh 0.3vw;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 0.3vw;
+  color: var(--text);
+}
+
+.arende-typ-tag-delete-button:hover{
+  background-color: var(--danger);
+  cursor: pointer;
+}
+
+.arende-typ-tag-check-button{
+  background-color: transparent;
+  border: none;
+  border-radius: 25px;
+  padding: 0.3vh 0.3vw;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 0.3vw;
+  color: var(--text);
+}
+
+.arende-typ-tag-check-button:hover{
+  background-color: #2e8b57;
+  color: white;
+  cursor: pointer;
+}
+
+.arende-jobb-form-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+  z-index: 1000;
+}
+
+.arende-jobb-form{
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 1.2rem;
+  width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.arende-jobb-form h3{
+  margin: 0 0 0.2rem 0;
+  font-size: 1rem;
+}
+
+.arende-jobb-form label{
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.arende-jobb-form input,
+.arende-jobb-form textarea{
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.arende-jobb-form textarea{
+  min-height: 4rem;
+  resize: vertical;
+}
+
+.arende-jobb-form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.arende-jobb-form-actions button{
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--element-darker);
+  background: var(--element-dark);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.arende-jobb-form-actions button[type="submit"]{
+  background: #2e8b57;
+  border-color: #2e8b57;
+  color: white;
+}
+
+.arende-typ-tag-add-button{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: flex;
   align-items: center;
-  margin-left: 6vw;
+  justify-content: center;
+  width: 1.75rem;
+  min-width: 1.75rem;
+  max-width: 1.75rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  padding: 0.5vh 0.35vw;
+  background-color: var(--element-dark);
+  border: 1px solid var(--element-darker);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  text-align-last: center;
+}
+
+.arende-typ-tag-add-button::-ms-expand{
+  display: none;
+}
+
+.arende-typ-tags{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5vw;
+  margin-top: 0.5vh;
+}
+
+.fakturerad-checkbox{
+  display:flex;
+  flex-direction:row;
+  align-items: center;
 }
 
 .arende-typ-checkboxes > div{

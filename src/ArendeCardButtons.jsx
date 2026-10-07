@@ -1,8 +1,15 @@
 import { useState } from 'react'
+import getTypes from './Helpers/getTypes.js'
+import hasType from './Helpers/hasType.js'
 
 export default function ArendeCardButtons({arende, updateArendeStatus}) {
+
+    const arendeTypes = getTypes(arende.arendeTyp);
+    const hasNySten = arendeTypes.some(type => type === "Ny sten");
+    const hasNyinskription = arendeTypes.some(type => type === "Nyinskription");
+
     if (arende.status === 'Nytt'){
-        if (arende.arendeTyp === 'Nyinskription' || arende.arendeTyp === 'Ny sten'){
+        if (hasNySten || hasNyinskription){
             return <div>
                 <button className = "send-button" 
                 onClick = {() => 
@@ -13,16 +20,6 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
                 updateArendeStatus("Väntar svar av kyrkogård", arende)}>Skickat ansökan →→
                 </button>
             </div>
-        } else if (arende.arendeTyp === "Stabilisering" || 
-                    arende.arendeTyp === "Rengöring" || 
-                    arende.arendeTyp === "Ommålning" || 
-                    arende.arendeTyp === "Inspektering" ||
-                    arende.arendeTyp === "Övrigt" ||
-                    arende.arendeTyp === "Högalid" ||
-                    arende.arendeTyp === "Lilla Dalen"){
-            return <div>
-                <button className = "send-button" onClick = {() => updateArendeStatus("Stängt", arende)}>Arbete utfört</button>
-            </div>
         } else {
             console.log(`${arende.arendeTyp} is missing button definition at status ${arende.status}`)
             return
@@ -30,7 +27,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
     }
 
     if (arende.status === 'Godkänd av kund') {
-        if (arende.arendeTyp === 'Nyinskription' || arende.arendeTyp === 'Ny sten'){
+        if (hasNySten || hasNyinskription){
             return <div>
                 <button
                 className = "send-button"
@@ -46,7 +43,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
     }
 
     if (arende.status === 'Godkänd av kyrkogård') {
-        if (arende.arendeTyp === 'Nyinskription' || arende.arendeTyp === 'Ny sten'){
+        if (hasNySten || hasNyinskription){
             return <div>
                 <button
                 className = "send-button"
@@ -62,7 +59,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
     }
 
     if (arende.status === 'Väntar svar av kyrkogård') {
-        if (arende.arendeTyp === 'Nyinskription' || arende.arendeTyp === 'Ny sten'){
+        if (hasNySten || hasNyinskription){
             return <div>
                 <button
                 className = "send-button"
@@ -77,7 +74,7 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
     }
 
     if (arende.status === 'Väntar svar av kund') {
-        if (arende.arendeTyp === 'Nyinskription' || arende.arendeTyp === 'Ny sten'){
+        if (hasNySten || hasNyinskription){
             return <div>
                 <button
                 className = "send-button"
@@ -91,8 +88,4 @@ export default function ArendeCardButtons({arende, updateArendeStatus}) {
             return
         }
     }
-
-    if (arende.status === 'Redo'){
-            return <button className = "send-button" onClick = {() => updateArendeStatus("Stängt", arende)}>Arbete utfört</button>
-        }
 }

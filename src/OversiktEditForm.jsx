@@ -1,4 +1,4 @@
-import { updateArende, getKyrkogardar, getGodkannanden, removeGodkannande } from './api';
+import { updateArende } from './api';
 import './OversiktEditForm.css'
 import {useState} from 'react'
 
@@ -11,25 +11,9 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
     kyrkogard: arende.kyrkogard,
     kvarter: arende.kvarter,
     gravnummer: arende.gravnummer,
-    arendeTyp: arende.arendeTyp
     })
 
     async function onSubmit(){
-
-    let newStatus = arende.status
-    
-    //Delete godkännanden if changing into a type that should not have godkännanden
-        if (formData.arendeTyp !== 'Ny sten' && 
-            formData.arendeTyp !== 'Nyinskription' && 
-            (arende.arendeTyp === 'Ny sten' || arende.arendeTyp === 'Nyinskription')){
-            const godkannanden = await getGodkannanden();
-            const toDelete = godkannanden.filter(g => g.arendeID === arende.id);
-            newStatus = "Nytt"
-        
-            // WAIT for all delete requests to finish
-            await Promise.all(toDelete.map(g => removeGodkannande(g.id)));
-        }
-
         const newArende = {
         ...arende, 
         avlidenNamn: formData.avlidenNamn,
@@ -38,8 +22,6 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
         kyrkogard: formData.kyrkogard,
         kvarter: formData.kvarter,
         gravnummer: formData.gravnummer,
-        arendeTyp: formData.arendeTyp,
-        status: newStatus
     };
 
         await updateArende(arende.id, newArende)
@@ -54,17 +36,7 @@ export default function OverSiktEditForm({arende, setOversiktEdit, setActiveAren
                 <input value = {formData.avlidenNamn} onChange = {(e) => setFormData({...formData, [e.target.name]: e.target.value})} name = "avlidenNamn"></input>
             </div>
             <div className = "edit-form-entry">
-                <label>Ärendetyp</label>
-                <select value = {formData.arendeTyp} onChange = {(e) => setFormData({...formData, arendeTyp: e.target.value})}>
-                    <option value = "Övrigt">Välj ärendetyp</option>
-                    <option>Ny sten</option>
-                    <option>Nyinskription</option>
-                    <option>Stabilisering</option>
-                    <option>Rengöring</option>
-                    <option>Inspektering</option>
-                    <option>Ommålning</option>
-                    <option>Övrigt</option>
-                </select>
+                <label><strong>Ärendetyp: {arende.arendeTyp}</strong></label>
             </div>
             <div className = "edit-form-entry">
                 <label><strong>Dödsdatum:</strong></label>

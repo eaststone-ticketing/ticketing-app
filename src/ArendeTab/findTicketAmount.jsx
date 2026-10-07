@@ -6,7 +6,7 @@ We don't return 0 in the end upon not finding a filter because that is a proper 
 
 // FILTER :                    FILTERING RULE
 
-
+import matchesTypeSearch from '../Helpers/matchesTypeSearch.js'
 
 export default function findTicketAmount(filter, results, typeToSearch, ursprungToSearch, includeLegacy){
 
@@ -28,7 +28,7 @@ export default function findTicketAmount(filter, results, typeToSearch, ursprung
 
     //Filter the results by TYPE
 
-    const filteredByType = filteredByUrsprung.filter(r => r.arendeTyp === typeToSearch || typeToSearch === "");
+    const filteredByType = filteredByUrsprung.filter(r => matchesTypeSearch(r.arendeTyp, typeToSearch));
 
     //Filter the results by STATUS
 

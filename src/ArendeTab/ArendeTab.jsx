@@ -1,18 +1,12 @@
 import { useState, useEffect } from 'react'
 import { getArenden, updateArende, getGodkannanden, removeGodkannande, getTraces } from "../api.js";
-import { TbGrave2 } from "react-icons/tb";
-import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
-import { HiOutlineMail } from "react-icons/hi";
-import { IoPersonOutline } from "react-icons/io5";
-import ArendeCardButtons from '../ArendeCardButtons.jsx'
+import ArendeCard from './ArendeCard.jsx'
 import NewArendeForm from './NewArendeForm/NewArendeForm.jsx'
 import findTicketAmount from './findTicketAmount.jsx'
 import ArendeCardFilterPanel from './ArendeCardFilterPanel.jsx'
 import laggTillTrace from '../laggTillTrace.jsx'
-import handleStatusChange from '../handleStatusChange.jsx'
 import {ArendeDetailViewMain} from './ArendeDetailViews/ArendeDetailViewMain.jsx'
-import { BsTelephone } from "react-icons/bs";
-import { ticketColorStyle } from '../Helpers/ticketColors.js'
+import matchesTypeSearch from '../Helpers/matchesTypeSearch.js'
 
 import '../App.css'
 
@@ -64,6 +58,8 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
   const [ursprungToSearch, setUrsprungToSearch] = useState("");
   const [skapareToSearch, setSkapareToSearch] = useState("");
   const [arendeVisibilityFilter, setArendeVisibilityFilter] = useState("alla");
+  const [onlyEjFakturerade, setOnlyEjFakturerade] = useState(false);
+  const [onlyEjSignerade, setOnlyEjSignerade] = useState(false);
   const [skapareByArendeId, setSkapareByArendeId] = useState({});
   const [includeLegacy, setIncludeLegacy] = useState(false)
   const skapareOptions = ["Ali", "Felix", "Ian", "Ieva", "Lotten", "Martin"];
@@ -127,20 +123,6 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
     }
   }
 
-function findKyrkogard(arende, kyrkogardar) {
-  const kyrkogardString = arende.kyrkogard;
-  return kyrkogardar.find(k => k.namn === kyrkogardString);
-}
-
-async function handleSignerad(arende) {
-  const newValue = arende.signerad === 1 ? 0 : 1;
-  const updatedArende = { ...arende, signerad: newValue };
-  setArenden(prev =>
-    prev.map(a => a.id === arende.id ? updatedArende : a)
-  );
-  await updateArende(arende.id, updatedArende);
-}
-
 async function updateArendeStatus(newStatus, arende){
 
   //Update the status
@@ -175,6 +157,12 @@ async function updateArendeStatus(newStatus, arende){
     const matchMinaArenden = arendeVisibilityFilter === "mina"
       ? (arende.assignedTo ?? "").toLowerCase() === loggedInUserName.toLowerCase()
       : true;
+    const matchEjFakturerade = onlyEjFakturerade
+      ? arende.fakturerad !== 1
+      : true;
+    const matchEjSignerade = onlyEjSignerade
+      ? arende.signerad !== 1
+      : true;
     const matchAvancerad = !avanceradSokning || Object.entries(avanceradSokningValues).every(([key, value]) =>
       !value || String(arende[key] ?? "").toLowerCase().includes(value.toLowerCase())
     );
@@ -187,6 +175,8 @@ async function updateArendeStatus(newStatus, arende){
       matchBestallare &&
       matchSkapare &&
       matchMinaArenden &&
+      matchEjFakturerade &&
+      matchEjSignerade &&
       matchAvancerad
     );
   });
@@ -256,10 +246,13 @@ async function updateArendeStatus(newStatus, arende){
                 Rengöring
               </option>
               <option>
-                Inspektering
+                Inspektion
               </option>
               <option>
                 Ommålning
+              </option>
+              <option>
+                Omslipning
               </option>
               <option>
                 Övrigt
@@ -277,6 +270,22 @@ async function updateArendeStatus(newStatus, arende){
               <option>Stockholms Gravstenar</option>
             </select>
 
+            </div>
+            <div className = "sok-arende-filter-toggles">
+              <button
+                type = "button"
+                className = {onlyEjFakturerade ? "sok-arende-filter-toggle active" : "sok-arende-filter-toggle"}
+                onClick = {() => setOnlyEjFakturerade(!onlyEjFakturerade)}
+              >
+                Ej fakturerade
+              </button>
+              <button
+                type = "button"
+                className = {onlyEjSignerade ? "sok-arende-filter-toggle active" : "sok-arende-filter-toggle"}
+                onClick = {() => setOnlyEjSignerade(!onlyEjSignerade)}
+              >
+                Ej signerade
+              </button>
             </div>
             <div className = "input-field-searchbar-arende">
               <label>Namn på avliden</label>
@@ -364,59 +373,20 @@ async function updateArendeStatus(newStatus, arende){
           <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter} includeLegacy = {includeLegacy}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && (typeToSearch === k.arendeTyp || typeToSearch === "") && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).filter(k => k.status !== "LEGACY" || includeLegacy).slice(0,arendeSliceLimit).map((arende) => (
-            <div key={arende.id} className= "arende-card-ny"
-              style={ticketColorStyle(arende.status, arende.arendeTyp)}>
-              <div>
-              <div className = "arende-card-header-and-button">
-              <h3 className = "truncate" onClick={() => {setActiveArende(arende); setActiveArendeKyrkogard(findKyrkogard(arende.id, kyrkogardar)); setShowMore(null); setTypeToSearch("");}}>{arende.avlidenNamn}: {arende.status}</h3>
-              {showMore !== arende.id && <IoMdArrowDropright className = "dropdown-arrow" onClick = {() => {setShowMore(arende.id)}}/>}
-              {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
-              </div>
-              <div className = "arende-typ-checkboxes-and-header">
-              <h4 className = "dense-h4">{arende.arendeTyp}</h4>
-              {(arende.arendeTyp === "Ny sten" || arende.arendeTyp === "Nyinskription") && <div className = "arende-typ-checkboxes">
-              <div>
-              <label>Kund</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kund, väntar svar av kyrkogård"} onChange = {() => handleStatusChange("kund", arende, setArenden)}></input>
-              </div>
-              <div>
-              <label>Kyrkogård</label>
-              <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kyrkogård, väntar svar av kund"} onChange = {() => handleStatusChange("kyrkogård", arende, setArenden)}></input>
-              </div>
-              {arende.arendeTyp === "Ny sten" && <div>
-              <label>Signerad</label>
-              <input type = "checkbox" checked = {arende.signerad === 1 || arende.status === "Väntar svar av kyrkogård" || arende.status === "Godkänd av kund, väntar svar av kyrkogård" || arende.status === "Väntar svar av kund och kyrkogård" || arende.status === "Godkänd av kyrkogård" || arende.status === "Godkänd av kyrkogård, väntar svar av kund" || arende.status === "Redo" || arende.status === "Stängt"} onChange = {() => handleSignerad(arende)} />
-              </div>}
-              </div>}
-              </div>
-              <ArendeCardButtons arende = {arende} updateArendeStatus = {updateArendeStatus}/>
-              {showMore === arende.id && <div>
-              <p><strong>{arende.status}</strong></p>
-              <div className = "arende-card-info-entry"> 
-              <IoPersonOutline className = "icon"></IoPersonOutline>
-              <p>{arende.bestallare}</p>
-              </div>
-              <div className = "arende-card-info-entry">
-              <HiOutlineMail className = "icon"/>
-              <p>{arende.email}</p>
-              </div>
-              <div className = "arende-card-info-entry">
-              <BsTelephone className = "icon"/>
-              <p>{arende.tel}</p>
-              </div>
-              <div className = "arende-card-bottom">
-              <div className = "arende-card-info-entry">
-              <TbGrave2 className = "icon"/>
-              <p>{arende.kyrkogard}</p>
-              </div>
-              </div>
-              </div>}
-              </div>
-              <div>
-              <button className = "delete-button-card" onClick = {(e) =>{e.stopPropagation(); handleDeleteButton(arende)}}>{arende.status !== "raderad" && <p>Radera</p>}{arende.status === "raderad" && <p>Återställ</p>}</button>
-              </div>
-            </div>
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && matchesTypeSearch(k.arendeTyp, typeToSearch) && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).filter(k => k.status !== "LEGACY" || includeLegacy).filter(k => !onlyEjFakturerade || k.fakturerad !== 1).filter(k => !onlyEjSignerade || k.signerad !== 1).slice(0,arendeSliceLimit).map((arende) => (
+            <ArendeCard
+              key={arende.id}
+              arende={arende}
+              showMore={showMore}
+              setShowMore={setShowMore}
+              setActiveArende={setActiveArende}
+              setActiveArendeKyrkogard={setActiveArendeKyrkogard}
+              setTypeToSearch={setTypeToSearch}
+              kyrkogardar={kyrkogardar}
+              setArenden={setArenden}
+              updateArendeStatus={updateArendeStatus}
+              handleDeleteButton={handleDeleteButton}
+            />
           ))}
           <button className = "load-more-button" onClick = {() => setArendeSliceLimit(arendeSliceLimit+50)}>↓ Ladda fler ärenden ↓</button>
           </div>  
@@ -427,7 +397,7 @@ async function updateArendeStatus(newStatus, arende){
           </div>
         </>
       )}
-      {activeArende !== null && <ArendeDetailViewMain activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} activeArendeKyrkogard = {activeArendeKyrkogard} setActiveArendeKyrkogard = {setActiveArendeKyrkogard} setArenden = {setArenden} kyrkogardar = {kyrkogardar} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
+      {activeArende !== null && <ArendeDetailViewMain activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setArenden = {setArenden} kyrkogardar = {kyrkogardar} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
     </div>
   );
 }

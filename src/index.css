@@ -57,6 +57,8 @@
   --type-nyinskription-end: rgb(255, 211, 242);
   --type-ommålning-start: rgb(255, 211, 211);
   --type-ommålning-end: rgb(255, 211, 211);
+  --type-omslipning-start: rgb(220, 211, 255);
+  --type-omslipning-end: rgb(220, 211, 255);
   --type-rengöring-start: rgb(255, 248, 211);
   --type-rengöring-end: rgb(255, 248, 211);
   --type-inspektering-start: rgb(252, 255, 211);
@@ -125,6 +127,8 @@
   --type-nyinskription-end: rgb(110, 75, 95);
   --type-ommålning-start: rgb(110, 70, 70);
   --type-ommålning-end: rgb(110, 70, 70);
+  --type-omslipning-start: rgb(85, 75, 115);
+  --type-omslipning-end: rgb(85, 75, 115);
   --type-rengöring-start: rgb(110, 100, 60);
   --type-rengöring-end: rgb(110, 100, 60);
   --type-inspektering-start: rgb(90, 100, 55);

@@ -49,16 +49,7 @@ export function InfoboxForm({activeArende, setActiveArende, setEdit, fields}){
                 {kyrkogardar.map((k) => <option value = {k.namn}>{k.namn}</option>)}
                 </select>}
 
-            {type === "typ" && <select value = {formData?.[key]} onChange = {(e) => setFormData({...formData, [key]: e.target.value})} className = 'infobox-content'>
-                <option value = "">Välj ärendetyp</option>
-                <option>Ny sten</option>
-                <option>Nyinskription</option>
-                <option>Stabilisering</option> 
-                <option>Rengöring</option>
-                <option>Inspektering</option>
-                <option>Ommålning</option>
-                <option>Övrigt</option>
-            </select>}
+            {type === "typ" && <strong>{formData?.[key]}</strong>}
             
             {type === "text" && <label className = 'infobox-content'>
                 <strong>{label && `${label}:`} </strong>
