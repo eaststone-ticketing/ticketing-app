@@ -12,6 +12,7 @@ import { ticketColorStyle, typeColor } from '../Helpers/ticketColors.js'
 import getTypes from '../Helpers/getTypes.js'
 import hasType  from '../Helpers/hasType.js'
 import addFinishComment from './addFinishComment.js'
+import laggTillTrace from '../laggTillTrace.jsx'
 
 const NON_COMBINABLE_TYPES = ["Ny sten", "Lilla Dalen", "Högalid"];
 const COMBINABLE_TYPES = [
@@ -156,6 +157,17 @@ export default function ArendeCard({
       await updateArende(arendeSnapshot.id, updatedArende);
     } catch (err) {
       console.error("Kunde inte uppdatera ärendetyp/status:", err);
+    }
+
+    try {
+      await laggTillTrace(
+        types.length > 1
+          ? `markerade ${finishedType} som utfört.`
+          : "ändrade status till Stängt",
+        arendeSnapshot
+      );
+    } catch (err) {
+      console.error("Kunde inte spara trace:", err);
     }
 
     try {
