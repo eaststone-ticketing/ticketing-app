@@ -1043,6 +1043,7 @@ app.get("/backup/database", authenticateToken, async (req, res) => {
       console.error("Backup stream error:", err);
       res.status(500).end();
     });
+    
 
   } catch (err) {
     console.error("Backup error:", err);
