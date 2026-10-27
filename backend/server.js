@@ -892,6 +892,9 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     if (formName === "form_sthlm.pdf"){
       form.getTextField("Ovrigt").setText(commentString || "");
     }
+    if (formName === "form_sthlm_new1.pdf"){
+      form.getTextField("Text3").setText(commentString || "");
+    }
     form.getTextField("Datum").setText(arende.datum || "");
     form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
 
