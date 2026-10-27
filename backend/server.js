@@ -14,8 +14,8 @@ import cookieParser from 'cookie-parser';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "./R2Client.js";
-import getTypes from "../src/Helpers/getTypes.js";
-import hasType from  "../src/Helpers/hasType.js";
+import getTypes from ".Helpers/getTypes.js";
+import hasType from  ".Helpers/hasType.js";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
