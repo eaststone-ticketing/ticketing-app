@@ -17,7 +17,8 @@ export default function DesignEditForm({ arende, setDesignEdit, setActiveArende 
         fodelseDatum: arende.fodelseDatum,
         dodsDatum: arende.dodsDatum,
         minnesord: arende.minnesord,
-        dekor: arende.dekor
+        dekor: arende.dekor,
+        staende: arende.staende
     });
 
     function onSubmit() {
@@ -161,6 +162,22 @@ export default function DesignEditForm({ arende, setDesignEdit, setActiveArende 
                         value={formData.dekor}
                         onChange={(e) => setFormData({ ...formData, dekor: e.target.value })}
                     />
+                </div>
+
+                <div className="edit-form-entry">
+                    <label><strong>Stående:</strong></label>
+                    <select
+                        name="staende"
+                        value={formData.staende ?? ""}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            staende: e.target.value === "" ? null : Number(e.target.value)
+                        })}
+                    >
+                        <option value="">-</option>
+                        <option value={1}>Ja</option>
+                        <option value={0}>Nej</option>
+                    </select>
                 </div>
 
                 <div className="button-panel">

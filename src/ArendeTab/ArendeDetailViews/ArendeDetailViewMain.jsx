@@ -16,6 +16,7 @@ import StenView from './StenView/StenView'
 import  ArendeImageView from './ArendeImageView/ArendeImageView.jsx'
 import getTypes from '../../Helpers/getTypes.js'
 import hasType from '../../Helpers/hasType.js'
+import FollowUpForm from './FollowUpForm.jsx'
 
 export function ArendeDetailViewMain({setActiveArende, activeArende, setActiveTab, setArenden, setKyrkogardToOpen}) {
 
@@ -32,6 +33,7 @@ const [designEdit, setDesignEdit] = useState(false);
 const [activeGodkannanden, setActiveGodkannanden] = useState([]);
 const [arendeDetailState, setArendeDetailState] = useState("oversikt");
 const [arendeBilderCount, setArendeBilderCount] = useState(0);
+const [showFollowUp, setShowFollowUp] = useState(false);
 
 const arendeTypes = getTypes(activeArende.arendeTyp);
 const hasNySten = arendeTypes.some(type => type === "Ny sten");
@@ -223,6 +225,16 @@ return (<div>
         <div className = "arende-detail-main-header-and-edit-button">
         <h2>{activeArende.avlidenNamn}</h2>
         <DownloadPdfButton arende = {activeArende} />
+        {hasType(activeArende.arendeTyp, "Nyinskription") && hasType(activeArende.arendeTyp, "Omslipning") && (
+          <DownloadPdfButton
+            arende={activeArende}
+            asType="Ny sten"
+            label="Ladda ned med formulär för ny sten"
+          />
+        )}
+        {activeArende.status === "Stängt" && (
+          <button type="button" onClick={() => setShowFollowUp(true)}>Skapa uppföljning</button>
+        )}
         </div>
         <h3>{activeArende.arendeTyp}</h3>
         </div>
@@ -239,7 +251,7 @@ return (<div>
                     ["Kyrkogård", "kyrkogard", "kyrkogard"],
                     ["Kvarter", "kvarter", "text"],
                     ["Gravnummer", "gravnummer", "text"],
-                    ...(!(hasHogalid || hasLillaDalen || hasNySten || hasNyinskription)
+                    ...(!(hasHogalid || hasLillaDalen || hasNySten)
                       ? [["Nuvarande text", "nuvarandeText", "text"]]
                       : [])]}/>
       
@@ -321,7 +333,7 @@ return (<div>
           <p>Dödsdatum: <strong>{activeArende.dodsDatum ?? "Dödsdatum saknas"}</strong></p>
           <p>Minnesord: <strong>{activeArende.minnesord ?? "Minnesord saknas"}</strong></p>
           <p>Dekor: <strong>{activeArende.dekor ?? "Dekor saknas"}</strong></p>
-          <p>Stående: <strong>{activeArende.staende === 1 ? "Ja": "Nej"}</strong></p>
+          <p>Stående: <strong>{activeArende.staende === 1 ? "Ja" : activeArende.staende === 0 ? "Nej" : "Information saknas"}</strong></p>
           </div>}
           {designEdit && <DesignEditForm arende = {activeArende} setDesignEdit={setDesignEdit} setActiveArende={setActiveArende}/>}
           </div>
@@ -386,6 +398,17 @@ return (<div>
           <ArendeImageView activeArende = {activeArende}/>
           </div>}
         {arendeDetailState === "bestallningar" && <ArendeComponentPage arende = {activeArende}/>}
+        {showFollowUp && (
+          <FollowUpForm
+            original={activeArende}
+            setArenden={setArenden}
+            onClose={() => setShowFollowUp(false)}
+            onCreated={(newArende) => {
+              setShowFollowUp(false);
+              setActiveArende(newArende);
+            }}
+          />
+        )}
         </div>
         </div>)
 }

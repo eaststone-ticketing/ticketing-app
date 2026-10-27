@@ -1018,6 +1018,8 @@
   border-radius: 12px;
   padding: 1.2rem;
   width: min(420px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -1038,7 +1040,8 @@
 }
 
 .arende-jobb-form input,
-.arende-jobb-form textarea{
+.arende-jobb-form textarea,
+.arende-jobb-form select{
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 400;
@@ -1047,6 +1050,22 @@
   border: 1px solid var(--element-darker);
   border-radius: 8px;
   padding: 0.45rem 0.55rem;
+}
+
+.arende-jobb-form label.arende-jobb-form-checkbox{
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.arende-jobb-form label.arende-jobb-form-checkbox input{
+  width: auto;
+}
+
+.arende-jobb-form-error{
+  margin: 0;
+  color: #b42318;
+  font-size: 0.85rem;
 }
 
 .arende-jobb-form textarea{
