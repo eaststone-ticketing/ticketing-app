@@ -14,6 +14,8 @@ import cookieParser from 'cookie-parser';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "./R2Client.js";
+import getTypes from "./Helpers/getTypes.js";
+import hasType from "./Helpers/hasType.js";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
@@ -790,9 +792,19 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
 
     // Get arende data from DB
     const arende = await db.get("SELECT * FROM arenden WHERE id = ?", [arendeId]);
+    
     if (!arende) {
       return res.status(404).json({ error: "Ärende not found" });
     }
+
+    // Optional override: fill as if this ticket were "Ny sten" (does not change DB)
+    const effectiveTyp = req.query.asType === "Ny sten" ? "Ny sten" : arende.arendeTyp;
+    const arendeTypes = getTypes(arende.arendeTyp);
+    const hasNyinskription = arendeTypes.some(type => type === "Nyinskription");
+    const hasStabilisering = arendeTypes.some(type => type === "Stabilisering");
+    const hasRengöring = arendeTypes.some(type => type === "Rengöring");
+    const hasInspektering = arendeTypes.some(type => type === "Inspektering");
+    const hasOmmålning = arendeTypes.some(type => type === "Ommålning");
 
     let formName;
   
@@ -810,10 +822,10 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       "Strandkyrkogården",
       "Järva begravningsplats"
     ];
-    if (arende.arendeTyp === "Ny sten" && !kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.kyrkogard !== "AAA") {
+    if (effectiveTyp === "Ny sten" && !kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.kyrkogard !== "AAA") {
       formName = "form.pdf"
       console.log(arende.kyrkogard);
-    } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && arende.arendeTyp === "Ny sten"){
+    } else if (kyrkogardar_stockholm.includes(arende.kyrkogard) && effectiveTyp === "Ny sten"){
       formName = "form_sthlm_new1.pdf"  
       console.log(arende.kyrkogard);
     } 
@@ -859,7 +871,7 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     const form = pdfDoc.getForm();
     console.log("PDF FIELDS:", form.getFields().map(f => f.getName()));
 
-    if (arende.arendeTyp === "Ny sten"){
+    if (effectiveTyp === "Ny sten"){
     // Fill in the form fields
     form.getTextField("Avlidnes_Namn").setText(arende.avlidenNamn || "");
     form.getTextField("Bestallarens_Namn").setText(arende.bestallare || "");
@@ -891,9 +903,6 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
     }
     if (formName === "form_sthlm.pdf"){
       form.getTextField("Ovrigt").setText(commentString || "");
-    }
-    if (formName === "form_sthlm_new1.pdf"){
-      form.getTextField("Text3").setText(commentString || "");
     }
     form.getTextField("Datum").setText(arende.datum || "");
     form.getTextField("Gravrattsinnehavare").setText(arende.gravrattsinnehavare || ""); 
@@ -943,9 +952,9 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       if (arende.fakturaTillDodsbo) form.getCheckBox("Check Box10").check();
       if (arende.GRO) form.getCheckBox("Check Box20").check();
 
-      if (arende.arendeTyp === "Nyinskription") form.getCheckBox("Check Box18").check();
-      if (arende.arendeTyp === "Rengöring") form.getCheckBox("Check Box5").check();
-      if (arende.arendeTyp === "Stabilisering") form.getCheckBox("Check Box6").check();
+      if (hasNyinskription) form.getCheckBox("Check Box18").check();
+      if (hasRengöring) form.getCheckBox("Check Box5").check();
+      if (hasStabilisering) form.getCheckBox("Check Box6").check();
       if (arende.arendeTyp === "Förgyllning") form.getCheckBox("Check Box7").check();
 
       if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
