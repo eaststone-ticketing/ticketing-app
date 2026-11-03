@@ -4,7 +4,7 @@ import { getToken } from './Helpers/auth.js'
 
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
-function UploadButton({ arendeID }) {
+function UploadButton({ arendeID, onUploaded }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
 
@@ -45,16 +45,20 @@ function UploadButton({ arendeID }) {
     if (uploadRes.ok) {
       setStatus("Upload successful!");
       console.log("Stored key:", key); // Save key in your DB if needed
-      await addBild({arendeID: arendeID, key: key})
+      const newBild = await addBild({arendeID: arendeID, key: key})
+      setFile(null);
+      if (onUploaded) {
+        onUploaded(newBild);
+      }
     } else {
       setStatus("Upload failed");
     }
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
+    <div className="upload-button">
+      <input type="file" accept="image/*,.heic,.pdf" onChange={handleFileChange} />
+      <button type="button" onClick={handleUpload}>Ladda upp</button>
       <p>{status}</p>
     </div>
   );

@@ -8,7 +8,7 @@
   justify-content: space-between;
   background-image:
     linear-gradient(to left, var(--status-color-start), var(--status-color-end)),
-    linear-gradient(to right, var(--arendeType-color-start) 0%, var(--arende-type-color-end) 45%, var(--surface) 45%, var(--surface) 100% ),
+    linear-gradient(to right, var(--surface) 0%, var(--surface) 100%),
     linear-gradient(to bottom, var(--surface) 60px, var(--element));
 
   background-size: 100% 35px, 100% 60px, 100% 100%;
@@ -47,20 +47,100 @@
   max-width: 70vw;
 }
 
-.arende-typ-checkboxes-and-header{
-  display:flex;
-  flex-direction:row;
-  gap: 6px;
-  justify-content:space-between;
-  width: 21vw;
+.arende-typ-tags{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.arende-typ-tag{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  padding: 0.2rem 0.45rem;
+  border-radius: 10px;
+}
+
+.mobile-app{
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.mobile-top-bar{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5vw 3vw;
+    flex-shrink: 0;
+}
+
+.mobile-list-view{
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-detail-container{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-results-scroll{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 2vw 2vh;
+}
+
+.mobile-logout-button{
+    background: none;
+    border: 1px solid var(--element-darker);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.mobile-user-badge{
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mobile-user-icon{
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
 }
 
 .filter-panel{
     display:flex;
     flex-direction: column;
-    background-color: aliceblue;
+    gap: 0;
+    background-color: var(--element);
+    color: var(--text);
     padding:2vw;
-    margin-bottom:1vh;
+    margin-bottom:0;
+    flex-shrink: 0;
 }
 
 .filter-panel button{
@@ -68,42 +148,414 @@
     margin: 1vh;
 }
 
+.filter-buttons{
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.filter-buttons button{
+    flex: 1;
+    margin: 0;
+}
+
+.mobile-search-row{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.mobile-search-row .mobile-search-field{
+    flex: 1;
+    min-width: 0;
+}
+
+.mobile-search-field{
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.mobile-search-field label{
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mobile-search-field input,
+.mobile-search-field select{
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.2;
+    padding: 0.2rem 0.4rem;
+    min-height: 0;
+    height: 1.7rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--element-darker, #ccc);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text, inherit);
+}
+
 .mobile-detail-view{
     display:flex;
     align-content:flex-start;
-    width: 90vw;
+    width: 100%;
+    max-width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 3vw;
+    box-sizing: border-box;
     flex-direction:column;
+    color: var(--text);
 }
 
-.mobile-detail-view button{
-    max-width: 25vw;
-    font-size: 14px;
+
+.button-panel{
+    display: flex;
+    gap: 0.5rem;
+    padding: 1.5vw 3vw;
+    flex-wrap: wrap;
+}
+
+.button-panel button{
+    background: var(--element);
+    color: var(--text);
+    border: 1px solid var(--element-darker);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.mobile-info-row{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 1vh;
 }
 
 .mobile-info-box{
+    flex: 3 1 0;
+    min-width: 0;
+    box-sizing: border-box;
     text-align:left;
-    line-height:1;
-    padding: 5vw;
-    background-color: aliceblue;
-    margin-top: 2vh;
+    line-height:1.35;
+    padding: 0.7rem 0.85rem;
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--element-darker);
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.mobile-info-box h3{
+    margin: 0 0 0.45rem;
+    font-size: 1.05rem;
+}
+
+.mobile-info-box p{
+    margin: 0.2rem 0;
+}
+
+.mobile-type-panel{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+    flex: 2 1 0;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.mobile-type-tag{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.35rem 0.4rem;
+    border-radius: 10px;
     font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.mobile-type-tag-label{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile-type-tag-check,
+.mobile-type-tag-delete{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--element-darker);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.mobile-type-tag-check:active{
+    background: #2e8b57;
+    color: white;
+}
+
+.mobile-type-tag-delete:active{
+    background: var(--danger);
+    color: white;
+}
+
+.mobile-type-add{
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    min-height: 2.25rem;
+    border: 1px solid var(--element-darker);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
 }
 
 .comment-field-mobile{
     text-align: left;
     font-size: 12px;
-    max-width: 90vw;
-    overflow:wrap;
-    
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 3vw 2vh;
+    color: var(--text);
+}
+
+.comment-field-mobile > h3{
+    padding-left: 0.75rem;
+    margin: 1.2vh 0 0.6vh;
+}
+
+.mobile-comment-form{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0.8rem;
+}
+
+.mobile-comment-input{
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.35;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--element-darker);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--text);
+    resize: vertical;
+    min-height: 4.5rem;
+}
+
+.mobile-comment-form button{
+    align-self: flex-start;
+    background: var(--element);
+    color: var(--text);
+    border: 1px solid var(--element-darker);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+.mobile-comment-form button:disabled{
+    opacity: 0.55;
+}
+
+.mobile-comment-empty{
+    margin: 0.4rem 0 0;
+    padding-left: 0.75rem;
+    color: var(--text);
+    opacity: 0.75;
+}
+
+.comment-field-mobile .kommentar-card{
+    background-color: var(--surface);
+    border: 1px solid var(--element-darker);
+    border-radius: 12px;
+    margin-top: 1vh;
+    padding: 0;
+    overflow: hidden;
 }
 
 .comment-field-mobile pre {
   white-space: pre-wrap;  
   word-break: break-word; 
-  padding: 5vw;
-  background-color: aliceblue;
-  margin-top: 2vh;
+  padding: 4vw;
+  margin: 0;
+  background-color: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.arende-jobb-form-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+  z-index: 1000;
+}
+
+.arende-jobb-form{
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 1.2rem;
+  width: min(420px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.arende-jobb-form h3{
+  margin: 0 0 0.2rem 0;
+  font-size: 1rem;
+}
+
+.arende-jobb-form label{
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.arende-jobb-form input,
+.arende-jobb-form textarea{
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.arende-jobb-form textarea{
+  min-height: 4rem;
+  resize: vertical;
+}
+
+.arende-jobb-form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.arende-jobb-form-actions button{
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--element-darker);
+  background: var(--element-dark);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.arende-jobb-form-actions button[type="submit"]{
+  background: #2e8b57;
+  border-color: #2e8b57;
+  color: white;
+}
+
+.mobile-bild-view{
+  padding: 0 3vw 2vh;
+  color: var(--text);
+}
+
+.mobile-bild-view h3{
+  margin: 1vh 0 0.6vh;
+  padding-left: 0.25rem;
+}
+
+.mobile-bild-view .galleri{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+.mobile-bild-view .galleri button{
+  background: var(--element);
+  color: var(--text);
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  margin: 0 0.25rem;
+}
+
+.mobile-bild-upload{
+  margin-top: 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  padding: 0.85rem;
+}
+
+.mobile-bild-upload .upload-button{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-bild-upload .upload-button input[type="file"]{
+  font-size: 13px;
+  color: var(--text);
+}
+
+.mobile-bild-upload .upload-button button{
+  align-self: flex-start;
+  background: var(--element);
+  color: var(--text);
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.mobile-bild-upload .upload-button p{
+  margin: 0;
   font-size: 12px;
 }
