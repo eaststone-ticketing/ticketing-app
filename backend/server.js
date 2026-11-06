@@ -441,6 +441,19 @@ app.post("/stenar", authenticateToken, async(req, res) => {
   res.json(newSten)
 })
 
+app.post("/stenObjekt", authenticateToken, async (req, res) => {
+  const attr = req.body.attr ?? req.body;
+  const attrJson = JSON.stringify(attr);
+  const result = await db.run(
+    `INSERT INTO stenObjekt(attr) VALUES(?)`,
+    [attrJson]
+  );
+  res.json({
+    id: result.lastID,
+    attr,
+  });
+})
+
 app.get("/kyrkogardar", authenticateToken, async (req, res) => {
     const rows =  await db.all("SELECT * FROM kyrkogardar");
 
@@ -512,6 +525,15 @@ app.get("/traces", authenticateToken, async (req, res) => {
 app.get("/stenar", authenticateToken, async (req, res) => {
   const stenar = await db.all("SELECT * FROM stenar")
   res.json(stenar);
+})
+
+app.get("/stenObjekt", authenticateToken, async (req, res) => {
+  const rows = await db.all("SELECT * FROM stenObjekt");
+  const stenObjekt = rows.map((row) => ({
+    ...row,
+    attr: typeof row.attr === "string" ? JSON.parse(row.attr || "{}") : (row.attr || {}),
+  }));
+  res.json(stenObjekt);
 })
 
 
@@ -586,6 +608,14 @@ app.delete("/stenar/:id", authenticateToken, async(req, res) => {
   await db.run ("DELETE FROM stenar WHERE id = ?", id);
 
   res.json({message: `Sten with ID ${id} deleted`})
+})
+
+app.delete("/stenObjekt/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+
+  await db.run("DELETE FROM stenObjekt WHERE id = ?", id);
+
+  res.json({ message: `StenObjekt with ID ${id} deleted` });
 })
 
 app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
@@ -756,6 +786,28 @@ app.put("/stenar/:id", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({error: "Failed to update stenar"})
+  }
+})
+
+app.put("/stenObjekt/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const attr = req.body.attr ?? req.body;
+
+  try {
+    await db.run(
+      `UPDATE stenObjekt
+      SET attr = ?
+      WHERE id = ?`,
+      [JSON.stringify(attr), id]
+    );
+    res.json({
+      id: Number(id),
+      attr,
+      message: `StenObjekt with ID ${id} updated successfully`,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update stenObjekt" });
   }
 })
 
