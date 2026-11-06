@@ -15,7 +15,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "./R2Client.js";
 import getTypes from "./Helpers/getTypes.js";
-import hasType from  "./Helpers/hasType.js";
+import hasType from "./Helpers/hasType.js";
 
 const API_URL = process.env.API_URL || "http://localhost:3000";
 
@@ -194,6 +194,13 @@ await db.exec(`
   );
   ` 
 );
+
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS stenObjekt (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    attr TEXT
+  );
+`);
 
 await db.exec(`CREATE TABLE IF NOT EXISTS bilder (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1008,11 +1015,13 @@ app.post("/refresh-token", async (req, res) => {
 app.get("/alter-table", async (req, res) => {
   try {
     await db.exec(`
-      ALTER TABLE arenden
-      ADD COLUMN fakturerad INTEGER;
+      CREATE TABLE IF NOT EXISTS stenObjekt (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        attr TEXT
+      );
     `);
-    console.log("Column fakturerad added successfully.");
-    res.status(200).json({ message: "Column fakturerad added successfully." });
+    console.log("Table stenObjekt created successfully.");
+    res.status(200).json({ message: "Table stenObjekt created successfully." });
   } catch (err) {
     console.error("Error altering table:", err.message);
     res.status(500).json({ error: "Failed to alter table", details: err.message });
@@ -1043,7 +1052,6 @@ app.get("/backup/database", authenticateToken, async (req, res) => {
       console.error("Backup stream error:", err);
       res.status(500).end();
     });
-    
 
   } catch (err) {
     console.error("Backup error:", err);
