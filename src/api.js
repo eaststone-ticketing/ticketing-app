@@ -676,6 +676,87 @@ export async function updateSten(id, data) {
   return res.json();
 }
 
+export async function getStenObjekt() {
+  const res = await fetch(`${API_URL}/stenObjekt`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getToken()}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch stenObjekt: ${res.status} ${res.statusText}`);
+  }
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
+export async function addStenObjekt(sten) {
+  const res = await fetch(`${API_URL}/stenObjekt`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getToken()}`,
+    },
+    credentials: "include",
+    body: JSON.stringify(sten),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to add stenObjekt: ${res.status} ${res.statusText}`);
+  }
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
+export async function updateStenObjekt(id, data) {
+  const res = await fetch(`${API_URL}/stenObjekt/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getToken()}`,
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to update stenObjekt: ${res.status} ${res.statusText}`);
+  }
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
+export async function removeStenObjekt(id) {
+  const res = await fetch(`${API_URL}/stenObjekt/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getToken()}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to delete stenObjekt: ${res.status} ${res.statusText}`);
+  }
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
 export async function downloadBackup() {
     const res = await fetch(`${API_URL}/backup/database`, {
         headers: {"Authorization": `Bearer ${await getToken()}`},

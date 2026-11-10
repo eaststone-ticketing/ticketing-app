@@ -1,0 +1,25 @@
+.material-select {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.material-select-toggle {
+  margin: 0;
+  padding: 0;
+  width: fit-content;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.material-select-toggle:hover {
+  opacity: 1;
+}
+
+.material-select select,
+.material-select input {
+  width: 100%;
+  box-sizing: border-box;
+}

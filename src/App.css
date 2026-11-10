@@ -459,7 +459,8 @@
   border: solid var(--element-dark);
   border-radius: 20px;
   font-family: inherit;
-  background: white;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .input-field-searchbar-arende .skapare-dropdown{

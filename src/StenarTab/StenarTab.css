@@ -1,0 +1,50 @@
+.stenar-tab {
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.stenar-body {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+.stenar-search-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+.stenar-search-column .stenar-searchbar {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+  /* Tall panel without stretching field spacing */
+  justify-content: flex-start;
+}
+
+.stenar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  margin-left: 10px;
+  padding-top: 0.75rem;
+  padding-right: 4px;
+}

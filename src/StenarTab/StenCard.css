@@ -1,0 +1,66 @@
+.sten-card {
+  border-radius: 8px;
+  margin: 2px;
+  padding: 10px;
+  background: var(--element);
+  box-sizing: border-box;
+}
+
+.sten-card-header-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sten-card-header-row h3 {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.sten-card-header-row .delete-button-card {
+  top: 0;
+  right: 0;
+}
+
+.sten-card-header-row .dropdown-arrow.sten-card-expand-arrow {
+  margin-left: 1.25rem;
+  margin-top: 2px;
+}
+
+.sten-card-subtitle {
+  margin: 4px 0 0;
+  opacity: 0.75;
+  line-height: 1.2;
+}
+
+.sten-card-edit-button {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sten-card-edit-button:hover {
+  opacity: 0.7;
+}
+
+.sten-card-details {
+  margin-top: 0.75rem;
+}
+
+.sten-card-details p {
+  margin: 2px 0;
+  line-height: 1.3;
+}
+
+.sten-card-detail-label {
+  opacity: 0.75;
+}

@@ -339,7 +339,7 @@ return (<div>
           </div>
           </div>
           </div>}
-        {arendeDetailState === "sten" && <StenView activeArende = {activeArende} setActiveArende={setActiveArende}/>}
+        {arendeDetailState === "sten" && <StenView activeArende={activeArende} />}
         {arendeDetailState === "kontaktpersoner" && <div>
           <h2>Kontaktpersoner för {activeArende.avlidenNamn}</h2>
           <p>Gravrättsinnehavare: {activeArende.gravrattsinnehavare}</p>

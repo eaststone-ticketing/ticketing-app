@@ -1,0 +1,33 @@
+.stenar-searchbar {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  margin-top: 2rem;
+}
+
+.stenar-searchbar-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 15px;
+}
+
+.stenar-searchbar-header h3 {
+  padding-left: 0;
+  margin: 0;
+}
+
+.stenar-searchbar-header .create-button {
+  width: fit-content;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  min-height: 0;
+  font-size: 0.9rem;
+}
+
+.stenar-searchbar .sok-arende-filter-toggles {
+  margin-top: 2rem;
+  flex-wrap: nowrap;
+}
