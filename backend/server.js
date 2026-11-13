@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import 'dotenv/config'; 
 import fs from "fs";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFName, PDFBool } from "pdf-lib";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
@@ -1019,10 +1019,15 @@ app.get("/arendepdf/:arendeId", authenticateToken, async (req, res) => {
       if (arende.forsankt === "Försänkt") form.getCheckBox("Check Box23").check();
       if (arende.forsankt === "Förhöjd") form.getCheckBox("Check Box24").check();
     }
+    // Keep Unicode (č, ć, etc.) in field values. Default Helvetica appearances
+    // only support WinAnsi and would throw / replace these characters.
+    // NeedAppearances asks the PDF viewer to redraw fields with a capable font.
+    form.acroForm.dict.set(PDFName.of("NeedAppearances"), PDFBool.True);
+
     // Save the filled PDF
     let filledPdfBytes;
     try {
-      filledPdfBytes = await pdfDoc.save();
+      filledPdfBytes = await pdfDoc.save({ updateFieldAppearances: false });
       console.log("PDF saved successfully.");
     } catch (err) {
       console.error("Error saving PDF:", err);
