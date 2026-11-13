@@ -4,8 +4,14 @@ import { createPortal } from 'react-dom'
 import MobileBildView from './MobileBildView.jsx'
 import { typeColor } from '../Helpers/ticketColors.js'
 import getTypes from '../Helpers/getTypes.js'
+import {
+  DEPENDENT_TYPES,
+  canCombineTypes,
+  getAvailableTypesToAdd,
+} from '../Helpers/arendeTypeOptions.js'
 import addFinishComment from '../ArendeTab/addFinishComment.js'
 import laggTillTrace from '../laggTillTrace.jsx'
+import archiveLinkedStones from '../Helpers/archiveLinkedStones.js'
 
 function findTaggedUsers(comment) {
   const regex = /@([^\s@]+)/g;
@@ -33,19 +39,6 @@ function appendNameAndDate(innehall) {
   return innehall + `\n\n${timestamp}`;
 }
 
-const NON_COMBINABLE_TYPES = ["Ny sten", "Lilla Dalen", "Högalid"];
-const COMBINABLE_TYPES = [
-  "Nyinskription",
-  "Stabilisering",
-  "Rengöring",
-  "Inspektion",
-  "Ommålning",
-  "Övrigt",
-];
-const DEPENDENT_TYPES = {
-  Omslipning: "Nyinskription",
-};
-
 const EMPTY_JOBB_FORM = {
   utforare: "",
   problem: "",
@@ -61,15 +54,8 @@ export default function MobileDetailView({ arende, setActiveArende, setArenden }
   const [jobbForm, setJobbForm] = useState(EMPTY_JOBB_FORM)
 
   const currentTypes = getTypes(arende.arendeTyp)
-  const canCombine = !currentTypes.some(type => NON_COMBINABLE_TYPES.includes(type))
-  const availableTypes = [
-    ...COMBINABLE_TYPES.filter(type => !currentTypes.includes(type)),
-    ...Object.entries(DEPENDENT_TYPES)
-      .filter(([type, requiredType]) =>
-        currentTypes.includes(requiredType) && !currentTypes.includes(type)
-      )
-      .map(([type]) => type),
-  ]
+  const canCombine = canCombineTypes(currentTypes)
+  const availableTypes = getAvailableTypesToAdd(currentTypes)
 
   useEffect(() => {
     async function loadKommentarer() {
@@ -181,6 +167,14 @@ export default function MobileDetailView({ arende, setActiveArende, setArenden }
       await updateArende(arendeSnapshot.id, updatedArende)
     } catch (err) {
       console.error("Kunde inte uppdatera ärendetyp/status:", err)
+    }
+
+    if (updatedArende.status === "Stängt") {
+      try {
+        await archiveLinkedStones(arendeSnapshot.id)
+      } catch (err) {
+        console.error("Kunde inte arkivera kopplade stenar:", err)
+      }
     }
 
     try {

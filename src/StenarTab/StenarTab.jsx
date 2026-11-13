@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './StenarTab.css'
 import StenCard from './StenCard.jsx'
 import StenarSearchMenu from './StenarSearchMenu.jsx'
 import RegistreraStenForm from './RegistreraStenForm.jsx'
+import StenImportDuplicateDialog from './StenImportDuplicateDialog.jsx'
 import { getStenObjekt } from '../api.js'
+import { downloadFilteredStenarCsv } from './exportStenarCsv.js'
+import { importStenarFromCsv } from './importStenarCsv.js'
 
-export { mmToCm, cmToMm } from '../Helpers/stoneUnits.js'
-
-function matchesSearch(sten, filters, arenden) {
+function matchesSearch(sten, filters, arenden, stenListTab) {
   const { attr } = sten
   const {
     material,
@@ -19,6 +20,10 @@ function matchesSearch(sten, filters, arenden) {
     onlySpecialBlasting,
   } = filters
 
+  const isArkiverad = attr.status === 'Arkiverad'
+  if (stenListTab === 'aktuella' && isArkiverad) return false
+  if (stenListTab === 'arkiverade' && !isArkiverad) return false
+
   const materialQ = material.trim().toLowerCase()
   if (materialQ && !(attr.material ?? "").toLowerCase().includes(materialQ)) {
     return false
@@ -29,7 +34,8 @@ function matchesSearch(sten, filters, arenden) {
     return false
   }
 
-  if (status && attr.status !== status) {
+  // Status filter only applies to active stones; archived tab is all Arkiverad.
+  if (stenListTab === 'aktuella' && status && attr.status !== status) {
     return false
   }
 
@@ -47,9 +53,10 @@ function matchesSearch(sten, filters, arenden) {
   return true
 }
 
-export default function StenarTab({ arenden = [] }) {
+export default function StenarTab({ arenden = [], setActiveTab, setActiveArende }) {
   const [stenar, setStenar] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [stenListTab, setStenListTab] = useState('aktuella')
   const [material, setMaterial] = useState("")
   const [modell, setModell] = useState("")
   const [avlidenNamn, setAvlidenNamn] = useState("")
@@ -57,6 +64,12 @@ export default function StenarTab({ arenden = [] }) {
   const [onlyLaserportratt, setOnlyLaserportratt] = useState(false)
   const [onlyLykthal, setOnlyLykthal] = useState(false)
   const [onlySpecialBlasting, setOnlySpecialBlasting] = useState(false)
+  const [duplicatePrompt, setDuplicatePrompt] = useState(null)
+  const stenarRef = useRef(stenar)
+
+  useEffect(() => {
+    stenarRef.current = stenar
+  }, [stenar])
 
   useEffect(() => {
     async function loadStenObjekt() {
@@ -81,8 +94,34 @@ export default function StenarTab({ arenden = [] }) {
   }
 
   const filtered = stenar.filter((sten) =>
-    matchesSearch(sten, filters, arenden)
+    matchesSearch(sten, filters, arenden, stenListTab)
   )
+
+  function resolveDuplicate(existing, incomingAttr) {
+    return new Promise((resolve) => {
+      setDuplicatePrompt({ existing, incomingAttr, resolve })
+    })
+  }
+
+  function handleDuplicateResolve(action) {
+    if (!duplicatePrompt) return
+    duplicatePrompt.resolve(action)
+    setDuplicatePrompt(null)
+  }
+
+  async function handleImportCsv(file) {
+    try {
+      await importStenarFromCsv(file, {
+        existingStenar: stenarRef.current,
+        setStenar,
+        resolveDuplicate,
+      })
+    } catch (err) {
+      console.error(err)
+      setDuplicatePrompt(null)
+      window.alert('Kunde inte importera CSV. Se konsolen för detaljer.')
+    }
+  }
 
   return (
     <div className="stenar-tab">
@@ -107,19 +146,48 @@ export default function StenarTab({ arenden = [] }) {
               onlySpecialBlasting={onlySpecialBlasting}
               setOnlySpecialBlasting={setOnlySpecialBlasting}
               onRegistrera={() => setShowForm(true)}
+              onDownloadCsv={() => downloadFilteredStenarCsv(filtered, arenden)}
+              onImportCsv={handleImportCsv}
             />
           </div>
-          <div className="stenar-list">
-            {filtered.map((sten) => (
-              <StenCard
-                key={sten.id}
-                sten={sten}
-                arenden={arenden}
-                setStenar={setStenar}
-              />
-            ))}
+          <div className="stenar-list-column">
+            <div className="stenar-list-tabs">
+              <button
+                type="button"
+                className={`notification-tab ${stenListTab === 'aktuella' ? 'active' : ''}`}
+                onClick={() => setStenListTab('aktuella')}
+              >
+                Aktuella stenar
+              </button>
+              <button
+                type="button"
+                className={`notification-tab ${stenListTab === 'arkiverade' ? 'active' : ''}`}
+                onClick={() => setStenListTab('arkiverade')}
+              >
+                Arkiverade stenar
+              </button>
+            </div>
+            <div className="stenar-list">
+              {filtered.map((sten) => (
+                <StenCard
+                  key={sten.id}
+                  sten={sten}
+                  arenden={arenden}
+                  setStenar={setStenar}
+                  setActiveTab={setActiveTab}
+                  setActiveArende={setActiveArende}
+                />
+              ))}
+            </div>
           </div>
         </div>
+      )}
+      {duplicatePrompt && (
+        <StenImportDuplicateDialog
+          existing={duplicatePrompt.existing}
+          incomingAttr={duplicatePrompt.incomingAttr}
+          onResolve={handleDuplicateResolve}
+        />
       )}
     </div>
   )

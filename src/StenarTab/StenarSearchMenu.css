@@ -31,3 +31,28 @@
   margin-top: 2rem;
   flex-wrap: nowrap;
 }
+
+.stenar-csv-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.5rem 1vw 1rem;
+}
+
+.stenar-csv-button {
+  background: none;
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.stenar-csv-button:hover {
+  background-color: var(--element-dark);
+}
+
+.stenar-csv-file-input {
+  display: none;
+}

@@ -34,6 +34,52 @@
   justify-content: flex-start;
 }
 
+.stenar-list-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  margin-left: 10px;
+  box-sizing: border-box;
+  /* Align tabs with "Registrera ny sten" in the search header */
+  padding-top: 2rem;
+}
+
+.stenar-list-tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px 0 0;
+  border-bottom: 1px solid var(--element-darker);
+  flex-shrink: 0;
+  min-height: 2.4rem;
+}
+
+.stenar-list-tabs .notification-tab {
+  padding: 8px 14px;
+  margin: 0;
+  border: 1px solid var(--element-darker);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  background-color: var(--element-dark);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stenar-list-tabs .notification-tab.active {
+  background-color: var(--surface);
+  font-weight: 800;
+}
+
+.stenar-list-tabs .notification-tab:hover {
+  background-color: var(--surface);
+}
+
 .stenar-list {
   display: flex;
   flex-direction: column;
@@ -41,10 +87,7 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  height: 100%;
-  max-height: 100%;
   overflow-y: auto;
-  margin-left: 10px;
   padding-top: 0.75rem;
   padding-right: 4px;
 }

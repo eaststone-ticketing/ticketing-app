@@ -25,7 +25,7 @@ export default function RegistreraStenForm({ setShowForm, setStenar, defaultAren
       baksida: '',
       kanter: '',
       arendeID: defaultArendeID ?? '',
-      status: 'Behöver beställas',
+      status: 'I lager',
     },
   })
 

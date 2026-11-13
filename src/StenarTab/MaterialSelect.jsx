@@ -4,12 +4,15 @@ import './MaterialSelect.css'
 
 export default function MaterialSelect({
   register,
+  setValue,
+  name = 'material',
   required = true,
   initialMaterial = '',
   materials: materialsProp,
 }) {
   const [materials, setMaterials] = useState(materialsProp ?? [])
   const [customMaterial, setCustomMaterial] = useState(false)
+  const materialsReady = materials.length > 0
 
   useEffect(() => {
     if (materialsProp) {
@@ -28,12 +31,15 @@ export default function MaterialSelect({
   }, [materialsProp])
 
   useEffect(() => {
-    if (!initialMaterial) return
+    if (!initialMaterial || !materialsReady) return
     const inList = materials.some((s) => s.namn === initialMaterial)
-    if (materials.length > 0 && !inList) {
+    if (!inList) {
       setCustomMaterial(true)
     }
-  }, [initialMaterial, materials])
+    if (setValue) {
+      setValue(name, initialMaterial)
+    }
+  }, [initialMaterial, materials, materialsReady, setValue, name])
 
   return (
     <div className="material-select">
@@ -42,7 +48,12 @@ export default function MaterialSelect({
           <p className="material-select-toggle" onClick={() => setCustomMaterial(true)}>
             +Lägg till ny
           </p>
-          <select {...register('material', { required })}>
+          {/* Remount once options exist so the saved value can match an <option>. */}
+          <select
+            key={materialsReady ? `material-loaded-${initialMaterial}` : 'material-loading'}
+            defaultValue={initialMaterial || ''}
+            {...register(name, { required })}
+          >
             <option value="">Välj material</option>
             {materials.map((s) => (
               <option key={s.id} value={s.namn}>
@@ -56,7 +67,7 @@ export default function MaterialSelect({
           <p className="material-select-toggle" onClick={() => setCustomMaterial(false)}>
             Använd existerande
           </p>
-          <input {...register('material', { required })} placeholder="Nytt material" />
+          <input {...register(name, { required })} placeholder="Nytt material" />
         </>
       )}
     </div>

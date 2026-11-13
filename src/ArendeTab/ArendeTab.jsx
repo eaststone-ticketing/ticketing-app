@@ -7,6 +7,7 @@ import ArendeCardFilterPanel from './ArendeCardFilterPanel.jsx'
 import laggTillTrace from '../laggTillTrace.jsx'
 import {ArendeDetailViewMain} from './ArendeDetailViews/ArendeDetailViewMain.jsx'
 import matchesTypeSearch from '../Helpers/matchesTypeSearch.js'
+import archiveLinkedStones from '../Helpers/archiveLinkedStones.js'
 
 import '../App.css'
 
@@ -129,6 +130,14 @@ async function updateArendeStatus(newStatus, arende){
   const updatedArende = {...arende, status: newStatus};
   await updateArende(arende.id, updatedArende)
 
+  if (newStatus === "Stängt") {
+    try {
+      await archiveLinkedStones(arende.id);
+    } catch (err) {
+      console.error("Kunde inte arkivera kopplade stenar:", err);
+    }
+  }
+
   // Add trace
   await laggTillTrace(`ändrade status till ${newStatus}`, arende)
 
@@ -222,14 +231,19 @@ async function updateArendeStatus(newStatus, arende){
       {activeArende === null && (
         <>
           <div className = "arende-tab-contents-further">
+          {skapaArende ? (
+          <div className = "new-stone-form-arenden">
+          <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>
+          </div>
+          ) : (<>
           <div className = "arende-search-column">
-          {!skapaArende && <div className = "arende-card-filter-panel">
+          <div className = "arende-card-filter-panel">
             <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button create-button">+ Skapa nytt ärende</button>
-          </div>}
-          {!skapaArende && <form className="searchbar-arende">
+          </div>
+          <form className="searchbar-arende">
             <div className = "header-and-dropdown">
             <h3>Sök ärende</h3>
-            <select onChange = {(e) => setTypeToSearch(e.target.value)}>
+            <select value={typeToSearch} onChange = {(e) => setTypeToSearch(e.target.value)}>
               <option value = "">
                 Välj typ av ärende
               </option>
@@ -264,7 +278,7 @@ async function updateArendeStatus(newStatus, arende){
                 Lilla Dalen
               </option>
             </select>
-            <select onChange = {(e) => setUrsprungToSearch(e.target.value)}>
+            <select value={ursprungToSearch} onChange = {(e) => setUrsprungToSearch(e.target.value)}>
               <option value = "">Välj ursprung</option>
               <option>Eaststone</option>
               <option>Stockholms Gravstenar</option>
@@ -366,10 +380,10 @@ async function updateArendeStatus(newStatus, arende){
                 </div>
               ))}
             </div>}
-          </form>}
-          {!skapaArende && <div><button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button> <button onClick = {() => setIncludeLegacy(!includeLegacy)}>{!includeLegacy ? "Inkludera LEGACY" : "Ignorera LEGACY"}</button></div>}
+          </form>
+          <div><button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button> <button onClick = {() => setIncludeLegacy(!includeLegacy)}>{!includeLegacy ? "Inkludera LEGACY" : "Ignorera LEGACY"}</button></div>
           </div>
-          {!skapaArende && <div className = "arende-results-column">
+          <div className = "arende-results-column">
           <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter} includeLegacy = {includeLegacy}/>
           <div className = "scrollable-box">
           {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
@@ -381,7 +395,6 @@ async function updateArendeStatus(newStatus, arende){
               setShowMore={setShowMore}
               setActiveArende={setActiveArende}
               setActiveArendeKyrkogard={setActiveArendeKyrkogard}
-              setTypeToSearch={setTypeToSearch}
               kyrkogardar={kyrkogardar}
               setArenden={setArenden}
               updateArendeStatus={updateArendeStatus}
@@ -390,10 +403,8 @@ async function updateArendeStatus(newStatus, arende){
           ))}
           <button className = "load-more-button" onClick = {() => setArendeSliceLimit(arendeSliceLimit+50)}>↓ Ladda fler ärenden ↓</button>
           </div>  
-          </div>}
-          {skapaArende && <div className = "new-stone-form-arenden">
-          <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>
-          </div>}
+          </div>
+          </>)}
           </div>
         </>
       )}

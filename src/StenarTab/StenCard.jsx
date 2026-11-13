@@ -4,6 +4,7 @@ import { FaRegEdit } from 'react-icons/fa'
 import calculateStonePrice from '../Helpers/calculateStonePrice.js'
 import { mmToCm } from '../Helpers/stoneUnits.js'
 import { removeStenObjekt } from '../api.js'
+import linkToArende from '../Helpers/linkToArende.js'
 import EditStenForm from './EditStenForm.jsx'
 import './StenCard.css'
 
@@ -11,12 +12,19 @@ function formatBool(value) {
   return value ? 'Ja' : 'Nej'
 }
 
-export default function StenCard({ sten, arenden = [], setStenar }) {
+export default function StenCard({
+  sten,
+  arenden = [],
+  setStenar,
+  setActiveTab,
+  setActiveArende,
+}) {
   const [showMore, setShowMore] = useState(false)
   const [editing, setEditing] = useState(false)
   const { attr } = sten
 
   const arende = arenden.find((a) => Number(a.id) === Number(attr.arendeID))
+  const isArkiverad = attr.status === 'Arkiverad'
   const breddCm = mmToCm(attr.bredd)
   const hojdCm = mmToCm(attr.hojd)
   const djupCm = mmToCm(attr.djup)
@@ -55,17 +63,19 @@ export default function StenCard({ sten, arenden = [], setStenar }) {
         <h3>
           {attr.modell} {attr.material} {breddCm}x{hojdCm}x{djupCm}cm
         </h3>
-        <button
-          type="button"
-          className="sten-card-edit-button"
-          onClick={(e) => {
-            e.stopPropagation()
-            setEditing(true)
-          }}
-          aria-label="Redigera sten"
-        >
-          <FaRegEdit />
-        </button>
+        {!isArkiverad && (
+          <button
+            type="button"
+            className="sten-card-edit-button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setEditing(true)
+            }}
+            aria-label="Redigera sten"
+          >
+            <FaRegEdit />
+          </button>
+        )}
         <button
           type="button"
           className="delete-button-card"
@@ -86,7 +96,18 @@ export default function StenCard({ sten, arenden = [], setStenar }) {
         )}
       </div>
       <p className="sten-card-subtitle">{attr.status}</p>
-      {arende && <p className="sten-card-subtitle">{arende.avlidenNamn}</p>}
+      {arende && (
+        <p
+          className={`sten-card-subtitle${setActiveTab && setActiveArende ? " trace-arende" : ""}`}
+          onClick={() => {
+            if (setActiveTab && setActiveArende) {
+              linkToArende(setActiveTab, setActiveArende, arende)
+            }
+          }}
+        >
+          #{arende.id} {arende.avlidenNamn}
+        </p>
+      )}
       {showMore && (
         <div className="sten-card-details">
           {detailRows.map((row) => (
@@ -96,7 +117,7 @@ export default function StenCard({ sten, arenden = [], setStenar }) {
           ))}
         </div>
       )}
-      {editing && (
+      {editing && !isArkiverad && (
         <EditStenForm
           sten={sten}
           setStenar={setStenar}

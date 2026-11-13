@@ -59,7 +59,7 @@ return (
           const renderForm = () => {
             switch (selectedForm) {
               case 'newStone':
-                return <NewStoneForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder}/>
+                return <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder}/>
               default:
                 return null
               

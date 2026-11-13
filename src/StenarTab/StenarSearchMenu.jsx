@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import './StenarSearchMenu.css'
 
 export const STEN_STATUS_OPTIONS = [
@@ -23,7 +24,17 @@ export default function StenarSearchMenu({
   onlySpecialBlasting,
   setOnlySpecialBlasting,
   onRegistrera,
+  onDownloadCsv,
+  onImportCsv,
 }) {
+  const fileInputRef = useRef(null)
+
+  function handleFileChange(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (file) onImportCsv(file)
+  }
+
   return (
     <form className="searchbar-arende stenar-searchbar">
       <div className="stenar-searchbar-header">
@@ -93,6 +104,29 @@ export default function StenarSearchMenu({
             </option>
           ))}
         </select>
+      </div>
+      <div className="stenar-csv-buttons">
+        <button
+          type="button"
+          className="stenar-csv-button"
+          onClick={onDownloadCsv}
+        >
+          Ladda ner CSV
+        </button>
+        <button
+          type="button"
+          className="stenar-csv-button"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Importera CSV
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          className="stenar-csv-file-input"
+          onChange={handleFileChange}
+        />
       </div>
     </form>
   )

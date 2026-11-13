@@ -11,27 +11,24 @@ import { updateArende } from "../api.js";
 import { ticketColorStyle, typeColor } from '../Helpers/ticketColors.js'
 import getTypes from '../Helpers/getTypes.js'
 import hasType  from '../Helpers/hasType.js'
+import {
+  DEPENDENT_TYPES,
+  canCombineTypes,
+  getAvailableTypesToAdd,
+} from '../Helpers/arendeTypeOptions.js'
 import addFinishComment from './addFinishComment.js'
 import laggTillTrace from '../laggTillTrace.jsx'
-
-const NON_COMBINABLE_TYPES = ["Ny sten", "Lilla Dalen", "Högalid"];
-const COMBINABLE_TYPES = [
-  "Nyinskription",
-  "Stabilisering",
-  "Rengöring",
-  "Inspektion",
-  "Ommålning",
-  "Övrigt",
-];
-// Can only be added when the required type is already present; never as the sole/first type.
-const DEPENDENT_TYPES = {
-  Omslipning: "Nyinskription",
-};
+import archiveLinkedStones from '../Helpers/archiveLinkedStones.js'
 
 const EMPTY_JOBB_FORM = {
   utforare: "",
   problem: "",
   anteckningar: "",
+};
+
+const URSPRUNG_LOGOS = {
+  Eaststone: "/Eaststone.svg",
+  "Stockholms Gravstenar": "/SG.svg",
 };
 
 async function handleSignerad(arende, setArenden) {
@@ -93,7 +90,6 @@ export default function ArendeCard({
   showMore,
   setShowMore,
   setActiveArende,
-  setTypeToSearch,
   kyrkogardar,
   setArenden,
   updateArendeStatus,
@@ -103,15 +99,9 @@ export default function ArendeCard({
   const [jobbForm, setJobbForm] = useState(EMPTY_JOBB_FORM);
 
   const currentTypes = getTypes(arende.arendeTyp);
-  const canCombine = !currentTypes.some(type => NON_COMBINABLE_TYPES.includes(type));
-  const availableTypes = [
-    ...COMBINABLE_TYPES.filter(type => !currentTypes.includes(type)),
-    ...Object.entries(DEPENDENT_TYPES)
-      .filter(([type, requiredType]) =>
-        currentTypes.includes(requiredType) && !currentTypes.includes(type)
-      )
-      .map(([type]) => type),
-  ];
+  const ursprungLogo = URSPRUNG_LOGOS[arende.ursprung];
+  const canCombine = canCombineTypes(currentTypes);
+  const availableTypes = getAvailableTypesToAdd(currentTypes);
 
   function openJobbForm(type) {
     setJobbFormType(type);
@@ -159,6 +149,14 @@ export default function ArendeCard({
       console.error("Kunde inte uppdatera ärendetyp/status:", err);
     }
 
+    if (updatedArende.status === "Stängt") {
+      try {
+        await archiveLinkedStones(arendeSnapshot.id);
+      } catch (err) {
+        console.error("Kunde inte arkivera kopplade stenar:", err);
+      }
+    }
+
     try {
       await laggTillTrace(
         types.length > 1
@@ -182,7 +180,7 @@ export default function ArendeCard({
       style={ticketColorStyle(arende.status, arende.arendeTyp)}>
       <div>
       <div className = "arende-card-header-and-button">
-      <h3 className = "truncate" onClick={() => {setActiveArende(arende); setShowMore(null); setTypeToSearch("");}}>{arende.avlidenNamn}: {arende.status}</h3>
+      <h3 className = "truncate" onClick={() => {setActiveArende(arende); setShowMore(null);}}>{arende.avlidenNamn}: {arende.status}</h3>
       {showMore !== arende.id && <IoMdArrowDropright className = "dropdown-arrow" onClick = {() => {setShowMore(arende.id)}}/>}
       {showMore === arende.id && <IoMdArrowDropdown className = "dropdown-arrow" onClick = {() => {setShowMore(null)}}/>}
       </div>
@@ -194,6 +192,7 @@ export default function ArendeCard({
           style={{ backgroundColor: typeColor[type]?.[0] || "transparent" }}
         >
           {type}
+          {arende.status !== "Stängt" && (
           <button
             type="button"
             className="arende-typ-tag-check-button"
@@ -204,6 +203,7 @@ export default function ArendeCard({
           >
             ✓
           </button>
+          )}
           {currentTypes.length > 1 && (
             <button
               type="button"
@@ -326,8 +326,15 @@ export default function ArendeCard({
       </div>
       </div>}
       </div>
-      <div>
+      <div className="arende-card-right">
       <button className = "delete-button-card" onClick = {(e) =>{e.stopPropagation(); handleDeleteButton(arende)}}>{arende.status !== "raderad" && <p>Radera</p>}{arende.status === "raderad" && <p>Återställ</p>}</button>
+      {ursprungLogo && (
+        <img
+          className="arende-card-ursprung-logo"
+          src={ursprungLogo}
+          alt={arende.ursprung}
+        />
+      )}
       </div>
     </div>
   );

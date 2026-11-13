@@ -30,7 +30,7 @@ function buildAttr(data) {
 
 export default function EditStenForm({ sten, setStenar, onClose }) {
   const { attr } = sten
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       material: attr.material ?? '',
       modell: attr.modell ?? '',
@@ -51,7 +51,15 @@ export default function EditStenForm({ sten, setStenar, onClose }) {
   })
 
   const onSubmit = async (data) => {
+    if (attr.status === 'Arkiverad') {
+      onClose()
+      return
+    }
     const nextAttr = buildAttr(data)
+    // Arkiverad can only be set by closing the linked ärende.
+    if (nextAttr.status === 'Arkiverad') {
+      nextAttr.status = attr.status
+    }
     try {
       await updateStenObjekt(sten.id, { attr: nextAttr })
       setStenar((prev) =>
@@ -82,6 +90,7 @@ export default function EditStenForm({ sten, setStenar, onClose }) {
           Material
           <MaterialSelect
             register={register}
+            setValue={setValue}
             initialMaterial={attr.material ?? ''}
           />
         </label>

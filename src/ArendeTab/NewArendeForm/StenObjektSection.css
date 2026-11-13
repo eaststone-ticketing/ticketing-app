@@ -1,0 +1,65 @@
+.sten-objekt-section {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--element-darker);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sten-objekt-section h4 {
+  grid-column: 1 / -1;
+  margin: 0 0 0.15rem;
+}
+
+.sten-objekt-fixed-modell {
+  margin: 0;
+  align-self: end;
+  padding-bottom: 0.35rem;
+}
+
+.sten-objekt-checkboxes {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding-top: 0.25rem;
+}
+
+.sten-objekt-section .input-field {
+  min-width: 0;
+}
+
+.sten-objekt-section input,
+.sten-objekt-section select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Keep material dropdown aligned with modell/höjd inputs; toggle sits on the label row. */
+.sten-objekt-material-field {
+  position: relative;
+}
+
+.sten-objekt-material-field .material-select {
+  gap: 0;
+}
+
+.sten-objekt-material-field .material-select-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+@media (max-width: 900px) {
+  .sten-objekt-section {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sten-objekt-section {
+    grid-template-columns: 1fr;
+  }
+}
