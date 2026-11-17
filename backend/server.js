@@ -208,6 +208,14 @@ await db.exec(`CREATE TABLE IF NOT EXISTS bilder (
     key TEXT
 )`)
 
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TEXT
+  );
+`)
+
 app.post("/api/upload-url", authenticateToken, async (req, res) => {
   const { arendeID, fileType } = req.body;
 
@@ -535,6 +543,86 @@ app.get("/stenObjekt", authenticateToken, async (req, res) => {
   }));
   res.json(stenObjekt);
 })
+
+/** Parse a settings row value column into an object. */
+function parseSettingsValue(raw) {
+  if (raw == null) return {};
+  if (typeof raw === "object") return raw;
+  try {
+    return JSON.parse(raw || "{}");
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * GET /settings → { priceConfig: {...}, ... }
+ * so callers can do settings.priceConfig.NYINSKRIPTION_STANDARD
+ */
+app.get("/settings", authenticateToken, async (req, res) => {
+  try {
+    const rows = await db.all("SELECT key, value FROM settings");
+    const settings = {};
+    for (const row of rows) {
+      settings[row.key] = parseSettingsValue(row.value);
+    }
+    res.json(settings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch settings" });
+  }
+});
+
+app.get("/settings/:key", authenticateToken, async (req, res) => {
+  const { key } = req.params;
+  try {
+    const row = await db.get("SELECT key, value, updated_at FROM settings WHERE key = ?", key);
+    if (!row) {
+      return res.status(404).json({ error: `Setting "${key}" not found` });
+    }
+    res.json({
+      key: row.key,
+      value: parseSettingsValue(row.value),
+      updated_at: row.updated_at,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch setting" });
+  }
+});
+
+/**
+ * PUT /settings/:key
+ * Body may be the JSON doc itself, or { value: <doc> }.
+ * Upserts the keyed document.
+ */
+app.put("/settings/:key", authenticateToken, async (req, res) => {
+  const { key } = req.params;
+  const value =
+    req.body && Object.prototype.hasOwnProperty.call(req.body, "value")
+      ? req.body.value
+      : req.body;
+
+  if (value == null || typeof value !== "object" || Array.isArray(value)) {
+    return res.status(400).json({ error: "Body must be a JSON object" });
+  }
+
+  const updatedAt = new Date().toISOString();
+  try {
+    await db.run(
+      `INSERT INTO settings (key, value, updated_at)
+       VALUES (?, ?, ?)
+       ON CONFLICT(key) DO UPDATE SET
+         value = excluded.value,
+         updated_at = excluded.updated_at`,
+      [key, JSON.stringify(value), updatedAt]
+    );
+    res.json({ key, value, updated_at: updatedAt });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update setting" });
+  }
+});
 
 
 app.delete("/kyrkogardar/:id", authenticateToken, async (req, res) => {
@@ -1072,13 +1160,14 @@ app.post("/refresh-token", async (req, res) => {
 app.get("/alter-table", async (req, res) => {
   try {
     await db.exec(`
-      CREATE TABLE IF NOT EXISTS stenObjekt (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        attr TEXT
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TEXT
       );
     `);
-    console.log("Table stenObjekt created successfully.");
-    res.status(200).json({ message: "Table stenObjekt created successfully." });
+    console.log("Table settings created successfully.");
+    res.status(200).json({ message: "Table settings created successfully." });
   } catch (err) {
     console.error("Error altering table:", err.message);
     res.status(500).json({ error: "Failed to alter table", details: err.message });
