@@ -114,7 +114,8 @@ await db.exec( `
     ursprung TEXT,
     nuvarandeText TEXT,
     signerad INTEGER,
-    fakturerad INTEGER
+    fakturerad INTEGER,
+    artiklar TEXT
   );
 `);
 
@@ -280,11 +281,12 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
 
 
 app.post("/arenden", authenticateToken, async (req, res) => {
-    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad}  = req.body;
+    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar}  = req.body;
+    const artiklarObj = artiklar && typeof artiklar === "object" ? artiklar : {};
     const result = await db.run (`
-        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad]);
+        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, JSON.stringify(artiklarObj)]);
     
     const newArende = {
         id: result.lastID,
@@ -326,7 +328,8 @@ app.post("/arenden", authenticateToken, async (req, res) => {
         ursprung, 
         nuvarandeText,
         signerad,
-        fakturerad
+        fakturerad,
+        artiklar: artiklarObj
     };
 
     res.json(newArende);
@@ -478,7 +481,13 @@ app.get("/bilder", authenticateToken, async (req, res) => {
 })
 
 app.get("/arenden", authenticateToken, async (req, res) => {
-    const arenden = await db.all("SELECT * FROM arenden")
+    const rows = await db.all("SELECT * FROM arenden")
+    const arenden = rows.map((row) => ({
+      ...row,
+      artiklar: typeof row.artiklar === "string"
+        ? JSON.parse(row.artiklar || "{}")
+        : (row.artiklar || {}),
+    }));
     res.json(arenden);
 })
 
@@ -728,9 +737,16 @@ app.put("/kyrkogardar/:id", authenticateToken, async (req, res) => {
 
 app.put("/arenden/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const fields = req.body;
+  const fields = { ...req.body };
 
   try {
+    if (Object.prototype.hasOwnProperty.call(fields, "artiklar")) {
+      const artiklar = fields.artiklar;
+      fields.artiklar = typeof artiklar === "string"
+        ? artiklar
+        : JSON.stringify(artiklar && typeof artiklar === "object" ? artiklar : {});
+    }
+
     // Build a dynamic update query based on what fields are provided
     const columns = Object.keys(fields)
       .map((key) => `${key} = ?`)
@@ -1160,14 +1176,11 @@ app.post("/refresh-token", async (req, res) => {
 app.get("/alter-table", async (req, res) => {
   try {
     await db.exec(`
-      CREATE TABLE IF NOT EXISTS settings (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL,
-        updated_at TEXT
-      );
+      ALTER TABLE arenden
+      ADD COLUMN artiklar TEXT;
     `);
-    console.log("Table settings created successfully.");
-    res.status(200).json({ message: "Table settings created successfully." });
+    console.log("Column artiklar added successfully.");
+    res.status(200).json({ message: "Column artiklar added successfully." });
   } catch (err) {
     console.error("Error altering table:", err.message);
     res.status(500).json({ error: "Failed to alter table", details: err.message });
