@@ -482,20 +482,37 @@ app.get("/bilder", authenticateToken, async (req, res) => {
   res.json(bilder);
 })
 
+function parseJsonColumn(raw, fallback) {
+  if (raw && typeof raw === "object") return raw;
+  if (typeof raw === "string" && raw.trim()) {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
+  }
+  return fallback;
+}
+
+function stringifyJsonField(value, emptyObjectFallback = false) {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return JSON.stringify(value);
+  if (value && typeof value === "object") return JSON.stringify(value);
+  return JSON.stringify(emptyObjectFallback ? {} : []);
+}
+
 app.get("/arenden", authenticateToken, async (req, res) => {
     const rows = await db.all("SELECT * FROM arenden")
     const arenden = rows.map((row) => {
-      let artiklar = {};
-      if (row.artiklar && typeof row.artiklar === "object") {
-        artiklar = row.artiklar;
-      } else if (typeof row.artiklar === "string" && row.artiklar.trim()) {
-        try {
-          artiklar = JSON.parse(row.artiklar);
-        } catch {
-          artiklar = {};
-        }
-      }
-      return { ...row, artiklar: artiklar && typeof artiklar === "object" ? artiklar : {} };
+      const artiklar = parseJsonColumn(row.artiklar, {});
+      const godkannanden = parseJsonColumn(row.godkannanden, []);
+      const ansokan = parseJsonColumn(row.ansokan, []);
+      return {
+        ...row,
+        artiklar: artiklar && typeof artiklar === "object" && !Array.isArray(artiklar) ? artiklar : {},
+        godkannanden: Array.isArray(godkannanden) ? godkannanden : [],
+        ansokan: Array.isArray(ansokan) ? ansokan : [],
+      };
     });
     res.json(arenden);
 })
@@ -750,10 +767,13 @@ app.put("/arenden/:id", authenticateToken, async (req, res) => {
 
   try {
     if (Object.prototype.hasOwnProperty.call(fields, "artiklar")) {
-      const artiklar = fields.artiklar;
-      fields.artiklar = typeof artiklar === "string"
-        ? artiklar
-        : JSON.stringify(artiklar && typeof artiklar === "object" ? artiklar : {});
+      fields.artiklar = stringifyJsonField(fields.artiklar, true);
+    }
+    if (Object.prototype.hasOwnProperty.call(fields, "godkannanden")) {
+      fields.godkannanden = stringifyJsonField(fields.godkannanden);
+    }
+    if (Object.prototype.hasOwnProperty.call(fields, "ansokan")) {
+      fields.ansokan = stringifyJsonField(fields.ansokan);
     }
 
     // Build a dynamic update query based on what fields are provided
