@@ -1,3 +1,5 @@
+export const PRIDE_FORCE_OUT_OF_SEASON_KEY = "topBarTheme.pride.forceOutOfSeason"
+
 export const seasonalTopBarThemes = [
   {
     id: "pride",
@@ -13,8 +15,20 @@ export const seasonalTopBarThemes = [
   },
 ]
 
+export function isPrideForcedOutOfSeason() {
+  return localStorage.getItem(PRIDE_FORCE_OUT_OF_SEASON_KEY) === "true"
+}
+
+export function setPrideForcedOutOfSeason(forced) {
+  localStorage.setItem(PRIDE_FORCE_OUT_OF_SEASON_KEY, forced ? "true" : "false")
+}
+
 export function getAvailableSeasonalTopBarThemes(date = new Date()) {
-  return seasonalTopBarThemes.filter((theme) => theme.isInSeason(date))
+  return seasonalTopBarThemes.filter(
+    (theme) =>
+      theme.isInSeason(date) ||
+      (theme.id === "pride" && isPrideForcedOutOfSeason())
+  )
 }
 
 export function loadEnabledTopBarThemeIds(date = new Date()) {

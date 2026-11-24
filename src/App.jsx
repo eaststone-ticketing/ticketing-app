@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { LuCog } from 'react-icons/lu'
 import { getKyrkogardar, getArenden, getKunder } from "./api.js";
 import './App.css'
 import ArendeTab from './ArendeTab/ArendeTab.jsx'
@@ -7,6 +8,8 @@ import LeveransTab from './LeveransTab/LeveransTab.jsx'
 import KyrkogardTab from './KyrkogardTab/KyrkogardTab.jsx'
 import OversiktTab from './OversiktTab/OversiktTab.jsx'
 import StenarTab from './StenarTab/StenarTab.jsx'
+import SettingsOverlay from './settings/SettingsOverlay.jsx'
+import { PriceConfigProvider } from './Helpers/PriceConfigContext.jsx'
 import { useSeasonalTopBarTheme } from './Helpers/useSeasonalTopBarTheme.js'
 
 function App() {
@@ -21,7 +24,14 @@ function App() {
   const [activeArende, setActiveArende] = useState(null)
   const [kyrkogardToOpen, setKyrkogardToOpen] = useState(null)
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark")
-  const { availableThemes, enabledById, toggleTheme } = useSeasonalTopBarTheme()
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const {
+    availableThemes,
+    enabledById,
+    toggleTheme,
+    prideForcedOutOfSeason,
+    setPrideThemeOutOfSeason,
+  } = useSeasonalTopBarTheme()
 
   useEffect(() => {
     async function loadKyrkogardar() {
@@ -55,7 +65,7 @@ function App() {
 
 
   return (
-    <>
+    <PriceConfigProvider>
       <div className = "app-shell">
         <div className = "tab-bar">
           <div className = "tab-bar-toggles">
@@ -90,17 +100,35 @@ function App() {
               </button>)
             )}
           </div>
+          <div className="tab-bar-settings">
+            <button
+              type="button"
+              className="theme-toggle theme-toggle-icon settings-cog-button"
+              aria-label="Öppna inställningar"
+              title="Inställningar"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <LuCog />
+            </button>
+          </div>
         </div>
         <div className="tab-content">
           {activeTab === 'Email' && <EmailTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} />}
           {activeTab === 'Ärenden' && <ArendeTab arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} activeArende = {activeArende} setActiveArende = {setActiveArende} setActiveTab = {setActiveTab} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Leveranser' && <LeveransTab setActiveArende = {setActiveArende} setActiveTab = {setActiveTab}/>}
-          {activeTab === 'Stenar' && <StenarTab arenden={arenden} setActiveTab={setActiveTab} setActiveArende={setActiveArende} />}
+          {activeTab === 'Stenar' && <StenarTab arenden={arenden} setArenden={setArenden} setActiveTab={setActiveTab} setActiveArende={setActiveArende} />}
           {activeTab === 'Kyrkogårdar' && <KyrkogardTab kyrkogardar = {kyrkogardar} setKyrkogardar = {setKyrkogardar} arenden = {arenden} setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} kyrkogardToOpen = {kyrkogardToOpen} setKyrkogardToOpen = {setKyrkogardToOpen}/>}
           {activeTab === 'Översikt' && <OversiktTab setActiveTab = {setActiveTab} setActiveArende = {setActiveArende} arenden = {arenden}/>}
         </div>
       </div>
-    </>
+      {settingsOpen && (
+        <SettingsOverlay
+          onClose={() => setSettingsOpen(false)}
+          prideForcedOutOfSeason={prideForcedOutOfSeason}
+          setPrideThemeOutOfSeason={setPrideThemeOutOfSeason}
+        />
+      )}
+    </PriceConfigProvider>
   )
 }
 

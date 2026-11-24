@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './StenarTab.css'
-import StenCard from './StenCard.jsx'
+import StenCard, { StenListHeader } from './StenCard.jsx'
 import StenarSearchMenu from './StenarSearchMenu.jsx'
 import RegistreraStenForm from './RegistreraStenForm.jsx'
 import StenImportDuplicateDialog from './StenImportDuplicateDialog.jsx'
-import { getStenObjekt } from '../api.js'
+import { getStenObjekt, updateStenObjekt } from '../api.js'
 import { downloadFilteredStenarCsv } from './exportStenarCsv.js'
 import { importStenarFromCsv } from './importStenarCsv.js'
 
@@ -53,7 +53,7 @@ function matchesSearch(sten, filters, arenden, stenListTab) {
   return true
 }
 
-export default function StenarTab({ arenden = [], setActiveTab, setActiveArende }) {
+export default function StenarTab({ arenden = [], setArenden, setActiveTab, setActiveArende }) {
   const [stenar, setStenar] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [stenListTab, setStenListTab] = useState('aktuella')
@@ -65,6 +65,7 @@ export default function StenarTab({ arenden = [], setActiveTab, setActiveArende 
   const [onlyLykthal, setOnlyLykthal] = useState(false)
   const [onlySpecialBlasting, setOnlySpecialBlasting] = useState(false)
   const [duplicatePrompt, setDuplicatePrompt] = useState(null)
+  const [selectedIds, setSelectedIds] = useState(() => new Set())
   const stenarRef = useRef(stenar)
 
   useEffect(() => {
@@ -93,9 +94,79 @@ export default function StenarTab({ arenden = [], setActiveTab, setActiveArende 
     onlySpecialBlasting,
   }
 
+  useEffect(() => {
+    setSelectedIds(new Set())
+  }, [
+    material,
+    modell,
+    avlidenNamn,
+    status,
+    onlyLaserportratt,
+    onlyLykthal,
+    onlySpecialBlasting,
+    stenListTab,
+  ])
+
   const filtered = stenar.filter((sten) =>
     matchesSearch(sten, filters, arenden, stenListTab)
   )
+  const allFilteredSelected =
+    filtered.length > 0 && filtered.every((sten) => selectedIds.has(sten.id))
+  const someFilteredSelected = filtered.some((sten) => selectedIds.has(sten.id))
+
+  function toggleSelected(id) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleSelectAll() {
+    if (allFilteredSelected) {
+      setSelectedIds(new Set())
+      return
+    }
+    setSelectedIds(new Set(filtered.map((sten) => sten.id)))
+  }
+
+  function handleDownloadSelectedCsv() {
+    const selected = filtered.filter((sten) => selectedIds.has(sten.id))
+    downloadFilteredStenarCsv(selected, arenden)
+  }
+
+  async function handleChangeSelectedStatus(newStatus) {
+    if (!newStatus) return
+    const selected = filtered.filter((sten) => selectedIds.has(sten.id))
+    if (selected.length === 0) return
+
+    const confirmed = window.confirm(
+      `Vill du ändra status till ${newStatus} för alla valda stenar?`
+    )
+    if (!confirmed) return
+
+    try {
+      await Promise.all(
+        selected.map((sten) =>
+          updateStenObjekt(sten.id, {
+            attr: { ...sten.attr, status: newStatus },
+          })
+        )
+      )
+      const selectedIdSet = new Set(selected.map((sten) => sten.id))
+      setStenar((prev) =>
+        prev.map((sten) =>
+          selectedIdSet.has(sten.id)
+            ? { ...sten, attr: { ...sten.attr, status: newStatus } }
+            : sten
+        )
+      )
+    } catch (err) {
+      console.error(err)
+      window.alert('Kunde inte ändra status. Se konsolen för detaljer.')
+    }
+  }
 
   function resolveDuplicate(existing, incomingAttr) {
     return new Promise((resolve) => {
@@ -126,7 +197,7 @@ export default function StenarTab({ arenden = [], setActiveTab, setActiveArende 
   return (
     <div className="stenar-tab">
       {showForm ? (
-        <RegistreraStenForm setShowForm={setShowForm} setStenar={setStenar} />
+        <RegistreraStenForm setShowForm={setShowForm} setStenar={setStenar} setArenden={setArenden} />
       ) : (
         <div className="stenar-body">
           <div className="stenar-search-column">
@@ -146,8 +217,10 @@ export default function StenarTab({ arenden = [], setActiveTab, setActiveArende 
               onlySpecialBlasting={onlySpecialBlasting}
               setOnlySpecialBlasting={setOnlySpecialBlasting}
               onRegistrera={() => setShowForm(true)}
-              onDownloadCsv={() => downloadFilteredStenarCsv(filtered, arenden)}
+              onDownloadCsv={handleDownloadSelectedCsv}
               onImportCsv={handleImportCsv}
+              onChangeStatus={handleChangeSelectedStatus}
+              selectedCount={filtered.filter((sten) => selectedIds.has(sten.id)).length}
             />
           </div>
           <div className="stenar-list-column">
@@ -168,14 +241,22 @@ export default function StenarTab({ arenden = [], setActiveTab, setActiveArende 
               </button>
             </div>
             <div className="stenar-list">
+              <StenListHeader
+                allSelected={allFilteredSelected}
+                someSelected={someFilteredSelected}
+                onToggleAll={toggleSelectAll}
+              />
               {filtered.map((sten) => (
                 <StenCard
                   key={sten.id}
                   sten={sten}
                   arenden={arenden}
+                  setArenden={setArenden}
                   setStenar={setStenar}
                   setActiveTab={setActiveTab}
                   setActiveArende={setActiveArende}
+                  selected={selectedIds.has(sten.id)}
+                  onToggleSelected={toggleSelected}
                 />
               ))}
             </div>

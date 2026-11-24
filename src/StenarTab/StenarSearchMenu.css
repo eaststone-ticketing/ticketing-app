@@ -40,6 +40,25 @@
   margin: 0.5rem 1vw 1rem;
 }
 
+.stenar-mass-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.stenar-mass-action select {
+  width: 100%;
+  max-width: 220px;
+  padding: 6px 8px;
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+}
+
 .stenar-csv-button {
   background: none;
   border: 1px solid var(--element-darker);
@@ -49,8 +68,13 @@
   cursor: pointer;
 }
 
-.stenar-csv-button:hover {
+.stenar-csv-button:hover:not(:disabled) {
   background-color: var(--element-dark);
+}
+
+.stenar-csv-button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .stenar-csv-file-input {

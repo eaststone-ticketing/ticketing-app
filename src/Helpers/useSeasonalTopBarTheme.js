@@ -2,17 +2,27 @@ import { useEffect, useMemo, useState } from "react"
 import {
   getActiveTopBarThemeId,
   getAvailableSeasonalTopBarThemes,
+  isPrideForcedOutOfSeason,
   loadEnabledTopBarThemeIds,
   saveEnabledTopBarThemeIds,
+  setPrideForcedOutOfSeason,
+  seasonalTopBarThemes,
 } from "./seasonalTopBarThemes.js"
 
 export function useSeasonalTopBarTheme() {
-  const availableThemes = useMemo(() => getAvailableSeasonalTopBarThemes(), [])
+  const [prideForcedOutOfSeason, setPrideForcedOutOfSeasonState] = useState(
+    isPrideForcedOutOfSeason
+  )
   const [enabledById, setEnabledById] = useState(loadEnabledTopBarThemeIds)
+
+  const availableThemes = useMemo(
+    () => getAvailableSeasonalTopBarThemes(),
+    [prideForcedOutOfSeason]
+  )
 
   const activeThemeId = useMemo(
     () => getActiveTopBarThemeId(enabledById),
-    [enabledById]
+    [enabledById, prideForcedOutOfSeason]
   )
 
   useEffect(() => {
@@ -25,7 +35,7 @@ export function useSeasonalTopBarTheme() {
 
   useEffect(() => {
     saveEnabledTopBarThemeIds(enabledById)
-  }, [enabledById])
+  }, [enabledById, prideForcedOutOfSeason])
 
   function toggleTheme(id) {
     setEnabledById((prev) => {
@@ -44,5 +54,38 @@ export function useSeasonalTopBarTheme() {
     })
   }
 
-  return { availableThemes, enabledById, toggleTheme }
+  /** Unlock (and turn on) pride theme even outside the seasonal window. */
+  function setPrideThemeOutOfSeason(enabled) {
+    setPrideForcedOutOfSeason(enabled)
+    setPrideForcedOutOfSeasonState(enabled)
+
+    setEnabledById((prev) => {
+      const updated = {}
+      for (const theme of seasonalTopBarThemes) {
+        updated[theme.id] = false
+      }
+
+      if (enabled) {
+        updated.pride = true
+        localStorage.setItem("topBarTheme.pride", "true")
+      } else {
+        const pride = seasonalTopBarThemes.find((theme) => theme.id === "pride")
+        if (pride && !pride.isInSeason()) {
+          localStorage.setItem("topBarTheme.pride", "false")
+        } else if (prev.pride) {
+          updated.pride = true
+        }
+      }
+
+      return updated
+    })
+  }
+
+  return {
+    availableThemes,
+    enabledById,
+    toggleTheme,
+    prideForcedOutOfSeason,
+    setPrideThemeOutOfSeason,
+  }
 }

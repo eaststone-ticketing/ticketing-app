@@ -18,8 +18,25 @@ export const STONE_PRICE_CONFIG = {
   STABILISERING_STANDARD: 3800,
   SOCKEL_STANDARD: 1700,
   BLADGULD_STANDARD: 2700,
+  BLADSILVER_STANDARD: 1200,
+  BLADKOPPAR_STANDARD: 1200,
   RELIEF_STANDARD: 1000,
   GULDFARG: 500,
   SILVERFARG: 500,
-  KOPPARFARG: 500
+  KOPPARFARG: 500,
+  BLOMLIST_STANDARD: 1700,
+  OVRIGT: 0,
+  RABATT: 0,
+}
+
+/** Merge a stored/partial config on top of the hardcoded defaults. */
+export function mergePriceConfig(raw) {
+  return {
+    ...STONE_PRICE_CONFIG,
+    ...(raw ?? {}),
+    PRICE_PER_M3: {
+      ...STONE_PRICE_CONFIG.PRICE_PER_M3,
+      ...(raw?.PRICE_PER_M3 ?? {}),
+    },
+  }
 }

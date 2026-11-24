@@ -1,39 +1,160 @@
-.sten-card {
-  border-radius: 8px;
-  margin: 2px;
-  padding: 10px;
-  background: var(--element);
+.sten-list-row {
+  display: grid;
+  /* Fixed check + actions widths so header and rows stay aligned */
+  grid-template-columns: 16% 16% 14% minmax(0, 1fr) 56px 132px;
+  align-items: center;
+  column-gap: 0;
+  width: 100%;
   box-sizing: border-box;
+  padding: 5px 10px;
+  font-size: 13px;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--element-darker);
+  background: var(--surface);
+  color: var(--text);
 }
 
-.sten-card-header-row {
+.sten-list-row > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.sten-list-row:nth-child(even) {
+  background: var(--element);
+}
+
+.sten-list-row:hover {
+  background: var(--element-dark);
+}
+
+.sten-list-row-selected,
+.sten-list-row-selected:nth-child(even) {
+  background: color-mix(in srgb, var(--surface) 55%, #9ec5e8 45%);
+}
+
+.sten-list-row-selected:hover {
+  background: color-mix(in srgb, var(--element-dark) 45%, #8eb8e0 55%);
+}
+
+.sten-list-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  cursor: default;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: var(--element);
+  border-bottom: 1px solid var(--element-darkest);
+}
+
+.sten-list-header:hover,
+.sten-list-header:nth-child(even) {
+  background: var(--element);
+}
+
+.sten-list-row > span.sten-list-row-check-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  overflow: visible;
+}
+
+.sten-list-row-check-cell input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.sten-list-row-primary {
+  font-weight: 600;
+}
+
+.sten-list-row-measurements {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+
+.sten-list-row > span.sten-list-row-ticket {
+  position: relative;
+  min-width: 0;
+  overflow: visible;
+}
+
+.sten-list-row-ticket-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sten-list-row-ticket-popover {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  min-width: 180px;
+  max-width: 260px;
+  padding: 8px 10px;
+  border: 1px solid var(--element-darker);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: normal;
+  pointer-events: none;
+}
+
+.sten-list-row-ticket-popover > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 8px;
+}
+
+.sten-list-row-ticket-popover-label {
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.sten-list-row-ticket:hover .sten-list-row-ticket-popover,
+.sten-list-row-ticket:focus-visible .sten-list-row-ticket-popover {
+  display: block;
+}
+
+.sten-list-row-actions-cell {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  padding-left: 8px;
+  padding-right: 0;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
-.sten-card-header-row h3 {
-  margin: 0;
-  padding: 0;
-  line-height: 1.2;
-}
-
-.sten-card-header-row .delete-button-card {
+.sten-list-row .delete-button-card {
   top: 0;
   right: 0;
+  background: transparent;
 }
 
-.sten-card-header-row .dropdown-arrow.sten-card-expand-arrow {
-  margin-left: 1.25rem;
-  margin-top: 2px;
-}
-
-.sten-card-subtitle {
-  margin: 4px 0 0;
-  opacity: 0.75;
-  line-height: 1.2;
+.sten-list-row .dropdown-arrow.sten-card-expand-arrow {
+  margin: 0;
+  font-size: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .sten-card-edit-button {
@@ -53,12 +174,18 @@
 }
 
 .sten-card-details {
-  margin-top: 0.75rem;
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--element-darker);
 }
 
 .sten-card-details p {
   margin: 2px 0;
   line-height: 1.3;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .sten-card-detail-label {

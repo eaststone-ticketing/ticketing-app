@@ -283,12 +283,14 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
 
 
 app.post("/arenden", authenticateToken, async (req, res) => {
-    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar}  = req.body;
+    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan}  = req.body;
     const artiklarObj = artiklar && typeof artiklar === "object" ? artiklar : {};
+    const godkannandenArr = Array.isArray(godkannanden) ? godkannanden : [];
+    const ansokanArr = Array.isArray(ansokan) ? ansokan : [];
     const result = await db.run (`
-        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, JSON.stringify(artiklarObj)]);
+        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, JSON.stringify(artiklarObj), JSON.stringify(godkannandenArr), JSON.stringify(ansokanArr)]);
     
     const newArende = {
         id: result.lastID,
@@ -331,7 +333,9 @@ app.post("/arenden", authenticateToken, async (req, res) => {
         nuvarandeText,
         signerad,
         fakturerad,
-        artiklar: artiklarObj
+        artiklar: artiklarObj,
+        godkannanden: godkannandenArr,
+        ansokan: ansokanArr,
     };
 
     res.json(newArende);

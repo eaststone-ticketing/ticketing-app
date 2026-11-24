@@ -14,21 +14,27 @@ import laggTillTrace from '../../laggTillTrace.jsx'
 import { getToken } from '../../Helpers/auth.js'
 import { cmToMm, mmToCm } from '../../Helpers/stoneUnits.js'
 import buildKostnadLines, {
-  FARG_TILLAGG_OPTIONS,
+  getFargTillaggOptions,
+  isFargTillaggOption,
   applyAmountOverrides,
-  formatKostnadspecifikationComment,
   reconcileOverrides,
   sumKostnadLines,
 } from '../../Helpers/buildKostnadLines.js'
+import { kostnadLinesToArtiklar } from '../../Helpers/artiklarHelpers.js'
+import { usePriceConfig } from '../../Helpers/PriceConfigContext.jsx'
 import getTypes from '../../Helpers/getTypes.js'
 import hasType from '../../Helpers/hasType.js'
+import { initialApprovalState } from '../../Helpers/approvalFields.js'
 import StenObjektSection, { TEXTKOMPLETTERING_STATUS } from './StenObjektSection.jsx'
 import ArendeTypTagPicker from './ArendeTypTagPicker.jsx'
 import Kostnadspecifikation from './Kostnadspecifikation.jsx'
 import { STEN_STATUS_OPTIONS } from '../../StenarTab/StenarSearchMenu.jsx'
 
-const FARG_TILLAGG_LABELS = new Set(FARG_TILLAGG_OPTIONS.map((opt) => opt.farg))
-const RELIEF_OPTION = FARG_TILLAGG_OPTIONS.find((opt) => opt.id === 'relief')
+const FARG_TILLAGG_LABELS = new Set(
+  getFargTillaggOptions()
+    .map((opt) => opt.farg)
+    .filter(Boolean)
+)
 
 function findTaggedUsers(comment) {
   const regex = /@([^\s@]+)/g;
@@ -119,7 +125,12 @@ const [lagerStenar, setLagerStenar] = useState([])
 const [selectedLagerStenId, setSelectedLagerStenId] = useState("")
 const [amountOverrides, setAmountOverrides] = useState({})
 const [fargTillagg, setFargTillagg] = useState(null)
+const [ovrigTillagg, setOvrigTillagg] = useState(null)
+const [rabattTillagg, setRabattTillagg] = useState(null)
 const depKeysRef = useRef({})
+const { priceConfig } = usePriceConfig()
+const fargTillaggOptions = getFargTillaggOptions(priceConfig)
+const reliefOption = fargTillaggOptions.find((opt) => opt.id === 'relief')
 
 const inputField = (label, namn, type, required = false) => {
     return <div>
@@ -207,6 +218,7 @@ const defaultKostnadLines = buildKostnadLines({
   sockelChecked: !!(needsStenObjekt && sockelChecked),
   useExistingSten,
   selectedLagerSten,
+  priceConfig,
 })
 
 function handleArendeTypesChange(nextTypes) {
@@ -251,8 +263,45 @@ const fargTillaggLine = fargTillagg
     }
   : null
 
+const ovrigTillaggLine = ovrigTillagg
+  ? {
+      id: 'ovrig-tillagg',
+      label: 'Övrigt',
+      amount: ovrigTillagg.amount,
+    }
+  : null
+
+const preRabattLines = [
+  ...kostnadLines,
+  ...(fargTillaggLine ? [fargTillaggLine] : []),
+  ...(ovrigTillaggLine ? [ovrigTillaggLine] : []),
+]
+const preRabattTotal = sumKostnadLines(preRabattLines)
+
+const rabattAmount =
+  rabattTillagg == null
+    ? null
+    : rabattTillagg.mode === 'percent'
+      ? -Math.round(
+          ((typeof preRabattTotal === 'number' ? preRabattTotal : 0) *
+            Number(rabattTillagg.percent ?? 0)) /
+            100
+        )
+      : -Math.abs(Number(rabattTillagg.inputValue ?? 0))
+
+const rabattTillaggLine =
+  rabattTillagg == null
+    ? null
+    : {
+        id: 'rabatt-tillagg',
+        label: 'Rabatt',
+        amount: rabattAmount,
+        mode: rabattTillagg.mode,
+        percent: rabattTillagg.percent,
+      }
+
 const kostnadTotal = sumKostnadLines(
-  fargTillaggLine ? [...kostnadLines, fargTillaggLine] : kostnadLines
+  rabattTillaggLine ? [...preRabattLines, rabattTillaggLine] : preRabattLines
 )
 
 useEffect(() => {
@@ -289,11 +338,26 @@ function applyFargTillagg(option) {
 }
 
 function handleAddFargTillagg(option) {
+  if (option.id === 'ovrig') {
+    setOvrigTillagg({ amount: Number(option.amount ?? 0) })
+    return
+  }
+  if (option.id === 'rabatt') {
+    setRabattTillagg({
+      mode: 'kr',
+      inputValue: Math.abs(Number(option.amount ?? 0)),
+      percent: 0,
+    })
+    return
+  }
+
+  if (!isFargTillaggOption(option)) return
+
   applyFargTillagg(option)
   if (option.id === 'relief') {
     setValue('forsankt', 'Förhöjd')
   } else {
-    // Bladguld / guldfärg / silverfärg / kopparfärg → Försänkt
+    // Bladguld / bladsilver / bladkoppar / guldfärg / silverfärg / kopparfärg → Försänkt
     setValue('forsankt', 'Försänkt')
   }
 }
@@ -314,9 +378,52 @@ function handleFargTillaggAmountChange(amount) {
   setFargTillagg((prev) => (prev ? { ...prev, amount } : prev))
 }
 
+function handleRemoveOvrigTillagg() {
+  setOvrigTillagg(null)
+}
+
+function handleOvrigTillaggAmountChange(amount) {
+  setOvrigTillagg((prev) => (prev ? { ...prev, amount: amount ?? 0 } : prev))
+}
+
+function handleRemoveRabattTillagg() {
+  setRabattTillagg(null)
+}
+
+function handleRabattTillaggAmountChange(value) {
+  setRabattTillagg((prev) => {
+    if (!prev) return prev
+    const nextValue = value == null ? 0 : Math.abs(Number(value))
+    if (prev.mode === 'percent') {
+      return { ...prev, percent: nextValue }
+    }
+    return { ...prev, inputValue: nextValue }
+  })
+}
+
+function handleRabattModeChange(mode) {
+  setRabattTillagg((prev) => {
+    if (!prev) return prev
+    if (mode === 'percent') {
+      return {
+        ...prev,
+        mode: 'percent',
+        percent: prev.percent ?? 0,
+      }
+    }
+    return {
+      ...prev,
+      mode: 'kr',
+      inputValue: prev.inputValue ?? 0,
+    }
+  })
+}
+
 function resetKostnadState() {
   setAmountOverrides({})
   setFargTillagg(null)
+  setOvrigTillagg(null)
+  setRabattTillagg(null)
   depKeysRef.current = {}
 }
 
@@ -324,8 +431,8 @@ function resetKostnadState() {
 useEffect(() => {
   if (forsanktValue === 'Förhöjd') {
     if (fargTillagg?.optionId === 'relief') return
-    if (!RELIEF_OPTION) return
-    applyFargTillagg(RELIEF_OPTION)
+    if (!reliefOption) return
+    applyFargTillagg(reliefOption)
     return
   }
   if (fargTillagg?.optionId === 'relief') {
@@ -418,10 +525,13 @@ const onSubmit = async (data) => {
       platsForFlerNamn: data.platsForFlerNamn,
       minnesord: data.minnesord,
       pris: data.pris,
+      artiklar: kostnadLinesToArtiklar(
+        rabattTillaggLine ? [...preRabattLines, rabattTillaggLine] : preRabattLines
+      ),
       tillbehor: data.tillbehor,
       sockel: data.sockel ? 1 : 0,
       staende: data.staende,
-      status: 'Nytt',
+      ...initialApprovalState(data.arendeTyp),
       gravrattsinnehavare: data.gravrattsinnehavare,
       ursprung: data.ursprung,
       nuvarandeText: data.nuvarandeText,
@@ -430,17 +540,6 @@ const onSubmit = async (data) => {
     laggTillTrace("har skapat ärendet", newArende)
     if (data.kommentar) {
       await addNewKommentar(data.kommentar, newArende.id)
-    }
-
-    const kostnadCommentLines = fargTillaggLine
-      ? [...kostnadLines, fargTillaggLine]
-      : kostnadLines
-    const kostnadComment = formatKostnadspecifikationComment(
-      kostnadCommentLines,
-      kostnadTotal
-    )
-    if (kostnadComment) {
-      await addNewKommentar(kostnadComment, newArende.id)
     }
 
     if (needsStenObjekt && useExistingSten && selectedLagerSten) {
@@ -729,9 +828,16 @@ const onSubmit = async (data) => {
         }
         onAmountChange={handleKostnadAmountChange}
         fargTillagg={fargTillaggLine}
+        ovrigTillagg={ovrigTillaggLine}
+        rabattTillagg={rabattTillaggLine}
         onAddFargTillagg={handleAddFargTillagg}
         onRemoveFargTillagg={handleRemoveFargTillagg}
         onFargTillaggAmountChange={handleFargTillaggAmountChange}
+        onRemoveOvrigTillagg={handleRemoveOvrigTillagg}
+        onOvrigTillaggAmountChange={handleOvrigTillaggAmountChange}
+        onRemoveRabattTillagg={handleRemoveRabattTillagg}
+        onRabattTillaggAmountChange={handleRabattTillaggAmountChange}
+        onRabattModeChange={handleRabattModeChange}
       />
     </div>
   )

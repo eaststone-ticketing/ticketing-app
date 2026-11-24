@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import './StenarSearchMenu.css'
 
 export const STEN_STATUS_OPTIONS = [
@@ -26,13 +26,22 @@ export default function StenarSearchMenu({
   onRegistrera,
   onDownloadCsv,
   onImportCsv,
+  onChangeStatus,
+  selectedCount = 0,
 }) {
   const fileInputRef = useRef(null)
+  const [massAction, setMassAction] = useState("")
+  const [massStatus, setMassStatus] = useState("")
 
   function handleFileChange(e) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (file) onImportCsv(file)
+  }
+
+  function handleMassActionChange(e) {
+    setMassAction(e.target.value)
+    setMassStatus("")
   }
 
   return (
@@ -109,13 +118,6 @@ export default function StenarSearchMenu({
         <button
           type="button"
           className="stenar-csv-button"
-          onClick={onDownloadCsv}
-        >
-          Ladda ner CSV
-        </button>
-        <button
-          type="button"
-          className="stenar-csv-button"
           onClick={() => fileInputRef.current?.click()}
         >
           Importera CSV
@@ -127,6 +129,52 @@ export default function StenarSearchMenu({
           className="stenar-csv-file-input"
           onChange={handleFileChange}
         />
+        <div className="stenar-mass-action">
+          <select
+            id="stenar-mass-action"
+            aria-label="Välj handling"
+            value={massAction}
+            onChange={handleMassActionChange}
+          >
+            <option value="">Välj handling</option>
+            <option value="download-csv">Ladda ner CSV</option>
+            <option value="change-status">Ändra status till</option>
+          </select>
+          {massAction === "download-csv" && (
+            <button
+              type="button"
+              className="stenar-csv-button"
+              onClick={onDownloadCsv}
+              disabled={selectedCount === 0}
+            >
+              Ladda ner CSV
+            </button>
+          )}
+          {massAction === "change-status" && (
+            <>
+              <select
+                aria-label="Ny status"
+                value={massStatus}
+                onChange={(e) => setMassStatus(e.target.value)}
+              >
+                <option value="">Välj status</option>
+                {STEN_STATUS_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="stenar-csv-button"
+                onClick={() => onChangeStatus?.(massStatus)}
+                disabled={selectedCount === 0 || !massStatus}
+              >
+                Ändra
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </form>
   )

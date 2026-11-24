@@ -14,7 +14,6 @@ export const STENAR_CSV_HEADERS = [
   'Lykthål',
   'Special blasting',
   'Priskategori',
-  'Pris (kr)',
   'Ärende-ID',
   'Avlidens namn',
 ]

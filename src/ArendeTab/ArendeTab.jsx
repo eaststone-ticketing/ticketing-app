@@ -1,69 +1,45 @@
 import { useState, useEffect } from 'react'
-import { getArenden, updateArende, getGodkannanden, removeGodkannande, getTraces } from "../api.js";
+import { getArenden, updateArende, getTraces } from "../api.js";
 import ArendeCard from './ArendeCard.jsx'
+import ArendeListRow, { ArendeListHeader } from './ArendeListRow.jsx'
 import NewArendeForm from './NewArendeForm/NewArendeForm.jsx'
 import findTicketAmount from './findTicketAmount.jsx'
 import ArendeCardFilterPanel from './ArendeCardFilterPanel.jsx'
+import ArendeTabSearchMenu from './ArendeTabSearchMenu/ArendeTabSearchMenu.jsx'
 import laggTillTrace from '../laggTillTrace.jsx'
+import recordAnsokan from '../recordAnsokan.js'
 import {ArendeDetailViewMain} from './ArendeDetailViews/ArendeDetailViewMain.jsx'
 import matchesTypeSearch from '../Helpers/matchesTypeSearch.js'
-import archiveLinkedStones from '../Helpers/archiveLinkedStones.js'
+import { initialApprovalState } from '../Helpers/approvalFields.js'
 
 import '../App.css'
 
-// Every free-text attribute of an ärende that can be searched in "Avancerad sökning".
-const AVANCERAD_SOKNING_FIELDS = [
-  ["Adress", "adress"],
-  ["Ort", "ort"],
-  ["Postnummer", "postnummer"],
-  ["Gravrättsinnehavare", "gravrattsinnehavare"],
-  ["Kvarter", "kvarter"],
-  ["Gravnummer", "gravnummer"],
-  ["Modell", "modell"],
-  ["Material", "material"],
-  ["Symboler", "symboler"],
-  ["Beteckning", "beteckning"],
-  ["Framsida", "framsida"],
-  ["Kanter", "kanter"],
-  ["Sockelbearbetning", "sockelBearbetning"],
-  ["Typsnitt", "typsnitt"],
-  ["Försänkt/Förhöjd", "forsankt"],
-  ["Färg", "farg"],
-  ["Dekor", "dekor"],
-  ["Plats för fler namn", "platsForFlerNamn"],
-  ["Minnesord", "minnesord"],
-  ["Pris", "pris"],
-  ["Tillbehör", "tillbehor"],
-  ["Nuvarande text", "nuvarandeText"],
-  ["Status", "status"],
-  ["Datum skapad", "datum"],
-  ["Födelsedatum", "fodelseDatum"],
-  ["Dödsdatum", "dodsDatum"]
-];
+const DEFAULT_SEARCH = {
+  avlidenNamn: "",
+  email: "",
+  tel: "",
+  kyrkogard: "",
+  bestallare: "",
+  typeToSearch: "",
+  ursprungToSearch: "",
+  skapareToSearch: "",
+  onlyEjFakturerade: false,
+  onlyEjSignerade: false,
+  avanceradSokning: false,
+  avanceradSokningValues: {},
+  includeLegacy: false,
+};
 
 export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, setKunder, activeArende, setActiveArende, setActiveTab, setKyrkogardToOpen}) {
 
-  const [avlidenNamn, setAvlidenNamn] = useState("");
-  const [email, setEmail] = useState("");
-  const [tel, setTel] = useState("");
-  const [kyrkogard, setKyrkogard] = useState("");
+  const [search, setSearch] = useState(DEFAULT_SEARCH);
   const [sorting, setSorting] = useState("default");
-  const [bestallare, setBestallare] = useState("");
-  const [avanceradSokning, setAvanceradSokning] = useState(false);
-  const [avanceradSokningValues, setAvanceradSokningValues] = useState({});
-  const [activeArendeKyrkogard, setActiveArendeKyrkogard] = useState(false);
   const [arendeSliceLimit, setArendeSliceLimit] = useState(50)
   const [showMore, setShowMore] = useState(null);
   const [filter, setFilter] = useState([]);
-  const [typeToSearch, setTypeToSearch] = useState("");
-  const [ursprungToSearch, setUrsprungToSearch] = useState("");
-  const [skapareToSearch, setSkapareToSearch] = useState("");
   const [arendeVisibilityFilter, setArendeVisibilityFilter] = useState("alla");
-  const [onlyEjFakturerade, setOnlyEjFakturerade] = useState(false);
-  const [onlyEjSignerade, setOnlyEjSignerade] = useState(false);
+  const [listMode, setListMode] = useState(false);
   const [skapareByArendeId, setSkapareByArendeId] = useState({});
-  const [includeLegacy, setIncludeLegacy] = useState(false)
-  const skapareOptions = ["Ali", "Felix", "Ian", "Ieva", "Lotten", "Martin"];
   const loggedInUserName = JSON.parse(localStorage.getItem("user"))?.userName ?? "";
 
   useEffect(() => {
@@ -104,18 +80,23 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
     const isConfirmed = window.confirm(`Är du säker på att du vill ${arende.status !== "raderad" ? "radera" :"återställa"}?`);
     if (isConfirmed) {
       if (arende.status === "raderad"){
-        const data = {...arende, status: "Nytt"}
+        const data = {
+          ...arende,
+          ...initialApprovalState(arende.arendeTyp),
+          deleted_at: null,
+        }
         await updateArende(arende.id, data)
         const arenden = await getArenden();
         setArenden(arenden);
         laggTillTrace("återställde ärendet", arende)
       }else {
-        const data = {...arende, status: "raderad", deleted_at: new Date().toISOString()}
-        const godkannanden = await getGodkannanden();
-        const toDelete = godkannanden.filter(g => g.arendeID === arende.id);
-
-        // WAIT for all delete requests to finish
-        await Promise.all(toDelete.map(g => removeGodkannande(g.id)));
+        const data = {
+          ...arende,
+          status: "raderad",
+          deleted_at: new Date().toISOString(),
+          godkannanden: [],
+          ansokan: [],
+        }
         await updateArende(arende.id, data)
         const arenden = await getArenden();
         setArenden(arenden);
@@ -124,55 +105,33 @@ export default function ArendeTab({arenden, setArenden, kyrkogardar, kunder, set
     }
   }
 
-async function updateArendeStatus(newStatus, arende){
-
-  //Update the status
-  const updatedArende = {...arende, status: newStatus};
-  await updateArende(arende.id, updatedArende)
-
-  if (newStatus === "Stängt") {
-    try {
-      await archiveLinkedStones(arende.id);
-    } catch (err) {
-      console.error("Kunde inte arkivera kopplade stenar:", err);
-    }
-  }
-
-  // Add trace
-  await laggTillTrace(`ändrade status till ${newStatus}`, arende)
-
-  //Set the live version to correspond to the database
-  const arenden = await getArenden();
-  setArenden(arenden)
-}
-
   const result = arenden.filter((arende) => {
-    const matchName = avlidenNamn
-      ? (arende.avlidenNamn ?? "").toLowerCase().includes(avlidenNamn.toLowerCase())
+    const matchName = search.avlidenNamn
+      ? (arende.avlidenNamn ?? "").toLowerCase().includes(search.avlidenNamn.toLowerCase())
       : true;
-    const matchEmail = email
-      ? (arende.email ?? "").toLowerCase().includes(email.toLowerCase())
+    const matchEmail = search.email
+      ? (arende.email ?? "").toLowerCase().includes(search.email.toLowerCase())
       : true;
-    const matchTel = tel ? (arende.tel ?? "").includes(tel) : true;
-    const matchKyrkogard = kyrkogard
-      ? (arende.kyrkogard ?? "").toLowerCase().includes(kyrkogard.toLowerCase())
+    const matchTel = search.tel ? (arende.tel ?? "").includes(search.tel) : true;
+    const matchKyrkogard = search.kyrkogard
+      ? (arende.kyrkogard ?? "").toLowerCase().includes(search.kyrkogard.toLowerCase())
       : true;
-    const matchBestallare = bestallare
-      ? (arende.bestallare ?? "").toLowerCase().includes(bestallare.toLowerCase())
+    const matchBestallare = search.bestallare
+      ? (arende.bestallare ?? "").toLowerCase().includes(search.bestallare.toLowerCase())
       : true;
-    const matchSkapare = skapareToSearch
-      ? (skapareByArendeId[arende.id] ?? "").toLowerCase().includes(skapareToSearch.toLowerCase())
+    const matchSkapare = search.skapareToSearch
+      ? (skapareByArendeId[arende.id] ?? "").toLowerCase().includes(search.skapareToSearch.toLowerCase())
       : true;
     const matchMinaArenden = arendeVisibilityFilter === "mina"
       ? (arende.assignedTo ?? "").toLowerCase() === loggedInUserName.toLowerCase()
       : true;
-    const matchEjFakturerade = onlyEjFakturerade
+    const matchEjFakturerade = search.onlyEjFakturerade
       ? arende.fakturerad !== 1
       : true;
-    const matchEjSignerade = onlyEjSignerade
+    const matchEjSignerade = search.onlyEjSignerade
       ? arende.signerad !== 1
       : true;
-    const matchAvancerad = !avanceradSokning || Object.entries(avanceradSokningValues).every(([key, value]) =>
+    const matchAvancerad = !search.avanceradSokning || Object.entries(search.avanceradSokningValues).every(([key, value]) =>
       !value || String(arende[key] ?? "").toLowerCase().includes(value.toLowerCase())
     );
 
@@ -236,170 +195,38 @@ async function updateArendeStatus(newStatus, arende){
           <NewArendeForm arenden = {arenden} setArenden = {setArenden} kyrkogardar = {kyrkogardar} kunder = {kunder} setKunder = {setKunder} setSkapaArende = {setSkapaArende} skapaArende = {skapaArende}/>
           </div>
           ) : (<>
-          <div className = "arende-search-column">
-          <div className = "arende-card-filter-panel">
-            <button onClick = {() => setSkapaArende(!skapaArende)} className = "arende-card-filter-panel-create-button create-button">+ Skapa nytt ärende</button>
-          </div>
-          <form className="searchbar-arende">
-            <div className = "header-and-dropdown">
-            <h3>Sök ärende</h3>
-            <select value={typeToSearch} onChange = {(e) => setTypeToSearch(e.target.value)}>
-              <option value = "">
-                Välj typ av ärende
-              </option>
-              <option>
-                Ny sten
-              </option>
-              <option>
-                Nyinskription
-              </option>
-              <option>
-                Stabilisering
-              </option>
-              <option>
-                Rengöring
-              </option>
-              <option>
-                Inspektion
-              </option>
-              <option>
-                Ommålning
-              </option>
-              <option>
-                Omslipning
-              </option>
-              <option>
-                Övrigt
-              </option>
-              <option>
-                Högalid
-              </option>
-              <option>
-                Lilla Dalen
-              </option>
-            </select>
-            <select value={ursprungToSearch} onChange = {(e) => setUrsprungToSearch(e.target.value)}>
-              <option value = "">Välj ursprung</option>
-              <option>Eaststone</option>
-              <option>Stockholms Gravstenar</option>
-            </select>
-
-            </div>
-            <div className = "sok-arende-filter-toggles">
-              <button
-                type = "button"
-                className = {onlyEjFakturerade ? "sok-arende-filter-toggle active" : "sok-arende-filter-toggle"}
-                onClick = {() => setOnlyEjFakturerade(!onlyEjFakturerade)}
-              >
-                Ej fakturerade
-              </button>
-              <button
-                type = "button"
-                className = {onlyEjSignerade ? "sok-arende-filter-toggle active" : "sok-arende-filter-toggle"}
-                onClick = {() => setOnlyEjSignerade(!onlyEjSignerade)}
-              >
-                Ej signerade
-              </button>
-            </div>
-            <div className = "input-field-searchbar-arende">
-              <label>Namn på avliden</label>
-              <input
-                type="text"
-                name="avlidenNamn"
-                value={avlidenNamn}
-                onChange={(e) => setAvlidenNamn(e.target.value)}
-              />
-            </div>
-                        <div className = "input-field-searchbar-arende">
-              <label>Beställare</label>
-              <input
-              type = "text"
-              name = "bestallare"
-              value = {bestallare}
-              onChange = {(e) => setBestallare(e.target.value)}
-              />
-            </div>
-            <div className = "input-field-searchbar-arende">
-              <label>Email</label>
-              <input
-                type="text"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className = "input-field-searchbar-arende">
-              <label>Telefonnummer</label>
-              <input
-                type="text"
-                name="tel"
-                value={tel}
-                onChange={(e) => setTel(e.target.value)}
-              />
-            </div>
-            <div className = "input-field-searchbar-arende">
-              <label>Kyrkogård</label>
-              <input
-                type="text"
-                name="kyrkogard"
-                value={kyrkogard}
-                onChange={(e) => setKyrkogard(e.target.value)}
-              />
-            </div>
-            <div className = "input-field-searchbar-arende skapare-field">
-              <select
-                className = "skapare-dropdown"
-                name = "skapare"
-                value = {skapareToSearch}
-                onChange = {(e) => setSkapareToSearch(e.target.value)}
-              >
-                <option value = "">Välj skapare</option>
-                {skapareOptions.map((skapare) => (
-                  <option key = {skapare} value = {skapare}>
-                    {skapare}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              type = "button"
-              className = "avancerad-sokning-toggle"
-              onClick = {() => setAvanceradSokning(!avanceradSokning)}
-            >
-              {avanceradSokning ? "Dölj avancerad sökning" : "Avancerad sökning"}
-            </button>
-            {avanceradSokning && <div className = "avancerad-sokning-grid">
-              {AVANCERAD_SOKNING_FIELDS.map(([label, key]) => (
-                <div key = {key} className = "avancerad-sokning-entry">
-                  <label>{label}</label>
-                  <input
-                    type = "text"
-                    value = {avanceradSokningValues[key] ?? ""}
-                    onChange = {(e) => setAvanceradSokningValues({...avanceradSokningValues, [key]: e.target.value})}
-                  />
-                </div>
-              ))}
-            </div>}
-          </form>
-          <div><button onClick = {() => setFilter(["raderad"])}>Visa raderade ärenden</button> <button onClick = {() => setIncludeLegacy(!includeLegacy)}>{!includeLegacy ? "Inkludera LEGACY" : "Ignorera LEGACY"}</button></div>
-          </div>
+          <ArendeTabSearchMenu
+            search={search}
+            setSearch={setSearch}
+            skapaArende={skapaArende}
+            setSkapaArende={setSkapaArende}
+            setFilter={setFilter}
+          />
           <div className = "arende-results-column">
-          <ArendeCardFilterPanel typeToSearch = {typeToSearch} ursprungToSearch = {ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter} includeLegacy = {includeLegacy}/>
+          <ArendeCardFilterPanel typeToSearch = {search.typeToSearch} ursprungToSearch = {search.ursprungToSearch} resultSorted = {resultSorted} setFilter = {setFilter} findTicketAmount = {findTicketAmount} setSorting = {setSorting} sorting = {sorting} arendeVisibilityFilter = {arendeVisibilityFilter} setArendeVisibilityFilter = {setArendeVisibilityFilter} includeLegacy = {search.includeLegacy} listMode = {listMode} setListMode = {setListMode}/>
           <div className = "scrollable-box">
-          {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && typeToSearch === "" && ursprungToSearch === ""
-          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && matchesTypeSearch(k.arendeTyp, typeToSearch) && (ursprungToSearch === k.ursprung || ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).filter(k => k.status !== "LEGACY" || includeLegacy).filter(k => !onlyEjFakturerade || k.fakturerad !== 1).filter(k => !onlyEjSignerade || k.signerad !== 1).slice(0,arendeSliceLimit).map((arende) => (
-            <ArendeCard
-              key={arende.id}
-              arende={arende}
-              showMore={showMore}
-              setShowMore={setShowMore}
-              setActiveArende={setActiveArende}
-              setActiveArendeKyrkogard={setActiveArendeKyrkogard}
-              kyrkogardar={kyrkogardar}
-              setArenden={setArenden}
-              updateArendeStatus={updateArendeStatus}
-              handleDeleteButton={handleDeleteButton}
-            />
+          {listMode && <ArendeListHeader />}
+          {resultSorted.filter(k => filter.length === 0 && k.status !== "raderad" && search.typeToSearch === "" && search.ursprungToSearch === ""
+          || (k.status !== "raderad" || filter.some(f => f === "raderad")) && matchesTypeSearch(k.arendeTyp, search.typeToSearch) && (search.ursprungToSearch === k.ursprung || search.ursprungToSearch === "") && (filter.some(f => f.toLowerCase() === k.status.toLowerCase()) || filter.length === 0)).filter(k => k.status !== "LEGACY" || search.includeLegacy).filter(k => !search.onlyEjFakturerade || k.fakturerad !== 1).filter(k => !search.onlyEjSignerade || k.signerad !== 1).slice(0,arendeSliceLimit).map((arende) => (
+            listMode ? (
+              <ArendeListRow
+                key={arende.id}
+                arende={arende}
+                setActiveArende={setActiveArende}
+              />
+            ) : (
+              <ArendeCard
+                key={arende.id}
+                arende={arende}
+                showMore={showMore}
+                setShowMore={setShowMore}
+                setActiveArende={setActiveArende}
+                kyrkogardar={kyrkogardar}
+                setArenden={setArenden}
+                onRecordAnsokan={(till, arende) => recordAnsokan(till, arende, setArenden)}
+                handleDeleteButton={handleDeleteButton}
+              />
+            )
           ))}
           <button className = "load-more-button" onClick = {() => setArendeSliceLimit(arendeSliceLimit+50)}>↓ Ladda fler ärenden ↓</button>
           </div>  

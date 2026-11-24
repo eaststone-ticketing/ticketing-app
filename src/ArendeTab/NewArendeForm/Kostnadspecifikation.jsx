@@ -1,16 +1,44 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './Kostnadspecifikation.css'
-import { FARG_TILLAGG_OPTIONS, sumKostnadLines } from '../../Helpers/buildKostnadLines.js'
+import {
+  getFargTillaggOptions,
+  sumKostnadLines,
+} from '../../Helpers/buildKostnadLines.js'
+import { usePriceConfig } from '../../Helpers/PriceConfigContext.jsx'
 
-function AmountInput({ value, onChange, missing }) {
+function AmountInput({ value, onChange, missing, prefix = null, suffix = null }) {
   if (missing && (value == null || value === '')) {
     return (
+      <span className="kostnadspecifikation-amount-wrap">
+        {prefix && <span className="kostnadspecifikation-amount-prefix">{prefix}</span>}
+        <input
+          type="number"
+          className="kostnadspecifikation-amount-input kostnadspecifikation-amount-missing"
+          placeholder="Pris saknas."
+          value=""
+          onChange={(e) => {
+            const raw = e.target.value
+            if (raw === '') {
+              onChange(null)
+              return
+            }
+            const n = Number(raw)
+            if (Number.isFinite(n)) onChange(n)
+          }}
+        />
+        {suffix && <span className="kostnadspecifikation-amount-suffix">{suffix}</span>}
+      </span>
+    )
+  }
+
+  return (
+    <span className="kostnadspecifikation-amount-wrap">
+      {prefix && <span className="kostnadspecifikation-amount-prefix">{prefix}</span>}
       <input
         type="number"
-        className="kostnadspecifikation-amount-input kostnadspecifikation-amount-missing"
-        placeholder="Pris saknas."
-        value=""
+        className="kostnadspecifikation-amount-input"
+        value={value ?? ''}
         onChange={(e) => {
           const raw = e.target.value
           if (raw === '') {
@@ -21,24 +49,8 @@ function AmountInput({ value, onChange, missing }) {
           if (Number.isFinite(n)) onChange(n)
         }}
       />
-    )
-  }
-
-  return (
-    <input
-      type="number"
-      className="kostnadspecifikation-amount-input"
-      value={value ?? ''}
-      onChange={(e) => {
-        const raw = e.target.value
-        if (raw === '') {
-          onChange(null)
-          return
-        }
-        const n = Number(raw)
-        if (Number.isFinite(n)) onChange(n)
-      }}
-    />
+      {suffix && <span className="kostnadspecifikation-amount-suffix">{suffix}</span>}
+    </span>
   )
 }
 
@@ -67,24 +79,61 @@ function LineAmount({ line, onAmountChange, editable }) {
   )
 }
 
+function formatMenuPrice(opt) {
+  if (opt.kind === 'rabatt') {
+    return `−${Number(opt.amount ?? 0).toLocaleString('sv-SE')} kr`
+  }
+  return `${Number(opt.amount ?? 0).toLocaleString('sv-SE')} kr`
+}
+
 export default function Kostnadspecifikation({
   lines = [],
   emptyMessage = 'Välj ärendetyp för att se kostnader.',
   onAmountChange,
   fargTillagg = null,
+  ovrigTillagg = null,
+  rabattTillagg = null,
   onAddFargTillagg,
   onRemoveFargTillagg,
   onFargTillaggAmountChange,
+  onRemoveOvrigTillagg,
+  onOvrigTillaggAmountChange,
+  onRemoveRabattTillagg,
+  onRabattTillaggAmountChange,
+  onRabattModeChange,
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuPos, setMenuPos] = useState(null)
   const addButtonRef = useRef(null)
   const menuRef = useRef(null)
-  const displayLines = fargTillagg ? [...lines, fargTillagg] : lines
+  const { priceConfig } = usePriceConfig()
+
+  const extraLines = [
+    fargTillagg,
+    ovrigTillagg,
+    rabattTillagg
+      ? {
+          ...rabattTillagg,
+          // Registered amount is negative; display value stays positive.
+          displayAmount:
+            rabattTillagg.mode === 'percent'
+              ? rabattTillagg.percent
+              : Math.abs(Number(rabattTillagg.amount ?? 0)),
+        }
+      : null,
+  ].filter(Boolean)
+
+  const displayLines = [...lines, ...extraLines]
   const total = sumKostnadLines(displayLines)
   const hasLines = displayLines.length > 0
-  const availableTillagg = FARG_TILLAGG_OPTIONS.filter(
-    (opt) => opt.id !== fargTillagg?.optionId
+
+  const occupiedIds = new Set(
+    [fargTillagg?.optionId, ovrigTillagg ? 'ovrig' : null, rabattTillagg ? 'rabatt' : null].filter(
+      Boolean
+    )
+  )
+  const availableTillagg = getFargTillaggOptions(priceConfig).filter(
+    (opt) => !occupiedIds.has(opt.id)
   )
 
   useLayoutEffect(() => {
@@ -204,6 +253,81 @@ export default function Kostnadspecifikation({
                 </div>
               </li>
             )}
+
+            {ovrigTillagg && (
+              <li className="kostnadspecifikation-item">
+                <div className="kostnadspecifikation-row">
+                  <span className="kostnadspecifikation-label">
+                    Övrigt
+                    <button
+                      type="button"
+                      className="kostnadspecifikation-remove"
+                      onClick={onRemoveOvrigTillagg}
+                      aria-label="Ta bort Övrigt"
+                    >
+                      ×
+                    </button>
+                  </span>
+                  <AmountInput
+                    value={ovrigTillagg.amount}
+                    onChange={onOvrigTillaggAmountChange}
+                  />
+                </div>
+              </li>
+            )}
+
+            {rabattTillagg && (
+              <li className="kostnadspecifikation-item">
+                <div className="kostnadspecifikation-row">
+                  <span className="kostnadspecifikation-label">
+                    Rabatt
+                    <button
+                      type="button"
+                      className={`kostnadspecifikation-mode-toggle ${
+                        rabattTillagg.mode === 'percent' ? 'active' : ''
+                      }`}
+                      onClick={() =>
+                        onRabattModeChange(
+                          rabattTillagg.mode === 'percent' ? 'kr' : 'percent'
+                        )
+                      }
+                      aria-label="Växla mellan kronor och procent"
+                      title={
+                        rabattTillagg.mode === 'percent'
+                          ? 'Byt till kronor'
+                          : 'Byt till procent'
+                      }
+                    >
+                      %
+                    </button>
+                    <button
+                      type="button"
+                      className="kostnadspecifikation-remove"
+                      onClick={onRemoveRabattTillagg}
+                      aria-label="Ta bort Rabatt"
+                    >
+                      ×
+                    </button>
+                  </span>
+                  <AmountInput
+                    prefix="−"
+                    suffix={rabattTillagg.mode === 'percent' ? '%' : null}
+                    value={
+                      rabattTillagg.mode === 'percent'
+                        ? rabattTillagg.percent
+                        : Math.abs(Number(rabattTillagg.amount ?? 0))
+                    }
+                    onChange={onRabattTillaggAmountChange}
+                  />
+                </div>
+                {rabattTillagg.mode === 'percent' &&
+                  typeof rabattTillagg.amount === 'number' && (
+                    <div className="kostnadspecifikation-rabatt-result">
+                      = {rabattTillagg.amount.toLocaleString('sv-SE')} kr
+                    </div>
+                  )}
+              </li>
+            )}
           </ul>
         )}
       </div>
@@ -248,7 +372,7 @@ export default function Kostnadspecifikation({
                   >
                     {opt.label}
                     <span className="kostnadspecifikation-add-menu-price">
-                      {opt.amount.toLocaleString('sv-SE')} kr
+                      {formatMenuPrice(opt)}
                     </span>
                   </button>
                 </li>

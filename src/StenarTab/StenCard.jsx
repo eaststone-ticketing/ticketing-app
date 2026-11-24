@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io'
 import { FaRegEdit } from 'react-icons/fa'
-import calculateStonePrice from '../Helpers/calculateStonePrice.js'
 import { mmToCm } from '../Helpers/stoneUnits.js'
 import { removeStenObjekt } from '../api.js'
 import linkToArende from '../Helpers/linkToArende.js'
@@ -12,12 +11,38 @@ function formatBool(value) {
   return value ? 'Ja' : 'Nej'
 }
 
+export function StenListHeader({ allSelected, someSelected, onToggleAll }) {
+  return (
+    <div className="sten-list-row sten-list-header">
+      <span>Modell</span>
+      <span>Material</span>
+      <span>Mått</span>
+      <span>Ärende</span>
+      <span className="sten-list-row-check-cell">
+        <input
+          type="checkbox"
+          checked={allSelected}
+          ref={(el) => {
+            if (el) el.indeterminate = someSelected && !allSelected
+          }}
+          onChange={onToggleAll}
+          aria-label="Markera alla i sökresultatet"
+        />
+      </span>
+      <span className="sten-list-row-actions-cell" aria-hidden="true" />
+    </div>
+  )
+}
+
 export default function StenCard({
   sten,
   arenden = [],
+  setArenden,
   setStenar,
   setActiveTab,
   setActiveArende,
+  selected = false,
+  onToggleSelected,
 }) {
   const [showMore, setShowMore] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -28,7 +53,11 @@ export default function StenCard({
   const breddCm = mmToCm(attr.bredd)
   const hojdCm = mmToCm(attr.hojd)
   const djupCm = mmToCm(attr.djup)
-  const price = calculateStonePrice(attr)
+  const measurements =
+    breddCm != null && hojdCm != null && djupCm != null
+      ? `${breddCm}x${hojdCm}x${djupCm}cm`
+      : '—'
+  const canLinkTicket = Boolean(arende && setActiveTab && setActiveArende)
 
   const detailRows = [
     { label: 'Status', value: attr.status },
@@ -40,10 +69,6 @@ export default function StenCard({
     { label: 'Lykthål', value: formatBool(attr.lykthal) },
     { label: 'Special blasting', value: formatBool(attr.specialBlasting) },
     { label: 'Priskategori', value: attr.prisKategori },
-    {
-      label: 'Pris',
-      value: price != null ? `${price.toLocaleString('sv-SE')} kr` : '—',
-    },
   ]
 
   async function handleDelete(e) {
@@ -57,12 +82,67 @@ export default function StenCard({
     }
   }
 
+  function handleTicketClick(e) {
+    e.stopPropagation()
+    if (canLinkTicket) {
+      linkToArende(setActiveTab, setActiveArende, arende)
+    }
+  }
+
   return (
-    <div className="sten-card">
-      <div className="sten-card-header-row">
-        <h3>
-          {attr.modell} {attr.material} {breddCm}x{hojdCm}x{djupCm}cm
-        </h3>
+    <div
+      className={[
+        'sten-list-row',
+        showMore ? 'sten-list-row-expanded' : '',
+        selected ? 'sten-list-row-selected' : '',
+      ].filter(Boolean).join(' ')}
+    >
+      <span className="sten-list-row-primary">{attr.modell || '—'}</span>
+      <span>{attr.material || '—'}</span>
+      <span className="sten-list-row-measurements">{measurements}</span>
+      <span
+        className={canLinkTicket ? 'sten-list-row-ticket trace-arende' : 'sten-list-row-ticket'}
+        onClick={handleTicketClick}
+        role={canLinkTicket ? 'link' : undefined}
+        tabIndex={canLinkTicket ? 0 : undefined}
+        onKeyDown={(e) => {
+          if (!canLinkTicket) return
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleTicketClick(e)
+          }
+        }}
+      >
+        <span className="sten-list-row-ticket-label">
+          {arende ? `#${arende.id} ${arende.avlidenNamn || ''}`.trim() : '—'}
+        </span>
+        {arende && (
+          <div className="sten-list-row-ticket-popover" role="tooltip">
+            <div>
+              <span className="sten-list-row-ticket-popover-label">Kyrkogård</span>
+              {arende.kyrkogard || '—'}
+            </div>
+            <div>
+              <span className="sten-list-row-ticket-popover-label">Kvarter</span>
+              {arende.kvarter || '—'}
+            </div>
+            <div>
+              <span className="sten-list-row-ticket-popover-label">Gravnummer</span>
+              {arende.gravnummer || '—'}
+            </div>
+          </div>
+        )}
+      </span>
+      <span className="sten-list-row-check-cell">
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={() => onToggleSelected?.(sten.id)}
+          onClick={(e) => e.stopPropagation()}
+          aria-label={`Markera sten ${sten.id}`}
+        />
+      </span>
+      <div className="sten-list-row-actions-cell">
         {!isArkiverad && (
           <button
             type="button"
@@ -95,19 +175,6 @@ export default function StenCard({
           />
         )}
       </div>
-      <p className="sten-card-subtitle">{attr.status}</p>
-      {arende && (
-        <p
-          className={`sten-card-subtitle${setActiveTab && setActiveArende ? " trace-arende" : ""}`}
-          onClick={() => {
-            if (setActiveTab && setActiveArende) {
-              linkToArende(setActiveTab, setActiveArende, arende)
-            }
-          }}
-        >
-          #{arende.id} {arende.avlidenNamn}
-        </p>
-      )}
       {showMore && (
         <div className="sten-card-details">
           {detailRows.map((row) => (
@@ -121,6 +188,7 @@ export default function StenCard({
         <EditStenForm
           sten={sten}
           setStenar={setStenar}
+          setArenden={setArenden}
           onClose={() => setEditing(false)}
         />
       )}

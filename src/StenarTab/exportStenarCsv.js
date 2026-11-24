@@ -1,4 +1,3 @@
-import calculateStonePrice from '../Helpers/calculateStonePrice.js'
 import { mmToCm } from '../Helpers/stoneUnits.js'
 import { STENAR_CSV_HEADERS } from './stenarCsvHeaders.js'
 
@@ -14,7 +13,6 @@ export function downloadFilteredStenarCsv(filtered, arenden) {
   const rows = filtered.map((sten) => {
     const { attr } = sten
     const arende = arenden.find((a) => Number(a.id) === Number(attr.arendeID))
-    const price = calculateStonePrice(attr)
 
     return [
       sten.id,
@@ -32,7 +30,6 @@ export function downloadFilteredStenarCsv(filtered, arenden) {
       attr.lykthal ? 'Ja' : 'Nej',
       attr.specialBlasting ? 'Ja' : 'Nej',
       attr.prisKategori ?? '',
-      price != null ? price : '',
       attr.arendeID ?? '',
       arende?.avlidenNamn ?? '',
     ].map(escapeCsvValue).join(',')

@@ -1,7 +1,7 @@
 import { STONE_PRICE_CONFIG } from './stonePriceConfig.js'
 
 /** Itemized stone price lines. `attr` dimensions must be in mm. Returns null if price cannot be calculated. */
-export default function buildStonePriceBreakdown(attr) {
+export default function buildStonePriceBreakdown(attr, priceConfig = STONE_PRICE_CONFIG) {
   const {
     GRUNDPRIS,
     PRICE_PER_M3,
@@ -10,7 +10,7 @@ export default function buildStonePriceBreakdown(attr) {
     LYKTHAL,
     LASERPORTRATT,
     SPECIAL_BLASTING,
-  } = STONE_PRICE_CONFIG
+  } = priceConfig
 
   const {
     hojd,
@@ -23,7 +23,7 @@ export default function buildStonePriceBreakdown(attr) {
     specialBlasting,
   } = attr ?? {}
 
-  const rate = PRICE_PER_M3[prisKategori]
+  const rate = PRICE_PER_M3?.[prisKategori]
   if (rate == null) return null
 
   const h = Number(hojd)

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { addArende, addKommentarer } from '../../api.js';
 import laggTillTrace from '../../laggTillTrace.jsx';
+import { withSyncedSmajobbArtiklar } from '../../Helpers/artiklarHelpers.js';
+import { usePriceConfig } from '../../Helpers/PriceConfigContext.jsx';
+import { initialApprovalState } from '../../Helpers/approvalFields.js';
 
 const FOLLOW_UP_TYPES = ["Inspektion", "Stabilisering", "Rengöring", "Nyinskription"];
 
@@ -32,36 +35,41 @@ function appendNameAndDate(innehall) {
   return innehall + `\n\n${timestamp}`;
 }
 
-function buildFollowUp(original, form) {
+function buildFollowUp(original, form, priceConfig) {
   const { id: _id, deleted_at: _deletedAt, ...rest } = original;
   const isNyinskription = form.arendeTyp === "Nyinskription";
 
-  return {
-    ...rest,
-    datum: new Date().toISOString().split('T')[0],
-    arendeTyp: form.arendeTyp,
-    status: "Nytt",
-    signerad: 0,
-    fakturerad: 0,
-    pris: "",
-    avlidenNamn: isNyinskription ? form.tillkommandeNamn.trim() : original.avlidenNamn,
-    nuvarandeText: isNyinskription ? (original.avlidenNamn ?? "") : original.nuvarandeText,
-    fodelseDatum: isNyinskription ? "" : original.fodelseDatum,
-    dodsDatum: isNyinskription ? "" : original.dodsDatum,
-    ...(form.annanKund
-      ? {
-          bestallare: form.bestallare.trim(),
-          adress: form.adress.trim(),
-          email: form.email.trim(),
-          tel: form.tel.trim(),
-          postnummer: "",
-          ort: "",
-        }
-      : {}),
-  };
+  return withSyncedSmajobbArtiklar(
+    {
+      ...rest,
+      datum: new Date().toISOString().split('T')[0],
+      arendeTyp: form.arendeTyp,
+      ...initialApprovalState(form.arendeTyp),
+      signerad: 0,
+      fakturerad: 0,
+      artiklar: {},
+      pris: "",
+      avlidenNamn: isNyinskription ? form.tillkommandeNamn.trim() : original.avlidenNamn,
+      nuvarandeText: isNyinskription ? (original.avlidenNamn ?? "") : original.nuvarandeText,
+      fodelseDatum: isNyinskription ? "" : original.fodelseDatum,
+      dodsDatum: isNyinskription ? "" : original.dodsDatum,
+      ...(form.annanKund
+        ? {
+            bestallare: form.bestallare.trim(),
+            adress: form.adress.trim(),
+            email: form.email.trim(),
+            tel: form.tel.trim(),
+            postnummer: "",
+            ort: "",
+          }
+        : {}),
+    },
+    priceConfig
+  );
 }
 
 export default function FollowUpForm({ original, setArenden, onClose, onCreated }) {
+  const { priceConfig } = usePriceConfig();
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -92,7 +100,7 @@ export default function FollowUpForm({ original, setArenden, onClose, onCreated 
 
     let newArende;
     try {
-      newArende = await addArende(buildFollowUp(original, form));
+      newArende = await addArende(buildFollowUp(original, form, priceConfig));
     } catch (err) {
       console.error("Kunde inte skapa uppföljning:", err);
       setError("Kunde inte skapa uppföljningen.");

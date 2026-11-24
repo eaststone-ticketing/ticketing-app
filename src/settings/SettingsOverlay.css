@@ -1,0 +1,150 @@
+/* Beat .arende-jobb-form { width: min(420px, ...) } */
+.arende-jobb-form.settings-overlay-panel {
+  width: min(1100px, 96vw);
+  max-height: 85vh;
+  padding: 1.2rem 2.75rem;
+  box-sizing: border-box;
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--element-darker);
+  padding-bottom: 0.4rem;
+}
+
+.settings-tab {
+  background: var(--element);
+  border: 1px solid var(--element-darker);
+  border-radius: 8px 8px 0 0;
+  padding: 0.4rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.settings-tab.active {
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.settings-panel h4 {
+  margin: 0.2rem 0 0.35rem;
+  font-size: 0.92rem;
+}
+
+.settings-panel-prices {
+  gap: 0.35rem;
+}
+
+.settings-help {
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.settings-toggle-button {
+  background: none;
+  border: 1px solid var(--element-darker);
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.settings-toggle-button:hover,
+.settings-toggle-button.active {
+  background-color: var(--element-dark);
+}
+
+.settings-price-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 2rem;
+  align-items: start;
+}
+
+.settings-price-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.settings-price-group h4 {
+  margin: 0 0 0.25rem;
+}
+
+@media (max-width: 800px) {
+  .settings-price-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings-price-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Beat .arende-jobb-form label { display:flex; flex-direction:column } */
+.arende-jobb-form.settings-overlay-panel label.settings-field-row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.arende-jobb-form.settings-overlay-panel label.settings-field-row input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--element-darker);
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  height: 1.65rem;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.settings-actions button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--element-darker);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.settings-actions button:hover {
+  background-color: var(--element-dark);
+}
+
+.settings-actions button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.settings-error {
+  margin: 0.35rem 0 0;
+  color: #b42318;
+  font-size: 0.85rem;
+}

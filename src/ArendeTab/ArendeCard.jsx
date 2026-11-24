@@ -6,9 +6,10 @@ import { HiOutlineMail } from "react-icons/hi";
 import { IoPersonOutline } from "react-icons/io5";
 import { BsTelephone } from "react-icons/bs";
 import ArendeCardButtons from '../ArendeCardButtons.jsx'
-import handleStatusChange from '../handleStatusChange.jsx'
+import handleStatusChange from '../handleStatusChange.js'
 import { updateArende } from "../api.js";
 import { ticketColorStyle, typeColor } from '../Helpers/ticketColors.js'
+import { isGodkannandeChecked } from '../Helpers/approvalFields.js'
 import getTypes from '../Helpers/getTypes.js'
 import hasType  from '../Helpers/hasType.js'
 import {
@@ -16,6 +17,8 @@ import {
   canCombineTypes,
   getAvailableTypesToAdd,
 } from '../Helpers/arendeTypeOptions.js'
+import { withSyncedSmajobbArtiklar } from '../Helpers/artiklarHelpers.js'
+import { usePriceConfig } from '../Helpers/PriceConfigContext.jsx'
 import addFinishComment from './addFinishComment.js'
 import laggTillTrace from '../laggTillTrace.jsx'
 import archiveLinkedStones from '../Helpers/archiveLinkedStones.js'
@@ -49,22 +52,25 @@ async function handleFakturerad(arende, setArenden) {
   await updateArende(arende.id, updatedArende);
 }
 
-async function handleAddType(arende, setArenden, typeToAdd) {
+async function handleAddType(arende, setArenden, typeToAdd, priceConfig) {
   const types = getTypes(arende.arendeTyp);
   if (!typeToAdd || types.includes(typeToAdd)) return;
   const requiredType = DEPENDENT_TYPES[typeToAdd];
   if (requiredType && !types.includes(requiredType)) return;
-  const updatedArende = {
-    ...arende,
-    arendeTyp: [...types, typeToAdd].join(", "),
-  };
+  const updatedArende = withSyncedSmajobbArtiklar(
+    {
+      ...arende,
+      arendeTyp: [...types, typeToAdd].join(", "),
+    },
+    priceConfig
+  );
   setArenden(prev =>
     prev.map(a => a.id === arende.id ? updatedArende : a)
   );
   await updateArende(arende.id, updatedArende);
 }
 
-async function handleRemoveType(arende, setArenden, typeToRemove) {
+async function handleRemoveType(arende, setArenden, typeToRemove, priceConfig) {
   const types = getTypes(arende.arendeTyp);
   if (types.length <= 1) return;
   // Dependent types must not be left as the only remaining type.
@@ -75,10 +81,13 @@ async function handleRemoveType(arende, setArenden, typeToRemove) {
     window.alert(`Ta bort beroende typer (t.ex. Omslipning) innan du tar bort ${typeToRemove}.`);
     return;
   }
-  const updatedArende = {
-    ...arende,
-    arendeTyp: types.filter(t => t !== typeToRemove).join(", "),
-  };
+  const updatedArende = withSyncedSmajobbArtiklar(
+    {
+      ...arende,
+      arendeTyp: types.filter(t => t !== typeToRemove).join(", "),
+    },
+    priceConfig
+  );
   setArenden(prev =>
     prev.map(a => a.id === arende.id ? updatedArende : a)
   );
@@ -92,11 +101,12 @@ export default function ArendeCard({
   setActiveArende,
   kyrkogardar,
   setArenden,
-  updateArendeStatus,
+  onRecordAnsokan,
   handleDeleteButton,
 }) {
   const [jobbFormType, setJobbFormType] = useState(null);
   const [jobbForm, setJobbForm] = useState(EMPTY_JOBB_FORM);
+  const { priceConfig } = usePriceConfig();
 
   const currentTypes = getTypes(arende.arendeTyp);
   const ursprungLogo = URSPRUNG_LOGOS[arende.ursprung];
@@ -130,12 +140,15 @@ export default function ArendeCard({
 
     const updatedArende =
       types.length > 1
-        ? {
-            ...arendeSnapshot,
-            arendeTyp: types
-              .filter(type => type !== finishedType)
-              .join(", "),
-          }
+        ? withSyncedSmajobbArtiklar(
+            {
+              ...arendeSnapshot,
+              arendeTyp: types
+                .filter(type => type !== finishedType)
+                .join(", "),
+            },
+            priceConfig
+          )
         : { ...arendeSnapshot, status: "Stängt" };
 
     setArenden(prev =>
@@ -211,7 +224,7 @@ export default function ArendeCard({
               onClick={(e) => {
                 e.stopPropagation();
                 if (window.confirm(`Är du säker på att du vill ta bort taggen "${type}"?`)) {
-                  handleRemoveType(arende, setArenden, type);
+                  handleRemoveType(arende, setArenden, type, priceConfig);
                 }
               }}
             >
@@ -227,7 +240,7 @@ export default function ArendeCard({
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             e.stopPropagation();
-            handleAddType(arende, setArenden, e.target.value);
+            handleAddType(arende, setArenden, e.target.value, priceConfig);
           }}
         >
           <option value="">+</option>
@@ -286,11 +299,11 @@ export default function ArendeCard({
       {(hasType(arende.arendeTyp, "Ny sten") || hasType(arende.arendeTyp, "Nyinskription")) && <>
       <div>
       <label>Kund</label>
-      <input type = "checkbox" checked = {arende.status === "Godkänd av kund" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kund, väntar svar av kyrkogård"} onChange = {() => handleStatusChange("kund", arende, setArenden)}></input>
+      <input type = "checkbox" checked = {isGodkannandeChecked(arende, "kund")} onChange = {() => handleStatusChange("kund", arende, setArenden)}></input>
       </div>
       <div>
       <label>Kyrkogård</label>
-      <input type = "checkbox" checked = {arende.status === "Godkänd av kyrkogård" || arende.status === "Redo" || arende.status === "LEGACY" || arende.status === "Stängt" || arende.status === "Godkänd av kyrkogård, väntar svar av kund"} onChange = {() => handleStatusChange("kyrkogård", arende, setArenden)}></input>
+      <input type = "checkbox" checked = {isGodkannandeChecked(arende, "kyrkogård")} onChange = {() => handleStatusChange("kyrkogård", arende, setArenden)}></input>
       </div>
       {hasType(arende.arendeTyp, "Ny sten") && <div>
       <label>Signerad</label>
@@ -303,7 +316,7 @@ export default function ArendeCard({
       </div>
       </div>
       </div>
-      <ArendeCardButtons arende = {arende} updateArendeStatus = {updateArendeStatus}/>
+      <ArendeCardButtons arende = {arende} onRecordAnsokan = {onRecordAnsokan}/>
       {showMore === arende.id && <div>
       <p><strong>{arende.status}</strong></p>
       <div className = "arende-card-info-entry">

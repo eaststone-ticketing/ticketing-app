@@ -3,50 +3,85 @@ import buildStonePriceBreakdown from './buildStonePriceBreakdown.js'
 import { cmToMm } from './stoneUnits.js'
 import getTypes from './getTypes.js'
 
-const JOB_STANDARD_PRICES = {
-  Nyinskription: STONE_PRICE_CONFIG.NYINSKRIPTION_STANDARD,
-  Rengöring: STONE_PRICE_CONFIG.RENGORING_STANDARD,
-  Ommålning: STONE_PRICE_CONFIG.OMMALNING_STANDARD,
-  Omslipning: STONE_PRICE_CONFIG.OMSLIPNING_STANDARD,
-  Stabilisering: STONE_PRICE_CONFIG.STABILISERING_STANDARD,
-  Inspektion: null,
-  Högalid: null,
-  'Lilla Dalen': null,
-  Övrigt: null,
+function jobStandardPrices(priceConfig) {
+  return {
+    Nyinskription: priceConfig.NYINSKRIPTION_STANDARD,
+    Rengöring: priceConfig.RENGORING_STANDARD,
+    Ommålning: priceConfig.OMMALNING_STANDARD,
+    Omslipning: priceConfig.OMSLIPNING_STANDARD,
+    Stabilisering: priceConfig.STABILISERING_STANDARD,
+    Inspektion: null,
+    Högalid: null,
+    'Lilla Dalen': null,
+    Övrigt: null,
+  }
 }
 
-export const FARG_TILLAGG_OPTIONS = [
-  {
-    id: 'bladguld',
-    label: 'Bladguld',
-    farg: 'Bladguld',
-    amount: STONE_PRICE_CONFIG.BLADGULD_STANDARD,
-  },
-  {
-    id: 'relief',
-    label: 'Relief',
-    farg: 'Relief',
-    amount: STONE_PRICE_CONFIG.RELIEF_STANDARD,
-  },
-  {
-    id: 'guldfarg',
-    label: 'Guldfärg',
-    farg: 'Guldfärg',
-    amount: STONE_PRICE_CONFIG.GULDFARG,
-  },
-  {
-    id: 'silverfarg',
-    label: 'Silverfärg',
-    farg: 'Silverfärg',
-    amount: STONE_PRICE_CONFIG.SILVERFARG,
-  },
-  {
-    id: 'kopparfarg',
-    label: 'Kopparfärg',
-    farg: 'Kopparfärg',
-    amount: STONE_PRICE_CONFIG.KOPPARFARG,
-  },
-]
+export function getFargTillaggOptions(priceConfig = STONE_PRICE_CONFIG) {
+  return [
+    {
+      id: 'bladguld',
+      label: 'Bladguld',
+      farg: 'Bladguld',
+      amount: priceConfig.BLADGULD_STANDARD,
+    },
+    {
+      id: 'bladsilver',
+      label: 'Bladsilver',
+      farg: 'Bladsilver',
+      amount: priceConfig.BLADSILVER_STANDARD,
+    },
+    {
+      id: 'bladkoppar',
+      label: 'Bladkoppar',
+      farg: 'Bladkoppar',
+      amount: priceConfig.BLADKOPPAR_STANDARD,
+    },
+    {
+      id: 'relief',
+      label: 'Relief',
+      farg: 'Relief',
+      amount: priceConfig.RELIEF_STANDARD,
+    },
+    {
+      id: 'guldfarg',
+      label: 'Guldfärg',
+      farg: 'Guldfärg',
+      amount: priceConfig.GULDFARG,
+    },
+    {
+      id: 'silverfarg',
+      label: 'Silverfärg',
+      farg: 'Silverfärg',
+      amount: priceConfig.SILVERFARG,
+    },
+    {
+      id: 'kopparfarg',
+      label: 'Kopparfärg',
+      farg: 'Kopparfärg',
+      amount: priceConfig.KOPPARFARG,
+    },
+    {
+      id: 'ovrig',
+      label: 'Övrigt',
+      amount: priceConfig.OVRIGT ?? 0,
+      kind: 'extra',
+    },
+    {
+      id: 'rabatt',
+      label: 'Rabatt',
+      amount: priceConfig.RABATT ?? 0,
+      kind: 'rabatt',
+    },
+  ]
+}
+
+export function isFargTillaggOption(option) {
+  return Boolean(option?.farg)
+}
+
+/** @deprecated Prefer getFargTillaggOptions(priceConfig) for live prices. */
+export const FARG_TILLAGG_OPTIONS = getFargTillaggOptions(STONE_PRICE_CONFIG)
 
 function stenAttrFromForm(sten) {
   if (!sten) return null
@@ -77,10 +112,11 @@ function stoneDependencyKey(attr) {
   ].join(':')
 }
 
-function pushJobLine(lines, arendeTyp, sten) {
-  if (!Object.prototype.hasOwnProperty.call(JOB_STANDARD_PRICES, arendeTyp)) return
+function pushJobLine(lines, arendeTyp, sten, priceConfig) {
+  const prices = jobStandardPrices(priceConfig)
+  if (!Object.prototype.hasOwnProperty.call(prices, arendeTyp)) return
 
-  const baseAmount = JOB_STANDARD_PRICES[arendeTyp]
+  const baseAmount = prices[arendeTyp]
   const jobDepKey = `job:${arendeTyp}`
   const jobId = `job-${arendeTyp}`
 
@@ -97,7 +133,7 @@ function pushJobLine(lines, arendeTyp, sten) {
       children.push({
         id: `${jobId}-special-blasting`,
         label: 'Special blasting',
-        amount: STONE_PRICE_CONFIG.SPECIAL_BLASTING,
+        amount: priceConfig.SPECIAL_BLASTING,
         dependencyKey: `${jobDepKey}:specialBlasting`,
       })
     }
@@ -131,6 +167,7 @@ export default function buildKostnadLines({
   sockelChecked,
   useExistingSten,
   selectedLagerSten,
+  priceConfig = STONE_PRICE_CONFIG,
 }) {
   const lines = []
   const types = Array.isArray(arendeTyp) ? arendeTyp : getTypes(arendeTyp)
@@ -142,7 +179,7 @@ export default function buildKostnadLines({
       const attr = useExistingSten
         ? selectedLagerSten?.attr
         : stenAttrFromForm(sten)
-      const breakdown = attr ? buildStonePriceBreakdown(attr) : null
+      const breakdown = attr ? buildStonePriceBreakdown(attr, priceConfig) : null
       const depKey = stoneDependencyKey(attr)
 
       if (breakdown) {
@@ -164,14 +201,14 @@ export default function buildKostnadLines({
       continue
     }
 
-    pushJobLine(lines, type, sten)
+    pushJobLine(lines, type, sten, priceConfig)
   }
 
   if (sockelChecked) {
     lines.push({
       id: 'sockel',
       label: 'Sockel',
-      amount: STONE_PRICE_CONFIG.SOCKEL_STANDARD,
+      amount: priceConfig.SOCKEL_STANDARD,
       dependencyKey: 'sockel',
     })
   }

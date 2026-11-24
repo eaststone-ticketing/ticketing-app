@@ -1,4 +1,7 @@
 import './ArendeCardFilterPanel.css'
+import { FaList } from "react-icons/fa";
+import { FiCreditCard } from "react-icons/fi";
+
 
 export default function ArendeCardFilterPanel({
   typeToSearch,
@@ -10,7 +13,9 @@ export default function ArendeCardFilterPanel({
   findTicketAmount,
   arendeVisibilityFilter,
   setArendeVisibilityFilter,
-  includeLegacy
+  includeLegacy,
+  listMode,
+  setListMode,
 }) {
 
   const filters = [
@@ -37,6 +42,15 @@ export default function ArendeCardFilterPanel({
         onClick = {() => setArendeVisibilityFilter("mina")}
       >
         Mina ärenden
+      </button>
+      <button
+        type = "button"
+        className = "arende-list-mode-toggle"
+        onClick = {() => setListMode(!listMode)}
+        aria-label = {listMode ? "Byt till kortvy" : "Byt till listvy"}
+        title = {listMode ? "Kortvy" : "Listvy"}
+      >
+        {listMode ?  <FiCreditCard />: <FaList />}
       </button>
     </div>
     <div className = "filter">

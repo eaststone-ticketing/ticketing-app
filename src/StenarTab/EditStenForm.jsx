@@ -1,7 +1,13 @@
 import { createPortal } from 'react-dom'
 import { useForm } from 'react-hook-form'
-import { updateStenObjekt } from '../api.js'
+import { getArenden, updateArende, updateStenObjekt } from '../api.js'
 import { cmToMm, mmToCm } from '../Helpers/stoneUnits.js'
+import calculateStonePrice from '../Helpers/calculateStonePrice.js'
+import { usePriceConfig } from '../Helpers/PriceConfigContext.jsx'
+import {
+  applyArtiklarToArende,
+  artiklarAfterStoneLinked,
+} from '../Helpers/artiklarHelpers.js'
 import { STEN_STATUS_OPTIONS } from './StenarSearchMenu.jsx'
 import MaterialSelect from './MaterialSelect.jsx'
 
@@ -28,7 +34,8 @@ function buildAttr(data) {
   }
 }
 
-export default function EditStenForm({ sten, setStenar, onClose }) {
+export default function EditStenForm({ sten, setStenar, setArenden, onClose }) {
+  const { priceConfig } = usePriceConfig()
   const { attr } = sten
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -65,6 +72,47 @@ export default function EditStenForm({ sten, setStenar, onClose }) {
       setStenar((prev) =>
         prev.map((s) => (s.id === sten.id ? { ...s, attr: nextAttr } : s))
       )
+
+      const previousArendeID = attr.arendeID == null || attr.arendeID === ''
+        ? null
+        : Number(attr.arendeID)
+      const nextArendeID = nextAttr.arendeID
+      const newlyLinked =
+        nextArendeID != null &&
+        Number(nextArendeID) !== 0 &&
+        Number(nextArendeID) !== Number(previousArendeID)
+
+      if (newlyLinked) {
+        const isSockel =
+          String(nextAttr.modell || '').trim().toLowerCase() === 'sockel'
+        const stonePrice = calculateStonePrice(nextAttr, priceConfig)
+        try {
+          const arenden = await getArenden()
+          const arende = arenden.find(
+            (a) => Number(a.id) === Number(nextArendeID)
+          )
+          if (arende) {
+            const nextArtiklar = artiklarAfterStoneLinked(arende.artiklar, {
+              isSockel,
+              stonePrice,
+              sockelPrice: priceConfig.SOCKEL_STANDARD,
+            })
+            const updated = applyArtiklarToArende(arende, nextArtiklar)
+            if (
+              JSON.stringify(updated.artiklar) !==
+              JSON.stringify(arende.artiklar || {})
+            ) {
+              await updateArende(arende.id, updated)
+              setArenden?.((prev) =>
+                (prev || []).map((a) => (a.id === updated.id ? updated : a))
+              )
+            }
+          }
+        } catch (artiklarErr) {
+          console.error('Kunde inte uppdatera artiklar på ärendet:', artiklarErr)
+        }
+      }
+
       onClose()
     } catch (err) {
       console.error(err)
@@ -84,7 +132,18 @@ export default function EditStenForm({ sten, setStenar, onClose }) {
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h3>Redigera sten</h3>
+        <div className="arende-jobb-form-header">
+          <h3>Redigera sten</h3>
+          <button
+            type="button"
+            className="arende-jobb-form-close"
+            onClick={onClose}
+            aria-label="Stäng"
+            title="Stäng"
+          >
+            ×
+          </button>
+        </div>
 
         <label>
           Material

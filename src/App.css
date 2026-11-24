@@ -47,6 +47,24 @@
   gap: 6px;
 }
 
+.tab-bar-settings {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.settings-cog-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-top-bar-theme] .settings-cog-button {
+  color: #fff;
+}
+
 .theme-toggle {
   margin-right: 0;
 }
@@ -1049,6 +1067,42 @@
 .arende-jobb-form h3{
   margin: 0 0 0.2rem 0;
   font-size: 1rem;
+}
+
+.arende-jobb-form-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.arende-jobb-form-header h3{
+  margin: 0;
+  line-height: 1.2;
+}
+
+.arende-jobb-form-close{
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  margin-top: -1.2vh;
+  background: var(--element);
+  border: none;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.arende-jobb-form-close:hover{
+  background-color: var(--danger);
+  color: white;
 }
 
 .arende-jobb-form label{

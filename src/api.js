@@ -757,6 +757,64 @@ export async function removeStenObjekt(id) {
   return res.json();
 }
 
+export async function getSettings() {
+  const res = await fetch(`${API_URL}/settings`, {
+    headers: { Authorization: `Bearer ${await getToken()}` },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch settings: ${res.status} ${res.statusText}`);
+  }
+
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
+export async function getSetting(key) {
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${await getToken()}` },
+    credentials: "include",
+  });
+
+  if (res.status === 404) return null;
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch setting "${key}": ${res.status} ${res.statusText}`);
+  }
+
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
+export async function updateSetting(key, value) {
+  const res = await fetch(`${API_URL}/settings/${encodeURIComponent(key)}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getToken()}`,
+    },
+    credentials: "include",
+    body: JSON.stringify(value),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to update setting "${key}": ${res.status} ${res.statusText}`);
+  }
+
+  const newToken = res.headers.get("Authorization");
+  if (newToken && newToken.startsWith("Bearer ")) {
+    localStorage.setItem("user", JSON.stringify({ token: newToken.split(" ")[1] }));
+  }
+  return res.json();
+}
+
 export async function downloadBackup() {
     const res = await fetch(`${API_URL}/backup/database`, {
         headers: {"Authorization": `Bearer ${await getToken()}`},

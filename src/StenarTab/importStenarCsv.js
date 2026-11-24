@@ -50,14 +50,14 @@ function parseCsvBool(value) {
 }
 
 function headersMatchExpected(headers) {
-  if (headers.length !== STENAR_CSV_HEADERS.length) return false
-  return STENAR_CSV_HEADERS.every((expected, index) => headers[index] === expected)
+  // Allow older exports that still include a "Pris (kr)" column.
+  return STENAR_CSV_HEADERS.every((expected) => headers.includes(expected))
 }
 
-function rowToStenAttr(row) {
+function rowToStenAttr(row, headers) {
   const get = (header) => {
-    const index = STENAR_CSV_HEADERS.indexOf(header)
-    return row[index] ?? ''
+    const index = headers.indexOf(header)
+    return index >= 0 ? row[index] ?? '' : ''
   }
 
   const arendeRaw = String(get('Ärende-ID')).trim()
@@ -125,7 +125,7 @@ export async function importStenarFromCsv(file, { existingStenar, setStenar, res
   let replacedCount = 0
 
   for (const row of rows) {
-    const attr = rowToStenAttr(row)
+    const attr = rowToStenAttr(row, headers)
     const match = findMatchingStone(workingStenar, attr)
 
     let action = 'keep-both'

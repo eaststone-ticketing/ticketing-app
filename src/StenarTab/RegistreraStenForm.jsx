@@ -1,6 +1,12 @@
 import { useForm } from 'react-hook-form'
-import { addStenObjekt } from '../api.js'
+import { addStenObjekt, getArenden, updateArende } from '../api.js'
 import { cmToMm } from '../Helpers/stoneUnits.js'
+import calculateStonePrice from '../Helpers/calculateStonePrice.js'
+import { usePriceConfig } from '../Helpers/PriceConfigContext.jsx'
+import {
+  applyArtiklarToArende,
+  artiklarAfterStoneLinked,
+} from '../Helpers/artiklarHelpers.js'
 import { STEN_STATUS_OPTIONS } from './StenarSearchMenu.jsx'
 import MaterialSelect from './MaterialSelect.jsx'
 import './RegistreraStenForm.css'
@@ -8,7 +14,8 @@ import './RegistreraStenForm.css'
 const PRIS_KATEGORIER = ['A', 'B', 'C', 'D']
 const SKULPTUR_OPTIONS = ['', 'Liten', 'Stor']
 
-export default function RegistreraStenForm({ setShowForm, setStenar, defaultArendeID }) {
+export default function RegistreraStenForm({ setShowForm, setStenar, setArenden, defaultArendeID }) {
+  const { priceConfig } = usePriceConfig()
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       material: '',
@@ -51,6 +58,35 @@ export default function RegistreraStenForm({ setShowForm, setStenar, defaultAren
     try {
       const created = await addStenObjekt({ attr })
       setStenar((prev) => [...prev, created])
+
+      if (attr.arendeID) {
+        const isSockel = String(attr.modell || '').trim().toLowerCase() === 'sockel'
+        const stonePrice = calculateStonePrice(attr, priceConfig)
+        try {
+          const arenden = await getArenden()
+          const arende = arenden.find((a) => Number(a.id) === Number(attr.arendeID))
+          if (arende) {
+            const nextArtiklar = artiklarAfterStoneLinked(arende.artiklar, {
+              isSockel,
+              stonePrice,
+              sockelPrice: priceConfig.SOCKEL_STANDARD,
+            })
+            const updated = applyArtiklarToArende(arende, nextArtiklar)
+            if (
+              JSON.stringify(updated.artiklar) !==
+              JSON.stringify(arende.artiklar || {})
+            ) {
+              await updateArende(arende.id, updated)
+              setArenden?.((prev) =>
+                (prev || []).map((a) => (a.id === updated.id ? updated : a))
+              )
+            }
+          }
+        } catch (artiklarErr) {
+          console.error('Kunde inte uppdatera artiklar på ärendet:', artiklarErr)
+        }
+      }
+
       reset()
       setShowForm(false)
     } catch (err) {
