@@ -115,7 +115,9 @@ await db.exec( `
     nuvarandeText TEXT,
     signerad INTEGER,
     fakturerad INTEGER,
-    artiklar TEXT
+    artiklar TEXT,
+    godkannanden TEXT,
+    ansokan TEXT
   );
 `);
 
@@ -482,12 +484,19 @@ app.get("/bilder", authenticateToken, async (req, res) => {
 
 app.get("/arenden", authenticateToken, async (req, res) => {
     const rows = await db.all("SELECT * FROM arenden")
-    const arenden = rows.map((row) => ({
-      ...row,
-      artiklar: typeof row.artiklar === "string"
-        ? JSON.parse(row.artiklar || "{}")
-        : (row.artiklar || {}),
-    }));
+    const arenden = rows.map((row) => {
+      let artiklar = {};
+      if (row.artiklar && typeof row.artiklar === "object") {
+        artiklar = row.artiklar;
+      } else if (typeof row.artiklar === "string" && row.artiklar.trim()) {
+        try {
+          artiklar = JSON.parse(row.artiklar);
+        } catch {
+          artiklar = {};
+        }
+      }
+      return { ...row, artiklar: artiklar && typeof artiklar === "object" ? artiklar : {} };
+    });
     res.json(arenden);
 })
 
@@ -1175,12 +1184,38 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", async (req, res) => {
   try {
-    await db.exec(`
-      ALTER TABLE arenden
-      ADD COLUMN artiklar TEXT;
+    const addedColumns = [];
+    const skippedColumns = [];
+
+    for (const column of ["godkannanden", "ansokan"]) {
+      try {
+        await db.exec(`ALTER TABLE arenden ADD COLUMN ${column} TEXT;`);
+        addedColumns.push(column);
+      } catch (err) {
+        if (String(err.message).includes("duplicate column")) {
+          skippedColumns.push(column);
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    // Non-approval track = no Ny sten / Nyinskription in arendeTyp
+    const statusResult = await db.run(`
+      UPDATE arenden
+      SET status = 'Redo'
+      WHERE status = 'Nytt'
+        AND IFNULL(arendeTyp, '') NOT LIKE '%Ny sten%'
+        AND IFNULL(arendeTyp, '') NOT LIKE '%Nyinskription%'
     `);
-    console.log("Column artiklar added successfully.");
-    res.status(200).json({ message: "Column artiklar added successfully." });
+
+    const message = {
+      addedColumns,
+      skippedColumns,
+      nyttToRedoUpdated: statusResult.changes ?? 0,
+    };
+    console.log("alter-table:", message);
+    res.status(200).json(message);
   } catch (err) {
     console.error("Error altering table:", err.message);
     res.status(500).json({ error: "Failed to alter table", details: err.message });
