@@ -20,7 +20,7 @@ export default async function recordAnsokan(till, arende, setArenden) {
 
   const label = till === 'kund' ? 'skiss' : 'ansökan'
   await laggTillTrace(
-    `skickade ${label} till ${till} (status ${updatedArende.status})`,
+    `skickade ${label} till ${till}`,
     arende
   )
 }

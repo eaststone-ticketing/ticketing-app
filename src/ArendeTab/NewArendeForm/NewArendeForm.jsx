@@ -91,9 +91,9 @@ function buildStenAttr(stenData, { modell, arendeID }) {
     lykthal: !!stenData.lykthal,
     specialBlasting: !!stenData.specialBlasting,
     prisKategori: stenData.prisKategori || 'A',
-    framsida: '',
-    baksida: '',
-    kanter: '',
+    framsida: stenData.framsida ?? '',
+    baksida: stenData.baksida ?? '',
+    kanter: stenData.kanter ?? '',
     arendeID,
     status: stenData.status || 'Behöver beställas',
   }
@@ -174,7 +174,15 @@ const {
   }  = useForm({
     defaultValues: {
       arendeTyp: '',
-      sten: { status: 'Behöver beställas', skulptur: '', material: '', prisKategori: 'A' },
+      sten: {
+        status: 'Behöver beställas',
+        skulptur: '',
+        material: '',
+        prisKategori: 'A',
+        framsida: '',
+        baksida: '',
+        kanter: '',
+      },
       sockelSten: { status: 'Behöver beställas', skulptur: '', material: '', prisKategori: 'A' },
       pris: '',
     }
@@ -764,11 +772,12 @@ const onSubmit = async (data) => {
               setValue={setValue}
               required={true}
               fixedModell={isNyinskription && !hasNySten ? "Textkomplettering" : null}
-              showMaterial={!(isNyinskription && !hasNySten)}
+              showMaterial={true}
               showSkulptur={!(isNyinskription && !hasNySten)}
               showPrisKategori={!(isNyinskription && !hasNySten)}
               showLaserportratt={!(isNyinskription && !hasNySten)}
               showLykthal={!(isNyinskription && !hasNySten)}
+              showYtor={!(isNyinskription && !hasNySten)}
               showSpecialBlasting={true}
               statusOptions={stenStatusOptions}
               defaultStatus={stenDefaultStatus}
@@ -791,6 +800,7 @@ const onSubmit = async (data) => {
               showLaserportratt={false}
               showLykthal={false}
               showSpecialBlasting={false}
+              showYtor={false}
               statusOptions={STEN_STATUS_OPTIONS}
               defaultStatus="Behöver beställas"
             />

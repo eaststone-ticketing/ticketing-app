@@ -67,7 +67,9 @@ export default function SettingsOverlay({
             setPrideThemeOutOfSeason={setPrideThemeOutOfSeason}
           />
         )}
-        {activeTab === 'price' && canEditPrices && <PriceSettingsTab />}
+        {activeTab === 'price' && canEditPrices && (
+          <PriceSettingsTab onCancel={onClose} />
+        )}
       </div>
     </div>,
     document.body

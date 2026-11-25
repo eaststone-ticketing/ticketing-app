@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './login.css'
-import logo from './assets/images/eaststone.png'
 import { getToken, logout, scheduleSessionExpiryCheck } from './Helpers/auth.js'
 const API_URL = import.meta.env.VITE_API_URL || "http://192.168.8.171:5000";
 
@@ -73,7 +72,8 @@ function Login({ onLogin }) {
       <div className = "background"></div>
       <form onSubmit={handleLogin} className = "login-box">
 
-        <img src={logo} alt="Logo"/>
+        <img src="/EaststoneSG.svg" alt="Eaststone SG" className="login-logo"/>
+        <h2>Eaststone SG</h2>
         <div className = "login-field">
           <label htmlFor = "username">Användare</label>
           <input

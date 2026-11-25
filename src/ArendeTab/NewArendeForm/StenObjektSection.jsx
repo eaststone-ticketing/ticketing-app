@@ -19,6 +19,7 @@ export default function StenObjektSection({
   showLaserportratt = true,
   showLykthal = true,
   showSpecialBlasting = true,
+  showYtor = true,
   statusOptions = STEN_STATUS_OPTIONS,
   defaultStatus = 'Behöver beställas',
 }) {
@@ -61,6 +62,22 @@ export default function StenObjektSection({
         Djup (cm)
         <input type="number" step="any" {...register(field('djup'), { required })} />
       </label>
+      {showYtor && (
+        <>
+          <label className="input-field">
+            Framsida
+            <input type="text" {...register(field('framsida'))} />
+          </label>
+          <label className="input-field">
+            Baksida
+            <input type="text" {...register(field('baksida'))} />
+          </label>
+          <label className="input-field">
+            Sidor
+            <input type="text" {...register(field('kanter'))} />
+          </label>
+        </>
+      )}
       {showSkulptur && (
         <label className="input-field">
           Skulptur

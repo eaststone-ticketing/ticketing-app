@@ -101,7 +101,7 @@ function summarizeChanges(before, after) {
   return changes
 }
 
-export default function PriceSettingsTab() {
+export default function PriceSettingsTab({ onCancel }) {
   const { priceConfig: livePriceConfig, setPriceConfig, loading } = usePriceConfig()
   const [draft, setDraft] = useState(() => mergePriceConfig(livePriceConfig))
   const [saving, setSaving] = useState(false)
@@ -119,6 +119,7 @@ export default function PriceSettingsTab() {
   function handleCancel() {
     setError('')
     setDraft(mergePriceConfig(livePriceConfig))
+    onCancel?.()
   }
 
   async function handleSave() {
