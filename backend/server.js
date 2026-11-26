@@ -117,9 +117,18 @@ await db.exec( `
     fakturerad INTEGER,
     artiklar TEXT,
     godkannanden TEXT,
-    ansokan TEXT
+    ansokan TEXT,
+    attr TEXT
   );
 `);
+
+try {
+  await db.exec(`ALTER TABLE arenden ADD COLUMN attr TEXT;`);
+} catch (err) {
+  if (!String(err.message).includes("duplicate column")) {
+    throw err;
+  }
+}
 
 await db.exec(`
   CREATE TABLE IF NOT EXISTS kunder (
@@ -283,14 +292,15 @@ app.post("/kyrkogardar", authenticateToken,  async (req, res) => {
 
 
 app.post("/arenden", authenticateToken, async (req, res) => {
-    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan}  = req.body;
+    const {datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan, attr}  = req.body;
     const artiklarObj = artiklar && typeof artiklar === "object" ? artiklar : {};
     const godkannandenArr = Array.isArray(godkannanden) ? godkannanden : [];
     const ansokanArr = Array.isArray(ansokan) ? ansokan : [];
+    const attrObj = attr && typeof attr === "object" && !Array.isArray(attr) ? attr : {};
     const result = await db.run (`
-        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, JSON.stringify(artiklarObj), JSON.stringify(godkannandenArr), JSON.stringify(ansokanArr)]);
+        INSERT INTO arenden (datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, artiklar, godkannanden, ansokan, attr)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        `, [datum, arendeTyp, avlidenNamn, fodelseDatum, dodsDatum, fakturaTillDodsbo, bestallare, adress, ort, postnummer, tel, email, kyrkogard, kvarter, gravnummer, modell, material, symboler, beteckning, framsida, kanter, sockelBearbetning, typsnitt, forsankt, farg, dekor, platsForFlerNamn, minnesord, pris, tillbehor, sockel, staende, GRO, status, gravrattsinnehavare, ursprung, nuvarandeText, signerad, fakturerad, JSON.stringify(artiklarObj), JSON.stringify(godkannandenArr), JSON.stringify(ansokanArr), JSON.stringify(attrObj)]);
     
     const newArende = {
         id: result.lastID,
@@ -336,6 +346,7 @@ app.post("/arenden", authenticateToken, async (req, res) => {
         artiklar: artiklarObj,
         godkannanden: godkannandenArr,
         ansokan: ansokanArr,
+        attr: attrObj,
     };
 
     res.json(newArende);
@@ -511,11 +522,13 @@ app.get("/arenden", authenticateToken, async (req, res) => {
       const artiklar = parseJsonColumn(row.artiklar, {});
       const godkannanden = parseJsonColumn(row.godkannanden, []);
       const ansokan = parseJsonColumn(row.ansokan, []);
+      const attr = parseJsonColumn(row.attr, {});
       return {
         ...row,
         artiklar: artiklar && typeof artiklar === "object" && !Array.isArray(artiklar) ? artiklar : {},
         godkannanden: Array.isArray(godkannanden) ? godkannanden : [],
         ansokan: Array.isArray(ansokan) ? ansokan : [],
+        attr: attr && typeof attr === "object" && !Array.isArray(attr) ? attr : {},
       };
     });
     res.json(arenden);
@@ -778,6 +791,9 @@ app.put("/arenden/:id", authenticateToken, async (req, res) => {
     }
     if (Object.prototype.hasOwnProperty.call(fields, "ansokan")) {
       fields.ansokan = stringifyJsonField(fields.ansokan);
+    }
+    if (Object.prototype.hasOwnProperty.call(fields, "attr")) {
+      fields.attr = stringifyJsonField(fields.attr, true);
     }
 
     // Build a dynamic update query based on what fields are provided
@@ -1208,36 +1224,21 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/alter-table", async (req, res) => {
   try {
-    const addedColumns = [];
-    const skippedColumns = [];
+    let added = false;
+    let skipped = false;
 
-    for (const column of ["godkannanden", "ansokan"]) {
-      try {
-        await db.exec(`ALTER TABLE arenden ADD COLUMN ${column} TEXT;`);
-        addedColumns.push(column);
-      } catch (err) {
-        if (String(err.message).includes("duplicate column")) {
-          skippedColumns.push(column);
-        } else {
-          throw err;
-        }
+    try {
+      await db.exec(`ALTER TABLE arenden ADD COLUMN attr TEXT;`);
+      added = true;
+    } catch (err) {
+      if (String(err.message).includes("duplicate column")) {
+        skipped = true;
+      } else {
+        throw err;
       }
     }
 
-    // Non-approval track = no Ny sten / Nyinskription in arendeTyp
-    const statusResult = await db.run(`
-      UPDATE arenden
-      SET status = 'Redo'
-      WHERE status = 'Nytt'
-        AND IFNULL(arendeTyp, '') NOT LIKE '%Ny sten%'
-        AND IFNULL(arendeTyp, '') NOT LIKE '%Nyinskription%'
-    `);
-
-    const message = {
-      addedColumns,
-      skippedColumns,
-      nyttToRedoUpdated: statusResult.changes ?? 0,
-    };
+    const message = { added, skipped };
     console.log("alter-table:", message);
     res.status(200).json(message);
   } catch (err) {
